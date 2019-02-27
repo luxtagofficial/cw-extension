@@ -1,6 +1,6 @@
 # cw-extension
 
-[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 
 [NEM2][catapult], aka Catapult, Wallet as Firefox Extension.
 
