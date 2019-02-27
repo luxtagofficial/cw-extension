@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "Catapult Wallet",
+  "version": "0.0.1",
+
+  "description": "User friendly Catapult Wallet",
+
+  "icons": {
+    "48": "icons/icon-48x48.png"
+  },
+  "browser_action": {
+    "default_icon": "icons/icon-48x48.png",
+    "default_title": "Opens MyExtension",
+    "default_popup": "app.html"
+  }
+}
