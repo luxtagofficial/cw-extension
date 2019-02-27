@@ -8,6 +8,12 @@
 
 A browser wallet to facilitate the integration with web applications and Catapult Blockchain in a user-friendly manner.
 
+## Contributing
+
+This project uses [C4(Collective Code Construction Contract)](https://rfc.zeromq.org/spec:42/C4/) process for contributions.
+
+Check the development contribution guidelines [here](docs/devguidelines.md).
+
 ## Alpha Scope
 
 ### Account management
@@ -53,10 +59,6 @@ nem2-nonfungible-asset is free software: you can redistribute it and/or modify i
 Catapult is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License along with Catapult. If not, see http://www.gnu.org/licenses/
-
-## Contributing
-
-This project uses [C4(Collective Code Construction Contract)](https://rfc.zeromq.org/spec:42/C4/) process for contributions.
 
 [catapult]: https://nemtech.github.io/
 
