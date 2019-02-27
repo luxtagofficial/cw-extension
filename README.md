@@ -12,41 +12,7 @@ A browser wallet to facilitate the integration with web applications and Catapul
 
 This project uses [C4(Collective Code Construction Contract)](https://rfc.zeromq.org/spec:42/C4/) process for contributions.
 
-Check the development contribution guidelines [here](docs/devguidelines.md).
-
-## Alpha Scope
-
-### Account management
-
-- Create an account. Generate a KeyPair and link it to a catapult network
-- Login into the account
-
-### Account information
-
-- See the account information
-- See the transaction history
-- See the account mosaic balance
-- See the account owned name spaces
-
-## Assets
-
-- Send assets with an optional message
-
-## Mosaics and Namespaces
-
-- Create a mosaic
-- Rent a namespace
-
-### Web integration
-
-- URI Schema to call the wallet though a web page
-- Explorer integration to validate data consistency
-
-## Out of scope
-
-- __Security__. The wallet __IS NOT AND IT WILL NOT BE__ a secure wallet. Just use it or testing purposes
-- Multisig support
-- Clear error messages
+[Scope & Guidelines at Wiki](https://github.com/aleixmorgadas/cw-extension/wiki)
 
 ## License
 
