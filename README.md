@@ -6,7 +6,7 @@
 
 ## Vision
 
-A wallet integrated with the browser to facilitate the integration with web applications and Catapult Blockchain in a user-friendly manner.
+A browser wallet to facilitate the integration with web applications and Catapult Blockchain in a user-friendly manner.
 
 ## Alpha Scope
 
