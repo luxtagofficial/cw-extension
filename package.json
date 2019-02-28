@@ -21,7 +21,7 @@
     "url": "git+https://github.com/aleixmorgadas/cw-extension.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "GPLv3",
   "bugs": {
     "url": "https://github.com/aleixmorgadas/cw-extension/issues"
   },
