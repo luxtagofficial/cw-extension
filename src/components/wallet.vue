@@ -1,6 +1,6 @@
 <template>
   <div>
-    Hello firefox extension. I am Vue!
+    Wallet mode
   </div>
 </template>
 <script>

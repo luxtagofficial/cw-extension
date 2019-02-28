@@ -11,7 +11,8 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('src/app.js', 'dist/').sass('src/app.scss', 'dist/');
+mix.js('src/popup.js', 'dist/').sass('src/popup.scss', 'dist/');
+mix.js('src/wallet.js', 'dist/').sass('src/wallet.scss', 'dist/');
 
 // Full API
 // mix.js(src, output);
