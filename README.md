@@ -12,7 +12,9 @@ A browser wallet to facilitate the integration with web applications and Catapul
 
 This project uses [C4(Collective Code Construction Contract)](https://rfc.zeromq.org/spec:42/C4/) process for contributions.
 
-[Scope & Guidelines at Wiki](https://github.com/aleixmorgadas/cw-extension/wiki)
+- [Alpha Milestone Scope](https://github.com/aleixmorgadas/cw-extension/wiki/Alpha-Milestone)
+- [Development Guidelines](https://github.com/aleixmorgadas/cw-extension/wiki/Development-Guidelines)
+- [Development Environment](https://github.com/aleixmorgadas/cw-extension/wiki/Development-environment)
 
 ## License
 
