@@ -3,29 +3,19 @@
   "version": "0.0.1",
   "private": true,
   "description": "",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "author": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "web-ext:run": "web-ext run",
     "dev": "NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "watch": "NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "eslint": "eslint --fix src/**/*",
     "hot": "NODE_ENV=development webpack-dev-server --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
     "production": "NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
-    "eslint": "eslint --fix src/**/*"
+    "watch": "NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "web-ext:run": "web-ext run"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aleixmorgadas/cw-extension.git"
+  "dependencies": {
+    "vuetify": "^1.3.0"
   },
-  "author": "",
-  "license": "GPLv3",
-  "bugs": {
-    "url": "https://github.com/aleixmorgadas/cw-extension/issues"
-  },
-  "homepage": "https://github.com/aleixmorgadas/cw-extension#readme",
   "devDependencies": {
     "eslint": "^5.14.1",
     "eslint-config-airbnb-base": "^13.1.0",
@@ -35,7 +25,25 @@
     "resolve-url-loader": "2.3.1",
     "sass": "^1.17.2",
     "sass-loader": "7.*",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.1",
     "vue": "^2.6.7",
-    "vue-template-compiler": "^2.6.7"
+    "vue-cli-plugin-vuetify": "^0.4.6",
+    "vue-template-compiler": "^2.6.7",
+    "vuetify-loader": "^1.0.5"
+  },
+  "bugs": {
+    "url": "https://github.com/aleixmorgadas/cw-extension/issues"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "homepage": "https://github.com/aleixmorgadas/cw-extension#readme",
+  "license": "GPLv3",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aleixmorgadas/cw-extension.git"
+
   }
 }
