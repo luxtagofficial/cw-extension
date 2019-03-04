@@ -1,10 +1,19 @@
 <template>
    <v-app>
       <v-content>
-        <v-container>Hello world</v-container>
+        <v-container flud>
+          <h4>Catapult Wallet 0.0.1</h4>
+           <wallet-creation></wallet-creation>
+        </v-container>
       </v-content>
     </v-app>
 </template>
 <script>
-export default { };
+import WalletCreation from './WalletCreation.vue';
+
+export default { 
+  components: {
+    WalletCreation
+  }
+};
 </script>
