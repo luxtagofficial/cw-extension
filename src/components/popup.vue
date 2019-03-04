@@ -1,10 +1,18 @@
 <template>
   <v-app>
     <v-content>
-      <v-container>
-        <div>Hello firefox extension. I am Vue!
-          <br>
-          <a href="wallet.html" target="_blank" v-on:click="closePopup">open wallet</a>
+      <v-container fluid>
+        <div class="fixedHeightContainer">
+          <v-layout align-center justify-center column fill-height>
+            <h1>Catapult Wallet 0.0.1</h1>
+            <v-btn
+              color="primary"
+              dark
+              href="wallet.html"
+              target="_blank"
+              v-on:click="closePopup"
+            >Create a Wallet</v-btn>
+          </v-layout>
         </div>
       </v-container>
     </v-content>
@@ -19,3 +27,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+.fixedHeightContainer {
+  height: 400px;
+}
+</style>
