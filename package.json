@@ -29,6 +29,7 @@
     "stylus-loader": "^3.0.1",
     "vue": "^2.6.7",
     "vue-cli-plugin-vuetify": "^0.4.6",
+    "vue-router": "^3.0.2",
     "vue-template-compiler": "^2.6.7",
     "vuetify-loader": "^1.0.5"
   },
@@ -44,6 +45,5 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aleixmorgadas/cw-extension.git"
-
   }
 }
