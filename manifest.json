@@ -17,7 +17,7 @@
     {
       "protocol": "web+nem",
       "name": "NEM Schema",
-      "uriTemplate": "wallet.html#handler=%s"
+      "uriTemplate": "wallet.html/#/handler?transaction=%s"
     }
   ]
 }
