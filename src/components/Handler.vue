@@ -10,7 +10,6 @@ export default {
     return { transaction: {} }
   },
   created: function () {
-    console.log('$route', this.$route.transaction);
     const transactionQuery = this.$route.query.transaction;
     this.transaction = JSON.parse(this.$route.query.transaction.substring(
       'web+nem://transaction?data='.length, transactionQuery.length));
