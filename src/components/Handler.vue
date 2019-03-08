@@ -14,7 +14,6 @@ export default {
     const transactionQuery = this.$route.query.transaction;
     this.transaction = JSON.parse(this.$route.query.transaction.substring(
       'web+nem://transaction?data='.length, transactionQuery.length));
-    this.transaction.a = 2;
   }
 };
 </script>
