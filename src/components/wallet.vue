@@ -1,16 +1,51 @@
 <template>
-   <v-app>
-      <v-content>
-        <v-container flud>
-          <h4>Catapult Wallet 0.0.1</h4>
-          <router-view></router-view>
-          <router-link to="/create-wallet">Go to Wallet Creation</router-link>
-        </v-container>
-      </v-content>
-    </v-app>
+  <v-app>
+    <v-content>
+      <v-container grid-list-md>
+        <h4>Catapult Wallet 0.0.1</h4>
+        <v-layout row wrap>
+          <v-flex xs2>
+            <v-navigation-drawer permanent floating>
+              <v-toolbar flat>
+                <v-list>
+                  <v-list-tile>
+                    <v-list-tile-title class="title">Menu</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-toolbar>
+
+              <v-divider></v-divider>
+
+              <v-list dense class="pt-0">
+                <v-list-tile @click  to="/">
+                  <v-list-tile-action>
+                    <v-icon>home</v-icon>
+                  </v-list-tile-action>
+
+                  <v-list-tile-content>
+                    <v-list-tile-title>Home</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile @click to="/create-wallet">
+                  <v-list-tile-action>
+                    <v-icon>payment</v-icon>
+                  </v-list-tile-action>
+
+                  <v-list-tile-content>
+                    <v-list-tile-title>Wallet </v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-navigation-drawer>
+          </v-flex>
+          <v-flex xs10 px-4>
+             <router-view></router-view>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 <script>
-
-export default { 
-};
+export default {};
 </script>
