@@ -4,12 +4,14 @@ import VueRouter from 'vue-router';
 import Wallet from './components/wallet.vue';
 import Handler from './components/Handler.vue';
 import WalletCreation from './components/WalletCreation.vue';
+import DeveloperMode from './components/DeveloperMode.vue';
 
 import 'vuetify/dist/vuetify.min.css';
 
 const routes = [
   { path: '/create-wallet', component: WalletCreation },
-  { path: '/handler', component: Handler}
+  { path: '/handler', component: Handler},
+  { path: '/developer-mode', component: DeveloperMode }
 ];
 
 const router = new VueRouter({

@@ -12,9 +12,7 @@
   </v-layout>
 </template>
 <script>
-const nem2Sdk = require("nem2-sdk");
-const NetworkType = nem2Sdk.NetworkType,
-    Account = nem2Sdk.Account;
+import { NetworkType, Account} from 'nem2-sdk';
 
 export default {
   data: function() {
