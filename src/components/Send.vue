@@ -2,11 +2,6 @@
   <v-layout column>
     <v-flex xs12>
       <h5 class="headline">Send a transaction</h5>
-      <p> 
-        Current Node: 
-        <a :href="nodeURL">{{ nodeURL }}</a> 
-        (Cow)
-      </p>
     </v-flex>
     <v-flex xs12>
     <v-form>
@@ -113,7 +108,6 @@ import {
   Address,
   PlainMessage,
   NetworkCurrencyMosaic,
-  MosaicId,
   UInt64
 } from "nem2-sdk";
 
@@ -125,7 +119,6 @@ export default {
       txRecipient: "",
       userPrivateKey: "",
       signedTx: null,
-      nodeURL: "http://54.178.241.129:3000", // hardcoded URL for now, will move as a global setting later on
       dialog: false
     };
   },
@@ -147,7 +140,7 @@ export default {
       );
 
       this.signedTx = signerAccount.sign(transferTx);
-      
+
     }
   }
 };

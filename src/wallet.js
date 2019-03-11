@@ -29,8 +29,6 @@ Vue.use(VueRouter);
 // eslint-disable-next-line no-new
 new Vue({
   el: '#wallet',
-  props: {
-  },
   components: {
     Wallet,
   },
