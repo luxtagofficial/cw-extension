@@ -4,7 +4,7 @@
       <v-container fluid>
         <div class="fixedHeightContainer">
           <v-layout align-center justify-center column fill-height>
-            <h5 class="headline">Catapult Wallet 0.0.1</h5>
+            <h5 class="headline">NEM2 Wallet 0.0.1</h5>
             <v-btn
               color="primary"
               dark
