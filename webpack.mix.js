@@ -1,4 +1,6 @@
-let mix = require('laravel-mix');
+/* eslint-disable max-len */
+const mix = require('laravel-mix');
+const path = require('path');
 
 /*
  |--------------------------------------------------------------------------
@@ -38,10 +40,27 @@ mix.js('src/wallet.js', 'dist/').sass('src/wallet.scss', 'dist/');
 // mix.setResourceRoot('prefix/for/resource/locators');
 // mix.autoload({}); <-- Will be passed to Webpack's ProvidePlugin.
 mix.webpackConfig({
+  output: {
+    publicPath: 'http://localhost:8080/',
+  },
+  devServer: {
+    hot: true, // this enables hot reload
+    inline: true, // use inline method for hmr
+    contentBase: path.join(__dirname, './'),
+    https: false, // true
+    port: 8080,
+    headers: { 'Access-Control-Allow-Origin': '*' },
+    watchOptions: {
+      exclude: [/node_modules/],
+    },
+
+  },
   node: {
     fs: 'empty',
     tls: 'empty',
     net: 'empty',
+    // prevent webpack from injecting eval / new Function through global polyfill
+    global: true,
   },
 }); // <-- Override webpack.config.js, without editing the file directly.
 // mix.babelConfig({}); <-- Merge extra Babel configuration (plugins, etc.) with Mix's default.
