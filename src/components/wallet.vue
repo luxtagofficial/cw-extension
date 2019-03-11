@@ -27,12 +27,26 @@
                   </v-list-tile-content>
                 </v-list-tile>
 
+                <v-list-tile @click to="/send">
+                  <v-list-tile-action>
+                    <v-icon>send</v-icon>
+                  </v-list-tile-action>
+
+
+                <v-list-tile-content>
+                    <v-list-tile-title>Send</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+
+
+
                 <v-list-tile @click>
                   <v-list-tile-action>
                     <v-icon>account_circle</v-icon>
                   </v-list-tile-action>
 
-                  <v-list-tile-content>
+
+                <v-list-tile-content>
                     <v-list-tile-title>Account</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
