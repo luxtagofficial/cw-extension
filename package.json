@@ -1,5 +1,5 @@
 {
-  "name": "nem2-wallet-webextension",
+  "name": "nem2-wallet-browserextension",
   "version": "0.0.1",
   "private": true,
   "description": "",
@@ -36,16 +36,16 @@
     "vuetify-loader": "^1.0.5"
   },
   "bugs": {
-    "url": "https://github.com/aleixmorgadas/nem2-wallet-webextension/issues"
+    "url": "https://github.com/aleixmorgadas/nem2-wallet-browserextension/issues"
   },
   "directories": {
     "doc": "docs"
   },
-  "homepage": "https://github.com/aleixmorgadas/nem2-wallet-webextension#readme",
+  "homepage": "https://github.com/aleixmorgadas/nem2-wallet-browserextension#readme",
   "license": "GPLv3",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aleixmorgadas/nem2-wallet-webextension.git"
+    "url": "git+https://github.com/aleixmorgadas/nem2-wallet-browserextension.git"
   }
 }
