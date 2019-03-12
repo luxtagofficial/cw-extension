@@ -156,7 +156,7 @@ export default {
         PlainMessage.create(this.txMessage),
         NetworkType.MIJIN_TEST
       );
-
+      
       this.signedTx = signerAccount.sign(transferTx);
 
       if (this.signedTx) {
