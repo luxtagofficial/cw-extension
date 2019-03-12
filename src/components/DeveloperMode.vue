@@ -17,17 +17,19 @@
             <v-text-field
               v-model="privateKey"
               label="Private Key"
+              :error="privateKeyErr"
+              :messages="privateKeyErrMessage"
               @change="recalculateAccount"
             />
             <v-text-field
               v-model="publicKey"
               label="Public Key"
-              @change="recalculateAccount"
+              @change="recalculatePublicAccount"
             />
             <v-radio-group
               v-model="networkID"
               row
-              @change="recalculateAccount"
+              @change="recalculatePublicAccount"
             >
               <v-radio
                 v-for="k in networkName"
@@ -39,12 +41,10 @@
             <v-text-field
               v-model="addressPlain"
               label="Address plain"
-              @change="recalculateAccount"
             />
             <v-text-field
               v-model="addressPretty"
               label="Address pretty"
-              @change="recalculateAccount"
             />
           </v-form>
         </v-flex>
@@ -61,7 +61,7 @@
   </v-layout>
 </template>
 <script>
-import { Account, NetworkType } from 'nem2-sdk';
+import { Account, NetworkType, PublicAccount } from 'nem2-sdk';
 
 export default {
   data() {
@@ -70,8 +70,11 @@ export default {
       publicKey: '',
       addressPlain: '',
       addressPretty: '',
+      publicAccount: null,
       networkType: NetworkType,
       networkID: NetworkType.MIJIN_TEST,
+      privateKeyErr: false,
+      privateKeyErrMessage: '',
     };
   },
   computed: {
@@ -82,18 +85,47 @@ export default {
     },
   },
   methods: {
+    isPrivatePublicKeyMatch() {
+      const acc = Account.createFromPrivateKey(this.privateKey, this.networkID);
+      return acc.publicKey.toUpperCase() === this.publicKey.toUpperCase();
+    },
+    checkPrivatePublicKeyMatch() {
+      if (!this.isPrivatePublicKeyMatch()) {
+        this.privateKeyErr = true;
+        this.privateKeyErrMessage = 'Private Key does not match public key';
+        return;
+      }
+      this.privateKeyErr = false;
+      this.privateKeyErrMessage = '';
+    },
     recalculateAccount() {
-      const pk = this.privateKey;
-      if (pk.length === 64) {
+      const pp = this.privateKey;
+      if (pp.length === 64) {
         try {
-          const kp = Account.createFromPrivateKey(pk, this.networkID);
-          this.publicKey = kp.publicKey;
-          this.addressPlain = kp.address.plain();
-          this.addressPretty = kp.address.pretty();
+          const acc = Account.createFromPrivateKey(pp, this.networkID);
+          this.publicKey = acc.publicKey;
+          this.recalculatePublicAccount();
         } catch (e) {
           console.log(e);
         }
       }
+    },
+    recalculatePublicAccount() {
+      const pk = this.publicKey;
+      if (pk.length === 64) {
+        try {
+          this.publicAccount = PublicAccount.createFromPublicKey(pk, this.networkID);
+          this.updateAddress();
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      this.checkPrivatePublicKeyMatch();
+    },
+    updateAddress() {
+      const acc = this.publicAccount;
+      this.addressPlain = acc.address.plain();
+      this.addressPretty = acc.address.pretty();
     },
     generateAccount() {
       const account = Account.generateNewAccount(NetworkType.MIJIN_TEST);
