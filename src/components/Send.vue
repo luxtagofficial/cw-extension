@@ -100,7 +100,7 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>s
+    </v-dialog>
 
     
     <v-card v-if="txHash != '' && txHash">
@@ -135,7 +135,7 @@ export default {
       signedTx: null,
       dialog: false,
       nodeURL: "http://54.178.241.129:3000", //temp hardcode
-      transactionHttp: new TransactionHttp("http://54.178.241.129:3000"),
+      transactionHttp: new TransactionHttp("http://54.178.241.129:3000"), //temp hardcode
       txHash: ""
     };
   },
