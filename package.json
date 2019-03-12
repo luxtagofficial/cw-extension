@@ -33,7 +33,8 @@
     "vue-cli-plugin-vuetify": "^0.4.6",
     "vue-router": "^3.0.2",
     "vue-template-compiler": "^2.6.7",
-    "vuetify-loader": "^1.0.5"
+    "vuetify-loader": "^1.0.5",
+    "webpack-dev-server": "^3.2.1"
   },
   "bugs": {
     "url": "https://github.com/aleixmorgadas/nem2-wallet-webextension/issues"

@@ -2,6 +2,12 @@
   <v-layout column>
     <v-flex xs12>
       <h5 class="headline">Send a transaction</h5>
+
+      <p>
+        Current Node: 
+        <a href="http://54.178.241.129:3000">http://54.178.241.129:3000</a>
+        (Cow)
+      </p>
     </v-flex>
     <v-flex xs12>
     <v-form>
@@ -48,7 +54,6 @@
         <v-card-title class="headline">Send this transaction?</v-card-title>
         <v-card-text>
           Are you sure you want to send the the transaction with the following details?
-
           <v-list>
           <v-list-tile>
             <v-list-tile-action>
@@ -90,12 +95,20 @@
 
           <v-btn
             color="info"
-            @click="createTransferTransaction">
+            @click="sendTransferTransaction">
             Yes, send it!
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog>s
+
+    
+    <v-card v-if="txHash != '' && txHash">
+        <v-card-title><b>Transaction sent to {{ txRecipient }} was a success! 🚀</b></v-card-title>
+        <v-card-text>
+         Hash: <a :href="nodeURL + '/transaction/' + txHash" target="_blank">{{ txHash }}</a> 
+        </v-card-text>
+      </v-card>
   </v-layout>
 </template>
 
@@ -108,7 +121,8 @@ import {
   Address,
   PlainMessage,
   NetworkCurrencyMosaic,
-  UInt64
+  UInt64,
+  TransactionHttp
 } from "nem2-sdk";
 
 export default {
@@ -119,13 +133,17 @@ export default {
       txRecipient: "",
       userPrivateKey: "",
       signedTx: null,
-      dialog: false
+      dialog: false,
+      nodeURL: "http://54.178.241.129:3000", //temp hardcode
+      transactionHttp: new TransactionHttp("http://54.178.241.129:3000"),
+      txHash: ""
     };
   },
   methods: {
-
-    createTransferTransaction: function() {
+    sendTransferTransaction: function() {
       this.dialog = false;
+
+      const recipientAddr = Address.createFromRawAddress(this.txRecipient);
       const signerAccount = Account.createFromPrivateKey(
         this.userPrivateKey,
         NetworkType.MIJIN_TEST
@@ -133,7 +151,7 @@ export default {
 
       const transferTx = TransferTransaction.create(
         Deadline.create(),
-        Address.createFromRawAddress(this.txRecipient),
+        recipientAddr,
         [NetworkCurrencyMosaic.createRelative(UInt64.fromUint(this.txAmount))],
         PlainMessage.create(this.txMessage),
         NetworkType.MIJIN_TEST
@@ -141,7 +159,18 @@ export default {
 
       this.signedTx = signerAccount.sign(transferTx);
 
-    }
+      if (this.signedTx) {
+        this.transactionHttp.announce(this.signedTx).subscribe(
+          (txAnnouncmentResponse)=> {
+            if (txAnnouncmentResponse.message ==
+              "packet 9 was pushed to the network via /transaction") {
+              this.txHash = this.signedTx.hash;
+            }
+          },
+          (err) => console.log(err)
+        );
+      }
+    },
   }
 };
 </script>
