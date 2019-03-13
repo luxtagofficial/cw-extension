@@ -1,4 +1,5 @@
-let mix = require('laravel-mix');
+/* eslint-disable max-len */
+const mix = require('laravel-mix');
 
 /*
  |--------------------------------------------------------------------------
