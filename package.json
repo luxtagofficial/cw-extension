@@ -14,7 +14,6 @@
     "web-ext:run": "web-ext run"
   },
   "dependencies": {
-    "laravel-mix": "^4.0.14",
     "nem2-library": "^0.9.11",
     "nem2-sdk": "^0.10.3-4",
     "vue": "^2.6.7",
@@ -27,6 +26,7 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-vue": "^5.2.2",
+    "laravel-mix": "^4.0.14",
     "resolve-url-loader": "2.3.1",
     "sass": "^1.17.2",
     "sass-loader": "7.*",
