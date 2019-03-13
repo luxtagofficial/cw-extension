@@ -84,7 +84,7 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-divider></v-divider>
+          <v-spacer></v-spacer>
 
           <v-btn
             color="info"
