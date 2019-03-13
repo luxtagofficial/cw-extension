@@ -19,6 +19,39 @@ This project uses [C4(Collective Code Construction Contract)](https://rfc.zeromq
 
 When you find that _nem2-wallet-browserextension_ could have XYZ, __think about what you can do for open source not what open source can do for you__. If you find something it's not working or something is missing, feel free to open a Pull Request, I will be more than happy to merge it, but I don't do features on demand :smile:.
 
+## Tools (I use)
+
+- npm or yarn
+- [visual studio code](https://code.visualstudio.com/) or your prefered IDE
+- [web-ext](https://github.com/mozilla/web-ext)
+
+```bash
+$> npm install --global web-ext
+```
+
+- [Firefox](https://www.mozilla.org/en-US/firefox/new/)
+
+## Clone repository
+
+```bash
+$> git clone git@github.com:aleixmorgadas/cw-extension.git
+$> cd cw-extension
+```
+
+## Install development dependencies
+
+```
+$> npm i
+```
+
+## Run development mode
+
+```
+$> npm run watch & npm run web-ext:run
+```
+
+`web-ext` will open your Firefox browser with the extension loaded.
+
 ## License
 
 Copyright (c) 2019-present Contributors as noted in the AUTHORS file
