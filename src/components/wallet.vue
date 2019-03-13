@@ -2,7 +2,7 @@
   <v-app>
     <v-content>
       <v-container grid-list-md>
-        <h4>Catapult Wallet 0.0.1</h4>
+        <h4>NEM2 Wallet 0.0.1</h4>
         <v-layout row wrap>
           <v-flex xs2>
             <v-navigation-drawer permanent floating>
