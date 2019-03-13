@@ -2,7 +2,6 @@
   <v-layout column>
     <v-flex xs12>
       <h5 class="headline">Send a transaction</h5>
-
       <p>
         Current Node: 
         <a href="http://54.178.241.129:3000">http://54.178.241.129:3000</a>
@@ -27,7 +26,7 @@
         placeholder="Here is your XEM, Bob! - Alice"
         v-model="txMessage"></v-text-field>
 
-        <v-divider></v-divider>
+        <v-spacer></v-spacer>
 
         <v-text-field
         label="Private Key"
@@ -85,7 +84,7 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-divider></v-divider>
 
           <v-btn
             color="info"
