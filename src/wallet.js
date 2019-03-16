@@ -1,16 +1,16 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import VueRouter from 'vue-router';
-import Wallet from './components/wallet.vue';
+import Home from './components/home.vue';
 import Handler from './components/Handler.vue';
-import WalletCreation from './components/WalletCreation.vue';
+import Wallet from './components/wallet/Wallet.vue';
 import DeveloperMode from './components/developermode/DeveloperMode.vue';
 import Send from './components/Send.vue';
 
 import 'vuetify/dist/vuetify.min.css';
 
 const routes = [
-  { path: '/create-wallet', component: WalletCreation },
+  { path: '/wallet', component: Wallet },
   { path: '/handler', component: Handler },
   { path: '/developer-mode', component: DeveloperMode },
   { path: '/send', component: Send },
@@ -28,12 +28,12 @@ Vue.use(VueRouter);
 
 // eslint-disable-next-line no-new
 new Vue({
-  el: '#wallet',
+  el: '#home',
   components: {
-    Wallet,
+    Home,
   },
   render(h) {
-    return h('wallet');
+    return h('home');
   },
   router,
 });
