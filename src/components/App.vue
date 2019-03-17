@@ -1,6 +1,10 @@
 <template>
   <v-app>
     <v-content>
+      <v-alert :value="true" type="warning" class="ma-0">
+        Please be aware this is a Wallet for development proposes, it has no security and the private keys are stored in plain text. 
+        <strong>DO NOT USE IN MAIN NET or PRODUCTION PRIVATE NETWORKS</strong>
+      </v-alert>
       <v-container grid-list-md >
         <v-layout row justify-space-between align-center>
           <h4>NEM2 Wallet 0.0.1</h4>
