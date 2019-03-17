@@ -22,6 +22,7 @@ class StateRepository {
     this.state = {
       wallets: wallets != null ? jsonToWallets(wallets) : [],
     };
+    this.state.activeWallet = this.state.wallets.length === 0 ? null : this.state.wallets[0];
   }
 
   wallets() {
@@ -40,6 +41,12 @@ class StateRepository {
     });
     if (walletIndex !== undefined) this.state.wallets.splice(walletIndex, 1);
     localStorage.setItem('wallets', walletsToJSON(this.state.wallets));
+  }
+
+  currentWallet(walletName) {
+    this.state.wallets.forEach((value) => {
+      if (value.name === walletName) this.state.activeWallet = value;
+    });
   }
 }
 

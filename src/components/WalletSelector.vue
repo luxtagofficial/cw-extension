@@ -15,7 +15,7 @@ import StateRepository from "../infrastructure/StateRepository.js";
 
 export default {
   data: () => ({
-    wallet: StateRepository.state.wallets.length == 0 ? null : StateRepository.state.wallets[0].name,
+    wallet: null,
     wallets: StateRepository.state.wallets,
     selectWallets: StateRepository.wallets().map(wallet => wallet.name),
   }),
@@ -23,7 +23,11 @@ export default {
   watch: {
     wallets: function(val) {
       this.selectWallets = StateRepository.wallets().map(wallet => wallet.name);
-    }
+    },
+    wallet: (val) => StateRepository.currentWallet(val)
+  },
+  created: function () {
+    this.wallet = StateRepository.state.wallets.length == 0 ? null : StateRepository.state.wallets[0].name
   }
 };
 </script>
