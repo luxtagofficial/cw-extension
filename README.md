@@ -1,6 +1,7 @@
 # nem2-wallet-browserextension
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+[![Build Status](https://travis-ci.org/aleixmorgadas/nem2-wallet-browserextension.svg?branch=master)](https://travis-ci.org/aleixmorgadas/nem2-wallet-browserextension)
 
 [NEM2][catapult], aka Catapult, Wallet as Firefox Extension.
 
