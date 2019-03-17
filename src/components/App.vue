@@ -40,6 +40,7 @@
                   </v-list-tile-content>
                 </v-list-tile>
 
+                <!--
                 <v-list-tile @click>
                   <v-list-tile-action>
                     <v-icon>account_circle</v-icon>
@@ -49,34 +50,27 @@
                     <v-list-tile-title>Account</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
+                -->
 
-                <v-list-group no-action prepend-icon="dns">
-                  <template v-slot:activator>
-                    <v-list-tile>
-                      <v-list-tile-title>Namespaces</v-list-tile-title>
-                    </v-list-tile>
-                  </template>
-                  <v-list-tile @click>
-                    <v-list-tile-title>Management</v-list-tile-title>
-                    <v-list-tile-action>
-                      <v-icon>add</v-icon>
-                    </v-list-tile-action>
-                  </v-list-tile>
-                </v-list-group>
+                <v-list-tile @click to="/namespace">
+                  <v-list-tile-action>
+                    <v-icon>dns</v-icon>
+                  </v-list-tile-action>
 
-                <v-list-group no-action prepend-icon="group_work">
-                  <template v-slot:activator>
-                    <v-list-tile>
-                      <v-list-tile-title>Assets</v-list-tile-title>
-                    </v-list-tile>
-                  </template>
-                  <v-list-tile @click>
-                    <v-list-tile-title>Management</v-list-tile-title>
-                    <v-list-tile-action>
-                      <v-icon>add</v-icon>
-                    </v-list-tile-action>
-                  </v-list-tile>
-                </v-list-group>
+                  <v-list-tile-content>
+                    <v-list-tile-title>Namespaces</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+
+                <v-list-tile @click to="/asset">
+                  <v-list-tile-action>
+                    <v-icon>group_work</v-icon>
+                  </v-list-tile-action>
+
+                  <v-list-tile-content>
+                    <v-list-tile-title>Assets</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
 
                 <v-list-tile @click to="/wallet">
                   <v-list-tile-action>
