@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import VueRouter from 'vue-router';
-import Home from './components/home.vue';
+import App from './components/App.vue';
+import Home from './components/Home.vue';
 import Handler from './components/Handler.vue';
 import Wallet from './components/wallet/Wallet.vue';
 import DeveloperMode from './components/developermode/DeveloperMode.vue';
@@ -14,6 +15,7 @@ const routes = [
   { path: '/handler', component: Handler },
   { path: '/developer-mode', component: DeveloperMode },
   { path: '/send', component: Send },
+  { path: '/', component: Home },
 ];
 
 const router = new VueRouter({
@@ -28,12 +30,12 @@ Vue.use(VueRouter);
 
 // eslint-disable-next-line no-new
 new Vue({
-  el: '#home',
+  el: '#app',
   components: {
-    Home,
+    App,
   },
   render(h) {
-    return h('home');
+    return h('app');
   },
   router,
 });

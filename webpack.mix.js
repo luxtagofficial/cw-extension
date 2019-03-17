@@ -15,7 +15,6 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 mix.js('src/popup.js', 'dist/').sass('src/popup.scss', 'dist/');
 mix.js('src/wallet.js', 'dist/').sass('src/wallet.scss', 'dist/');
-// mix.extract(['nem2-sdk']);
 
 // Full API
 // mix.js(src, output);
@@ -45,6 +44,7 @@ mix.webpackConfig({
     tls: 'empty',
     net: 'empty',
   },
+  devtool: 'inline-source-map',
   optimization: {
     minimizer: [
       new TerserPlugin({
@@ -69,10 +69,3 @@ mix.webpackConfig({
 //   terser: {}, // Terser-specific options. https://github.com/webpack-contrib/terser-webpack-plugin#options
 //   postCss: [] // Post-CSS options: https://github.com/postcss/postcss/blob/master/docs/plugins.md
 // });
-mix.options({
-  optimize: {
-    splitChunks: {
-      maxSize: 4,
-    },
-  },
-});
