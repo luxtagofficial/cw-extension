@@ -99,7 +99,7 @@
               </v-list>
             </v-navigation-drawer>
           </v-flex>
-          <v-flex xs10 px-4>
+          <v-flex xs10 pl-4>
             <router-view></router-view>
           </v-flex>
         </v-layout>
