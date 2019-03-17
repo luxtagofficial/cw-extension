@@ -210,7 +210,7 @@ export default {
       signedTx: null,
       transferTx: null,
       dialog: false,
-      checkbox: true,
+      checkbox: false,
       mosaics: [],
       currentMosaicName: "",
       currentMosaicAmount: "",
