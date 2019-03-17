@@ -1,8 +1,11 @@
 <template>
   <v-app>
     <v-content>
-      <v-container grid-list-md>
-        <h4>NEM2 Wallet 0.0.1</h4>
+      <v-container grid-list-md >
+        <v-layout row justify-space-between align-center>
+          <h4>NEM2 Wallet 0.0.1</h4>
+          <WalletSelector />
+        </v-layout>
         <v-layout row>
           <v-flex sm>
             <v-navigation-drawer permanent floating>
@@ -107,5 +110,11 @@
   </v-app>
 </template>
 <script>
-export default {};
+import WalletSelector from './WalletSelector.vue';
+
+export default {
+  components: {
+    WalletSelector,
+  }
+};
 </script>
