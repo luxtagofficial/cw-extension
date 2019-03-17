@@ -48,5 +48,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aleixmorgadas/nem2-wallet-browserextension.git"
-  }
+  },
+  "sideEffects": false
 }

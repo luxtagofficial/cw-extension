@@ -2,5 +2,6 @@
     "/dist/popup.js": "/dist/popup.js",
     "/dist/popup.css": "/dist/popup.css",
     "/dist/wallet.css": "/dist/wallet.css",
-    "/dist/wallet.js": "/dist/wallet.js"
+    "/dist/wallet.js": "/dist/wallet.js",
+    "/dist/vendor.min.js": "/dist/vendor.min.js"
 }
