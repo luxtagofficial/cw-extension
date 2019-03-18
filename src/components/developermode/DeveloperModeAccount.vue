@@ -73,9 +73,11 @@ export default {
   },
   computed: {
     networkName() {
-      return Object.keys(NetworkType)
-        // eslint-disable-next-line no-restricted-globals
-        .filter(key => !isNaN(Number(NetworkType[key])));
+      // Hide MAIN_NET and TEST_NET until catapult release
+      // return Object.keys(NetworkType)
+      //   // eslint-disable-next-line no-restricted-globals
+      //   .filter(key => !isNaN(Number(NetworkType[key])));
+      return ['MIJIN', 'MIJIN_TEST'];
     },
   },
   methods: {
@@ -100,7 +102,7 @@ export default {
           this.publicKey = acc.publicKey;
           this.recalculatePublicAccount();
         } catch (e) {
-          console.log(e);
+          console.error(e);
         }
       }
     },
@@ -111,7 +113,7 @@ export default {
           this.publicAccount = PublicAccount.createFromPublicKey(pk, this.networkID);
           this.updateAddress();
         } catch (e) {
-          console.log(e);
+          console.error(e);
         }
       }
       this.checkPrivatePublicKeyMatch();
@@ -122,7 +124,7 @@ export default {
       this.addressPretty = acc.address.pretty();
     },
     generateAccount() {
-      const account = Account.generateNewAccount(NetworkType.MIJIN_TEST);
+      const account = Account.generateNewAccount(this.networkID);
       this.privateKey = account.privateKey.toString();
       this.recalculateAccount();
     },
