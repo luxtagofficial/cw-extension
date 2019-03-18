@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 const mix = require('laravel-mix');
+const TerserPlugin = require('terser-webpack-plugin');
 
 /*
  |--------------------------------------------------------------------------
@@ -31,7 +32,6 @@ mix.js('src/wallet.js', 'dist/').sass('src/wallet.scss', 'dist/');
 // mix.babel(files, destination); <-- Identical to mix.combine(), but also includes Babel compilation.
 // mix.copy(from, to);
 // mix.copyDirectory(fromDir, toDir);
-// mix.minify(file);
 // mix.sourceMaps(); // Enable sourcemaps
 // mix.version(); // Enable versioning.
 // mix.disableNotifications();
@@ -43,6 +43,18 @@ mix.webpackConfig({
     fs: 'empty',
     tls: 'empty',
     net: 'empty',
+  },
+  devtool: 'inline-source-map',
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          output: {
+            comments: false,
+          },
+        },
+      }),
+    ],
   },
 }); // <-- Override webpack.config.js, without editing the file directly.
 // mix.babelConfig({}); <-- Merge extra Babel configuration (plugins, etc.) with Mix's default.

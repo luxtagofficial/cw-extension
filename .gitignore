@@ -65,3 +65,5 @@ typings/
 web-ext-artifacts/
 
 .vscode/
+
+.web-extension-id
