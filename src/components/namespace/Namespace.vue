@@ -1,12 +1,44 @@
 <template>
-  <div>
-    <h2>Namespace. Help wanted</h2>
-    <p>This is a collaborative browser. If you miss this feature, please, consider helping the project developing a small feature.</p>
-    <p>We have GitHub issues to describe the main feature we have in mind, but you are free to propose another way to manage namespaces</p>
-    <a href="https://github.com/aleixmorgadas/nem2-wallet-browserextension/issues/2" target="_blank">https://github.com/aleixmorgadas/nem2-wallet-browserextension/issues/2</a>
-  </div>
+  <v-layout column>
+    <v-layout
+      row
+      justify-space-between
+      align-center
+    >
+      <h5 class="headline">
+        Namespace
+      </h5>
+      <div>
+        <v-btn
+          color="primary mx-0"
+          @click="registerNamespace = true"
+        >
+          Register Namespace
+        </v-btn>
+      </div>
+    </v-layout>
+    <NamespaceRegistration
+      v-show="registerNamespace"
+      @closeComponent="registerNamespace = false"
+    />
+    <NamespaceList class="my-2" />
+  </v-layout>
 </template>
 <script>
+import NamespaceRegistration from './NamespaceRegistration.vue';
+import NamespaceList from './NamespaceList.vue';
+
+export default {
+  components: {
+    NamespaceRegistration,
+    NamespaceList,
+  },
+  data() {
+    return {
+      registerNamespace: false,
+    };
+  },
+};
 </script>
 <style scoped>
 </style>
