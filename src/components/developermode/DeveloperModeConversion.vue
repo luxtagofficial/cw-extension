@@ -84,7 +84,7 @@ export default {
     },
     uint64Convert() {
       const parsedUint64 = new UInt64(this.uint64Array.replace(/(\[|\])/g, '').split(',').map(x => Number(x)));
-      this.hexNumber = parsedUint64.toHex();
+      this.hexNumber = parsedUint64.toHex().toUpperCase();
       this.number = parseInt(this.hexNumber, 16);
     },
   },
