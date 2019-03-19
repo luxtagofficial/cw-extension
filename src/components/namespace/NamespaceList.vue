@@ -62,7 +62,7 @@
   </v-layout>
 </template>
 <script>
-import { NamespaceHttp } from 'nem2-sdk';
+import { NamespaceHttp, UInt64 } from 'nem2-sdk';
 import { flatMap, mergeMap } from 'rxjs/operators';
 import StateRepository from '../../infrastructure/StateRepository.js';
 
@@ -99,7 +99,7 @@ export default {
         let aliasType;
         switch (ns.namespaceInfo.alias.type) {
           case 1:
-            aliasText = ns.namespaceInfo.alias.mosaicId.toHex().toUpperCase();
+            aliasText = (new UInt64(ns.namespaceInfo.alias.mosaicId)).toHex().toUpperCase();
             aliasType = 'mosaic';
             break;
           case 2:
