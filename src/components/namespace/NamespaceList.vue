@@ -21,13 +21,8 @@
       v-show="!noWallets"
       class="py-0"
     >
-      <v-layout justify-end>
-        <v-btn @click="reloadNamespaces">
-          Reload
-        </v-btn>
-      </v-layout>
       <v-list
-        two-line
+        three-line
         class="py-0"
       >
         <v-slide-y-transition
@@ -72,6 +67,14 @@ import { mergeMap } from 'rxjs/operators';
 import StateRepository from '../../infrastructure/StateRepository.js';
 
 export default {
+  props: {
+    reloadNamespaceNotifier: {
+      type: Number,
+      default() {
+        return 0;
+      },
+    },
+  },
   data() {
     return {
       noWallets: StateRepository.wallets().length === 0,
@@ -132,6 +135,11 @@ export default {
   },
   watch: {
     activeWallet: {
+      handler() {
+        this.reloadNamespaces();
+      },
+    },
+    reloadNamespaceNotifier: {
       handler() {
         this.reloadNamespaces();
       },
