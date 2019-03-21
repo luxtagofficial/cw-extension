@@ -42,6 +42,11 @@
             label="Address pretty"
             @change="calculateAddress"
           />
+          <v-text-field
+            v-model="addressEncoded"
+            label="Address encoded"
+            @change="decodeAddress"
+          />
         </v-form>
       </v-flex>
     </v-card-text>
@@ -58,8 +63,15 @@
 
 <script>
 import {
-  Account, Address, NetworkType, PublicAccount,
+  Account,
+  Address,
+  NetworkType,
+  PublicAccount,
 } from 'nem2-sdk';
+import {
+  address as libAddress,
+  convert as libConvert,
+} from 'nem2-library';
 
 export default {
   data() {
@@ -68,6 +80,7 @@ export default {
       publicKey: '',
       addressPlain: '',
       addressPretty: '',
+      addressEncoded: '',
       publicAccount: null,
       networkType: NetworkType,
       networkID: NetworkType.MIJIN_TEST,
@@ -126,6 +139,7 @@ export default {
       const acc = this.publicAccount;
       this.addressPlain = acc.address.plain();
       this.addressPretty = acc.address.pretty();
+      this.addressEncoded = libConvert.uint8ToHex(libAddress.stringToAddress(this.addressPlain));
     },
     generateAccount() {
       const account = Account.generateNewAccount(this.networkID);
@@ -134,6 +148,12 @@ export default {
     },
     calculateAddress(a) {
       const address = Address.createFromRawAddress(a);
+      this.addressPlain = address.plain();
+      this.addressPretty = address.pretty();
+      this.addressEncoded = libConvert.uint8ToHex(libAddress.stringToAddress(this.addressPlain));
+    },
+    decodeAddress() {
+      const address = Address.createFromEncoded(this.addressEncoded);
       this.addressPlain = address.plain();
       this.addressPretty = address.pretty();
     },
