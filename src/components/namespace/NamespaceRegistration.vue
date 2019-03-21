@@ -78,10 +78,31 @@
         <v-btn
           :disabled="disabledSendTransaction"
           color="primary mx-0"
-          @click="sendTransaction"
+          @click="showDialog"
         >
           Send Transaction
         </v-btn>
+        <Dialog
+          :is-show="isDialogShow"
+          @transmitTransaction="sendTransaction"
+          @close="dialogClosed"
+        >
+          <v-list>
+            <v-list-tile
+              v-for="detail in dialogDetails"
+              :key="detail.key"
+            >
+              <v-list-tile-action>
+                <v-icon>{{ detail.icon }}</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  {{ detail.key }}: {{ detail.value }}
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </Dialog>
       </v-layout>
     </v-layout>
   </v-scale-transition>
@@ -91,8 +112,12 @@ import {
   NetworkType, RegisterNamespaceTransaction, NamespaceType, Deadline, UInt64, TransactionHttp,
 } from 'nem2-sdk';
 import StateRepository from '../../infrastructure/StateRepository.js';
+import Dialog from './Dialog.vue';
 
 export default {
+  components: {
+    Dialog,
+  },
   data() {
     return {
       sharedState: StateRepository.state,
@@ -104,6 +129,8 @@ export default {
       namespaceName: '',
       parentNamespaceName: '',
       duration: 0,
+      isDialogShow: false,
+      dialogDetails: [],
     };
   },
   computed: {
@@ -121,6 +148,26 @@ export default {
     },
   },
   methods: {
+    showDialog() {
+      this.dialogDetails = [
+        {
+          icon: 'add',
+          key: 'NamespaceType',
+          value: this.namespaceType === 0 ? 'RootNamespace' : 'SubNamespace',
+        },
+        {
+          icon: 'add',
+          key: 'Namespace name',
+          value: this.namespaceType === 0 ? this.namespaceName : (`${this.parentNamespaceName}.${this.namespaceName}`),
+        },
+        {
+          icon: 'add',
+          key: 'Duration',
+          value: this.duration,
+        },
+      ];
+      this.isDialogShow = true;
+    },
     sendTransaction() {
       if (this.activeWallet == null) return;
       const { duration } = this;
@@ -151,6 +198,10 @@ export default {
       const signedTx = account.sign(registerNamespaceTransaction);
       const txHttp = new TransactionHttp(endpoint);
       txHttp.announce(signedTx).subscribe(console.log, console.error);
+    },
+    dialogClosed() {
+      this.isDialogShow = false;
+      this.dialogDetails = [];
     },
   },
 };
