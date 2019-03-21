@@ -35,10 +35,12 @@
           <v-text-field
             v-model="addressPlain"
             label="Address plain"
+            @change="calculateAddress"
           />
           <v-text-field
             v-model="addressPretty"
             label="Address pretty"
+            @change="calculateAddress"
           />
         </v-form>
       </v-flex>
@@ -55,7 +57,9 @@
 </template>
 
 <script>
-import { Account, NetworkType, PublicAccount } from 'nem2-sdk';
+import {
+  Account, Address, NetworkType, PublicAccount,
+} from 'nem2-sdk';
 
 export default {
   data() {
@@ -127,6 +131,11 @@ export default {
       const account = Account.generateNewAccount(this.networkID);
       this.privateKey = account.privateKey.toString();
       this.recalculateAccount();
+    },
+    calculateAddress(a) {
+      const address = Address.createFromRawAddress(a);
+      this.addressPlain = address.plain();
+      this.addressPretty = address.pretty();
     },
   },
 };
