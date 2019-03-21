@@ -12,20 +12,25 @@
       <DeveloperModeConversion />
     </v-flex>
     <v-flex xs12>
+      <DeveloperModeTimestamp />
+    </v-flex>
+    <v-flex xs12>
       <DeveloperModeNamespace />
     </v-flex>
   </v-layout>
 </template>
 <script>
-import DeveloperModeConversion from './DeveloperModeConversion.vue';
 import DeveloperModeAccount from './DeveloperModeAccount.vue';
+import DeveloperModeConversion from './DeveloperModeConversion.vue';
 import DeveloperModeNamespace from './DeveloperModeNamespace.vue';
+import DeveloperModeTimestamp from './DeveloperModeTimestamp.vue';
 
 export default {
   components: {
-    DeveloperModeConversion,
     DeveloperModeAccount,
+    DeveloperModeConversion,
     DeveloperModeNamespace,
+    DeveloperModeTimestamp,
   },
 };
 </script>
