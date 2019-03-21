@@ -21,13 +21,8 @@
       v-show="!noWallets"
       class="py-0"
     >
-      <v-layout justify-end>
-        <v-btn @click="reloadNamespaces">
-          Reload
-        </v-btn>
-      </v-layout>
       <v-list
-        two-line
+        three-line
         class="py-0"
       >
         <v-slide-y-transition
@@ -47,6 +42,9 @@
                   {{ namespace.hexId }}
                 </v-list-tile-sub-title>
                 <v-list-tile-sub-title class="monospaced">
+                  {{ namespace.expire }}
+                </v-list-tile-sub-title>
+                <v-list-tile-sub-title class="monospaced">
                   {{ namespace.type }} {{ namespace.alias }}
                 </v-list-tile-sub-title>
               </v-list-tile-content>
@@ -62,16 +60,27 @@
   </v-layout>
 </template>
 <script>
-import { NamespaceHttp, UInt64 } from 'nem2-sdk';
-import { flatMap, mergeMap } from 'rxjs/operators';
+import {
+  NamespaceHttp, UInt64, BlockchainHttp, Address,
+} from 'nem2-sdk';
+import { mergeMap } from 'rxjs/operators';
 import StateRepository from '../../infrastructure/StateRepository.js';
 
 export default {
+  props: {
+    reloadNamespaceNotifier: {
+      type: Number,
+      default() {
+        return 0;
+      },
+    },
+  },
   data() {
     return {
       noWallets: StateRepository.wallets().length === 0,
       sharedState: StateRepository.state,
       namespacesInfo: [],
+      blockHeight: 0,
     };
   },
   computed: {
@@ -94,28 +103,32 @@ export default {
           return 1;
         }
         return 0;
-      }).map((ns) => {
+      }).map((ns, index, original) => {
+        const name = ns.namespaceInfo.levels.map(level => original.find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.');
         let aliasText;
         let aliasType;
         switch (ns.namespaceInfo.alias.type) {
           case 1:
             aliasText = (new UInt64(ns.namespaceInfo.alias.mosaicId)).toHex().toUpperCase();
-            aliasType = 'mosaic';
+            aliasType = 'mosaic alias:';
             break;
           case 2:
-            aliasText = ns.namespaceInfo.alias.address;
-            aliasType = 'address';
+            aliasText = Address.createFromEncoded(ns.namespaceInfo.alias.address).pretty();
+            aliasType = 'address alias:';
             break;
           default:
             aliasText = '';
             aliasType = 'no alias';
             break;
         }
+        const expireWithin = ns.namespaceInfo.endHeight.compact() - this.blockHeight;
+        const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`;
         return {
-          name: ns.namespaceName.name,
+          name,
           hexId: ns.namespaceInfo.id.toHex().toUpperCase(),
           type: aliasType,
           alias: aliasText,
+          expire: expireText,
         };
       });
     },
@@ -126,29 +139,39 @@ export default {
         this.reloadNamespaces();
       },
     },
+    reloadNamespaceNotifier: {
+      handler() {
+        this.reloadNamespaces();
+      },
+    },
   },
   mounted() {
     this.reloadNamespaces();
   },
   methods: {
-    reloadNamespaces() {
+    async reloadNamespaces() {
       if (this.activeWallet == null) return;
       this.namespacesInfo = [];
       const namespaces = {};
       const endpoint = this.activeWallet.node;
       const { address } = this.activeWallet.account;
+      const blockChainHttp = new BlockchainHttp(endpoint);
+      this.blockHeight = (await blockChainHttp.getBlockchainHeight().toPromise()).compact();
       const namespaceHttp = new NamespaceHttp(endpoint);
       namespaceHttp.getNamespacesFromAccount(address).pipe(
-        flatMap(_ => _),
-        mergeMap((x) => {
-          namespaces[x.id.toHex().toUpperCase()] = { namespaceInfo: x };
-          return namespaceHttp.getNamespacesName([x.id]);
+        mergeMap((namespacesInfo) => {
+          const namespaceIds = namespacesInfo.map((x) => {
+            namespaces[x.id.toHex().toUpperCase()] = { namespaceInfo: x };
+            return x.id;
+          });
+          return namespaceHttp.getNamespacesName(namespaceIds);
         }),
-        flatMap(_ => _),
-      ).subscribe((namespaceName) => {
-        const namespace = namespaces[namespaceName.namespaceId.toHex().toUpperCase()];
-        namespace.namespaceName = namespaceName;
-        this.namespacesInfo.push(namespace);
+      ).subscribe((namespacesName) => {
+        this.namespacesInfo = namespacesName.map((namespaceName) => {
+          const namespace = namespaces[namespaceName.namespaceId.toHex().toUpperCase()];
+          namespace.namespaceName = namespaceName;
+          return namespace;
+        });
       });
     },
   },

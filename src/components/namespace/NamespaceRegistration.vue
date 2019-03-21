@@ -29,12 +29,11 @@
             class="ma-0 pa-0"
             label="Namespace name"
             solo
-            required
-          />
+            required></v-text-field>
         </v-flex>
       </v-layout>
       <v-layout
-        v-if="isShowParentNamespaceName"
+        v-if="isSubNamespace"
         row
       >
         <v-flex xs3>
@@ -45,11 +44,13 @@
             v-model="parentNamespaceName"
             class="ma-0 pa-0"
             label="Parent Namespace name"
-            solo
-          />
+            solo></v-text-field>
         </v-flex>
       </v-layout>
-      <v-layout row>
+      <v-layout
+        v-if="!isSubNamespace"
+        row
+      >
         <v-flex xs3>
           <v-subheader>Duration</v-subheader>
         </v-flex>
@@ -60,9 +61,13 @@
             label="Duration"
             type="number"
             solo
-            required
-          />
+            required></v-text-field>
         </v-flex>
+      </v-layout>
+      <v-layout column>
+        <SendConfirmation
+          :tx-send-data="txSendResults"
+        />
       </v-layout>
       <v-layout
         row
@@ -78,11 +83,32 @@
         <v-btn
           :disabled="disabledSendTransaction"
           color="primary mx-0"
-          @click="sendTransaction"
+          @click="showDialog"
         >
           Send Transaction
         </v-btn>
       </v-layout>
+      <Dialog
+        :is-show="isDialogShow"
+        @transmitTransaction="sendTransaction"
+        @close="dialogClosed"
+      >
+        <v-list>
+          <v-list-tile
+            v-for="detail in dialogDetails"
+            :key="detail.key"
+          >
+            <v-list-tile-action>
+              <v-icon>{{ detail.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ detail.key }}: {{ detail.value }}
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </Dialog>
     </v-layout>
   </v-scale-transition>
 </template>
@@ -91,8 +117,14 @@ import {
   NetworkType, RegisterNamespaceTransaction, NamespaceType, Deadline, UInt64, TransactionHttp,
 } from 'nem2-sdk';
 import StateRepository from '../../infrastructure/StateRepository.js';
+import Dialog from './Dialog.vue';
+import SendConfirmation from './SendConfirmation.vue';
 
 export default {
+  components: {
+    Dialog,
+    SendConfirmation,
+  },
   data() {
     return {
       sharedState: StateRepository.state,
@@ -104,23 +136,46 @@ export default {
       namespaceName: '',
       parentNamespaceName: '',
       duration: 0,
+      isDialogShow: false,
+      dialogDetails: [],
+      txSendResults: [],
     };
   },
   computed: {
     activeWallet() {
       return this.sharedState.activeWallet;
     },
-    isShowParentNamespaceName() {
+    isSubNamespace() {
       return this.namespaceType === NamespaceType.SubNamespace;
     },
     disabledSendTransaction() {
       if (this.namespaceType === NamespaceType.RootNamespace) {
         return this.namespaceName === '' || this.duration === 0;
       }
-      return this.namespaceName === '' || this.parentNamespaceName === '' || this.duration === 0;
+      return this.namespaceName === '' || this.parentNamespaceName === '';
     },
   },
   methods: {
+    showDialog() {
+      this.dialogDetails = [
+        {
+          icon: 'add',
+          key: 'NamespaceType',
+          value: this.namespaceType === 0 ? 'RootNamespace' : 'SubNamespace',
+        },
+        {
+          icon: 'add',
+          key: 'Namespace name',
+          value: this.namespaceType === 0 ? this.namespaceName : (`${this.parentNamespaceName}.${this.namespaceName}`),
+        },
+        {
+          icon: 'add',
+          key: 'Duration',
+          value: this.duration,
+        },
+      ];
+      this.isDialogShow = true;
+    },
     sendTransaction() {
       if (this.activeWallet == null) return;
       const { duration } = this;
@@ -151,6 +206,14 @@ export default {
       const signedTx = account.sign(registerNamespaceTransaction);
       const txHttp = new TransactionHttp(endpoint);
       txHttp.announce(signedTx).subscribe(console.log, console.error);
+      this.txSendResults = [{
+        txHash: signedTx.hash,
+        nodeURL: endpoint,
+      }];
+    },
+    dialogClosed() {
+      this.isDialogShow = false;
+      this.dialogDetails = [];
     },
   },
 };
