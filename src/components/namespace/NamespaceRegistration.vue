@@ -29,8 +29,7 @@
             class="ma-0 pa-0"
             label="Namespace name"
             solo
-            required
-          />
+            required></v-text-field>
         </v-flex>
       </v-layout>
       <v-layout
@@ -45,8 +44,7 @@
             v-model="parentNamespaceName"
             class="ma-0 pa-0"
             label="Parent Namespace name"
-            solo
-          />
+            solo></v-text-field>
         </v-flex>
       </v-layout>
       <v-layout row>
@@ -60,8 +58,7 @@
             label="Duration"
             type="number"
             solo
-            required
-          />
+            required></v-text-field>
         </v-flex>
       </v-layout>
       <v-layout
@@ -82,28 +79,33 @@
         >
           Send Transaction
         </v-btn>
-        <Dialog
-          :is-show="isDialogShow"
-          @transmitTransaction="sendTransaction"
-          @close="dialogClosed"
-        >
-          <v-list>
-            <v-list-tile
-              v-for="detail in dialogDetails"
-              :key="detail.key"
-            >
-              <v-list-tile-action>
-                <v-icon>{{ detail.icon }}</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>
-                  {{ detail.key }}: {{ detail.value }}
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list>
-        </Dialog>
       </v-layout>
+      <v-layout column>
+        <SendConfirmation
+          :tx-send-data="txSendResults"
+        />
+      </v-layout>
+      <Dialog
+        :is-show="isDialogShow"
+        @transmitTransaction="sendTransaction"
+        @close="dialogClosed"
+      >
+        <v-list>
+          <v-list-tile
+            v-for="detail in dialogDetails"
+            :key="detail.key"
+          >
+            <v-list-tile-action>
+              <v-icon>{{ detail.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ detail.key }}: {{ detail.value }}
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+      </Dialog>
     </v-layout>
   </v-scale-transition>
 </template>
@@ -113,10 +115,12 @@ import {
 } from 'nem2-sdk';
 import StateRepository from '../../infrastructure/StateRepository.js';
 import Dialog from './Dialog.vue';
+import SendConfirmation from './SendConfirmation.vue';
 
 export default {
   components: {
     Dialog,
+    SendConfirmation,
   },
   data() {
     return {
@@ -131,6 +135,7 @@ export default {
       duration: 0,
       isDialogShow: false,
       dialogDetails: [],
+      txSendResults: [],
     };
   },
   computed: {
@@ -198,6 +203,10 @@ export default {
       const signedTx = account.sign(registerNamespaceTransaction);
       const txHttp = new TransactionHttp(endpoint);
       txHttp.announce(signedTx).subscribe(console.log, console.error);
+      this.txSendResults = [{
+        txHash: signedTx.hash,
+        nodeURL: endpoint,
+      }];
     },
     dialogClosed() {
       this.isDialogShow = false;
