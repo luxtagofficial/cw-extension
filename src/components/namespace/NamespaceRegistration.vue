@@ -33,7 +33,7 @@
         </v-flex>
       </v-layout>
       <v-layout
-        v-if="isShowParentNamespaceName"
+        v-if="isSubNamespace"
         row
       >
         <v-flex xs3>
@@ -47,7 +47,10 @@
             solo></v-text-field>
         </v-flex>
       </v-layout>
-      <v-layout row>
+      <v-layout
+        v-if="!isSubNamespace"
+        row
+      >
         <v-flex xs3>
           <v-subheader>Duration</v-subheader>
         </v-flex>
@@ -60,6 +63,11 @@
             solo
             required></v-text-field>
         </v-flex>
+      </v-layout>
+      <v-layout column>
+        <SendConfirmation
+          :tx-send-data="txSendResults"
+        />
       </v-layout>
       <v-layout
         row
@@ -79,11 +87,6 @@
         >
           Send Transaction
         </v-btn>
-      </v-layout>
-      <v-layout column>
-        <SendConfirmation
-          :tx-send-data="txSendResults"
-        />
       </v-layout>
       <Dialog
         :is-show="isDialogShow"
@@ -142,14 +145,14 @@ export default {
     activeWallet() {
       return this.sharedState.activeWallet;
     },
-    isShowParentNamespaceName() {
+    isSubNamespace() {
       return this.namespaceType === NamespaceType.SubNamespace;
     },
     disabledSendTransaction() {
       if (this.namespaceType === NamespaceType.RootNamespace) {
         return this.namespaceName === '' || this.duration === 0;
       }
-      return this.namespaceName === '' || this.parentNamespaceName === '' || this.duration === 0;
+      return this.namespaceName === '' || this.parentNamespaceName === '';
     },
   },
   methods: {
