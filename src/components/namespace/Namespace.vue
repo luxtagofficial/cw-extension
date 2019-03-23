@@ -3,7 +3,6 @@
     <v-layout
       row
       justify-space-between
-      align-center
     >
       <h5 class="headline">
         Namespace
