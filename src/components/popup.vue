@@ -4,14 +4,14 @@
       <v-container fluid>
         <div class="fixedHeightContainer">
           <v-layout align-center justify-center column fill-height>
-            <h5 class="headline">NEM2 Wallet 0.0.1</h5>
+            <h5 class="headline">NEM2 Wallet</h5>
             <v-btn
               color="primary"
               dark
               href="wallet.html"
               target="_blank"
               v-on:click="closePopup"
-            >Create a Wallet</v-btn>
+            >Open Wallet</v-btn>
           </v-layout>
         </div>
       </v-container>
