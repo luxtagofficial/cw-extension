@@ -1,6 +1,22 @@
 <template>
-
 <v-layout column>
+   <div v-show="noWallets">
+      <v-layout
+        column
+        justify-center
+        ma-5
+        text
+        class="text-md-center"
+      >
+        <v-icon
+          x-large
+          color="orange darken-2"
+        >
+          warning
+        </v-icon>
+        <span>You have no wallets configured</span>
+      </v-layout>
+    </div>
     <v-flex xs12>
       <h5 class="headline mb-4">Send A Transfer Transaction</h5>
     </v-flex>
@@ -11,10 +27,10 @@
     <v-card-text>
     <p class="mb-4">
         Current Node: 
-        <a href="http://54.178.241.129:3000">http://54.178.241.129:3000</a>
+        <a :href="nodeURL">{{ nodeURL }}</a>
         (Cow)
     </p>
-    <v-flex xs12>
+    <v-flex xs12 v-show="!noWallets">
     <v-form lazy-validation>
     <v-text-field
         label="Recipient"
@@ -81,7 +97,12 @@
         class="mt-3 mb-3"
         :counter="64"
         required
-        v-model="userPrivateKey"></v-text-field>
+        v-model="userPrivateKey">
+        <template slot="append">
+             <v-btn v-if="userPrivateKey == ''" small color="primary" @click="fillPrivateKeyField">
+               Use my wallet's private key
+             </v-btn>
+        </template></v-text-field>
 
      <v-flex xs12 v-if="txRecipient == '' || userPrivateKey == ''">
       <v-alert :value="true" type="info">
@@ -137,7 +158,6 @@
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
-
     <template v-for="(mosaic) in mosaics">
       <v-list :key="mosaic.id.toHex()">
           <v-list-tile v-if="!(mosaic.id.toHex() == '85bbea6cc462b244')"> 
@@ -148,8 +168,6 @@
               <v-list-tile-title>
                 Asset Attached: {{ mosaic.id.toHex() }} 
               </v-list-tile-title>
-
-  
             </v-list-tile-content>
           </v-list-tile>
       </v-list>
@@ -195,6 +213,7 @@ import {
 } from "nem2-sdk";
 
 import SendConfirmation from "./SendConfirmation.vue";
+import StateRespository from "../../infrastructure/StateRepository.js"
 
 export default {
   components: {
@@ -203,6 +222,7 @@ export default {
 
   data: function() {
     return {
+      sharedState: StateRespository.state,
       txMessage: "",
       txAmount: 0,
       txRecipient: "",
@@ -214,9 +234,10 @@ export default {
       mosaics: [],
       currentMosaicName: "",
       currentMosaicAmount: "",
-      nodeURL: "http://54.178.241.129:3000", //temp hardcode
-      transactionHttp: new TransactionHttp("http://54.178.241.129:3000"), //temp hardcode
-      txHash: ""
+      nodeURL: StateRespository.state.activeWallet.node, 
+      transactionHttp: new TransactionHttp(StateRespository.state.activeWallet.node), 
+      txHash: "",
+      noWallets: StateRespository.wallets().length == 0
     };
   },
   methods: {
@@ -278,8 +299,19 @@ export default {
 
     removeMosaic: function(index) {
       this.mosaics.splice(index, 1);
+    },
+
+
+    fillPrivateKeyField: function() {
+      this.userPrivateKey = this.getActiveWallet.privateKey;
     }
-  }
+  },
+
+  computed: {
+    getActiveWallet: function() {
+      return this.sharedState.activeWallet.account;
+    },
+  },
 };
 </script>
 <style scoped>
