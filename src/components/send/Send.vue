@@ -1,32 +1,36 @@
 <template>
-
 <v-layout column>
     <v-flex xs12>
       <h5 class="headline mb-4">Send A Transfer Transaction</h5>
     </v-flex>
-    <v-card>
-    <v-card-title>
-    <span class="title">Send Assets</span>
-    </v-card-title>
-    <v-card-text>
     <p class="mb-4">
         Current Node: 
-        <a href="http://54.178.241.129:3000">http://54.178.241.129:3000</a>
+        <a :href="nodeURL">{{ nodeURL }}</a>
         (Cow)
     </p>
     <v-flex xs12>
     <v-form lazy-validation>
     <v-text-field
-        label="Recipient"
         placeholder="ex. SB2JNF-UZ4MQP-BBDEQ2-C4QW2U-56PPVK-KMAMDU-77IE"
         required
-        v-model="txRecipient"></v-text-field>
+        v-model="txRecipient" 
+        solo
+        reverse>
+        <template slot="append">
+          <v-subheader>Recipient</v-subheader>
+        </template>
+        </v-text-field>
 
         <v-text-field
-        label="Amount (Network Currency / XEM)"
         placeholder="ex. 10"
         type="number"
-        v-model="txAmount"></v-text-field>
+        v-model="txAmount" 
+        reverse
+        solo>
+        <template slot="append">
+          <v-subheader>Amount (Network Currency / XEM)</v-subheader>
+        </template>
+        </v-text-field>
 
          <v-checkbox
        v-model="checkbox"
@@ -36,7 +40,7 @@
          <v-text-field
         label="Attach Mosaic Hex"
         placeholder="Mosaic ID Here"
-        v-model="currentMosaicName">
+        v-model="currentMosaicName" solo>
         <template slot="append">
              <v-btn :disabled="currentMosaicName == ''" @click="addMosaic" fab small color="primary">
                <v-icon>add</v-icon>
@@ -47,7 +51,7 @@
         <v-text-field
         label="Asset Amount"
         placeholder="ex. 10"
-        v-model="currentMosaicAmount">
+        v-model="currentMosaicAmount" solo>
         </v-text-field>
 
         <template v-for="(mosaic, index) in mosaics">
@@ -72,16 +76,29 @@
       <v-spacer />
 
          <v-text-field
-        label="Message"
         placeholder="Here is your XEM, Bob! - Alice"
-        v-model="txMessage"></v-text-field>
+        v-model="txMessage" solo reverse>
+        <template slot="append">
+          <v-subheader>Message</v-subheader>
+        </template>
+      </v-text-field>
 
         <v-text-field
-        label="Private Key"
+        label=""
         class="mt-3 mb-3"
         :counter="64"
         required
-        v-model="userPrivateKey"></v-text-field>
+        v-model="userPrivateKey" solo reverse>
+        <template slot="append">
+          <v-subheader>Private Key</v-subheader>
+        </template>
+        
+        <template slot="prepend-inner">
+          <v-btn v-if="userPrivateKey == ''" small color="primary" @click="fillPrivateKeyField">
+               Use my wallet's private key
+             </v-btn>
+        </template> 
+        </v-text-field>
 
      <v-flex xs12 v-if="txRecipient == '' || userPrivateKey == ''">
       <v-alert :value="true" type="info">
@@ -91,16 +108,15 @@
 
     </v-form>
     </v-flex>
-    </v-card-text>
     <v-card-actions>
       <v-btn 
         v-on:click="dialog = true"
         :disabled="txRecipient == '' || userPrivateKey == ''"
         color="primary mx-0">Send</v-btn>
     </v-card-actions>
-      <SendConfirmation :txHash="txHash" :txRecipient="txRecipient" :nodeURL="nodeURL" />
-</v-card>
-
+<div class="mt-4">
+  <SendConfirmation :txHash="txHash" :txRecipient="txRecipient" :nodeURL="nodeURL" />
+</div>
 
 <v-dialog
       v-model="dialog"
@@ -137,7 +153,6 @@
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
-
     <template v-for="(mosaic) in mosaics">
       <v-list :key="mosaic.id.toHex()">
           <v-list-tile v-if="!(mosaic.id.toHex() == '85bbea6cc462b244')"> 
@@ -148,8 +163,6 @@
               <v-list-tile-title>
                 Asset Attached: {{ mosaic.id.toHex() }} 
               </v-list-tile-title>
-
-  
             </v-list-tile-content>
           </v-list-tile>
       </v-list>
@@ -173,9 +186,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    
-    
   </v-layout>
 </template>
 
@@ -195,6 +205,7 @@ import {
 } from "nem2-sdk";
 
 import SendConfirmation from "./SendConfirmation.vue";
+import StateRespository from "../../infrastructure/StateRepository.js";
 
 export default {
   components: {
@@ -203,6 +214,7 @@ export default {
 
   data: function() {
     return {
+      sharedState: StateRespository.state,
       txMessage: "",
       txAmount: 0,
       txRecipient: "",
@@ -214,9 +226,12 @@ export default {
       mosaics: [],
       currentMosaicName: "",
       currentMosaicAmount: "",
-      nodeURL: "http://54.178.241.129:3000", //temp hardcode
-      transactionHttp: new TransactionHttp("http://54.178.241.129:3000"), //temp hardcode
-      txHash: ""
+      nodeURL: StateRespository.state.activeWallet.node,
+      transactionHttp: new TransactionHttp(
+        StateRespository.state.activeWallet.node
+      ),
+      txHash: "",
+      noWallets: StateRespository.wallets().length == 0
     };
   },
   methods: {
@@ -278,6 +293,16 @@ export default {
 
     removeMosaic: function(index) {
       this.mosaics.splice(index, 1);
+    },
+
+    fillPrivateKeyField: function() {
+      this.userPrivateKey = this.getActiveWallet.privateKey;
+    }
+  },
+
+  computed: {
+    getActiveWallet: function() {
+      return this.sharedState.activeWallet.account;
     }
   }
 };
