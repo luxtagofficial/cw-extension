@@ -35,8 +35,8 @@ $> npm install --global web-ext
 ## Clone repository
 
 ```bash
-$> git clone git@github.com:aleixmorgadas/cw-extension.git
-$> cd cw-extension
+$> git clone git@github.com:aleixmorgadas/nem2-wallet-browserextension.git
+$> cd nem2-wallet-browserextension
 ```
 
 ## Install development dependencies
