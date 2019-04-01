@@ -1,12 +1,64 @@
 <template>
-  <div>
-    <h2>Asset. Help wanted</h2>
-    <p>This is a collaborative browser. If you miss this feature, please, consider helping the project developing a small feature.</p>
-    <p>We have GitHub issues to describe the main feature we have in mind, but you are free to propose another way to manage assets</p>
-    <a href="https://github.com/aleixmorgadas/nem2-wallet-browserextension/issues/3" target="_blank">https://github.com/aleixmorgadas/nem2-wallet-browserextension/issues/3</a>
-  </div>
+  <v-layout column>
+    <v-layout
+      row
+      justify-space-between
+    >
+      <h5 class="headline">
+        Assets
+      </h5>
+      <div>
+        <v-btn
+          color="primary mx-0"
+          @click="createAsset = !createAsset"
+        >
+          Create Asset
+        </v-btn>
+      </div>
+    </v-layout>
+    <AssetCreation
+      v-show="createAsset"
+      @closeComponent="createAsset = false"
+    />
+    <v-layout
+      row
+      justify-space-between
+      align-center
+    >
+      <h5 class="subheading">
+        List
+      </h5>
+      <div>
+        <v-btn
+          color="primary mx-0"
+          @click="reloadAssetNotifier++"
+        >
+          Reload List
+        </v-btn>
+      </div>
+    </v-layout>
+    <AssetList
+      class="my-2"
+      :reload-asset-notifier="reloadAssetNotifier"
+    />
+  </v-layout>
 </template>
 <script>
+import AssetCreation from './AssetCreation.vue';
+import AssetList from './AssetList.vue';
+
+export default {
+  components: {
+    AssetCreation,
+    AssetList,
+  },
+  data() {
+    return {
+      createAsset: false,
+      reloadAssetNotifier: 0,
+    };
+  },
+};
 </script>
 <style scoped>
 </style>
