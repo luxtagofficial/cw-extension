@@ -32,7 +32,7 @@
         >
           <template v-for="(as, index) in assets">
             <v-layout
-              :key="as.hexId"
+              :key="as.title"
               column
             >
               <v-list-tile
@@ -40,15 +40,20 @@
                 ripple
               >
                 <v-list-tile-content class="my-2">
-                  <v-list-tile-title>{{ as.hexId }}</v-list-tile-title>
+                  <v-list-tile-title>{{ as.title }}</v-list-tile-title>
                   <v-list-tile-sub-title>
                     <div class="monospaced-bold">
-                      {{ as.absoluteAmount }}
+                      {{ as.subTitle }}
                     </div>
                   </v-list-tile-sub-title>
                   <v-list-tile-sub-title>
                     <div class="monospaced">
-                      {{ as.relativeAmount }}
+                      {{ as.subSubTitle }}
+                    </div>
+                  </v-list-tile-sub-title>
+                  <v-list-tile-sub-title>
+                    <div class="monospaced">
+                      {{ as.subSubSubTitle }}
                     </div>
                   </v-list-tile-sub-title>
                 </v-list-tile-content>
@@ -161,11 +166,14 @@ export default {
           const { divisibility } = mosaicAmountView.mosaicInfo.properties;
           const amount = mosaicAmountView.amount.compact();
           const relAmount = amount / (10 ** divisibility);
-          const mosaicName = mosaicAmountView.fullName().toUpperCase();
+          const mosaicId = mosaicAmountView.fullName().toUpperCase();
+          const { mosaicInfo } = mosaicAmountView;
+          const endHeight = mosaicInfo.height.compact() + mosaicInfo.duration.compact();
           return {
-            hexId: mosaicName,
-            absoluteAmount: amount.toString(10),
-            relativeAmount: relAmount.toString(10),
+            title: mosaicId,
+            subTitle: `Balance:${amount.toString(10)}(${relAmount.toString(10)})`,
+            subSubTitle: ` Expire within ${endHeight - blockHeight} blocks`,
+            subSubSubTitle: `Divisibility:${mosaicInfo.divisibility} Supply:${mosaicInfo.supply.compact()} SupplyMutable:${mosaicInfo.isSupplyMutable()} Transferable:${mosaicInfo.isTransferable()}`,
             expand: {
               isExpandMore: false,
             },
