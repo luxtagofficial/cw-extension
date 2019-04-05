@@ -47,6 +47,13 @@ $> npm i
 
 ## Run development mode
 
+In a windows environment:
+```
+$> npm run windev
+```
+
+In other environments:
+
 ```
 $> npm run watch & npm run web-ext:run
 ```
