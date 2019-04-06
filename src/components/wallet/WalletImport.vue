@@ -64,7 +64,7 @@ import StateRepository from "../../infrastructure/StateRepository.js";
 export default {
   data: function() {
     return {
-      node: "http://13.114.200.132:3000",
+      node: "",
       walletName: "",
       account: {},
       privateKey: "",
