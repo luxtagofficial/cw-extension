@@ -113,7 +113,6 @@ export default {
       this.assets = [];
       const endpoint = this.activeWallet.node;
       const { address } = this.activeWallet.account;
-      //const address = Address.createFromRawAddress("SCA7ZS-2B7DEE-BGU3TH-SILYHC-RUR32Y-YE55ZB-LYA2");
       const blockChainHttp = new BlockchainHttp(endpoint);
       const blockHeight = (await blockChainHttp
         .getBlockchainHeight()
