@@ -58,8 +58,8 @@ import {
   NetworkCurrencyMosaic,
   AccountHttp,
   MosaicHttp,
-  BlockchainHttp
-  //Address
+  BlockchainHttp,
+  Address
 } from "nem2-sdk";
 import { of } from "rxjs";
 import { mergeMap, flatMap, toArray, map } from "rxjs/operators";

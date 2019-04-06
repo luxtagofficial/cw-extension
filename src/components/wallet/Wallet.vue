@@ -4,24 +4,29 @@
       <h5 class="headline">Wallet</h5>
       <div>
         <v-btn color="primary mx-0" v-on:click="createWallet = true">Create Wallet</v-btn>
+        <v-btn color="primary mx-0" v-on:click="importWallet = true">Import Wallet</v-btn>
       </div>
     </v-layout>
     <WalletCreation v-show="createWallet" v-on:closeComponent='createWallet = false'/>
+    <WalletImport v-show="importWallet" v-on:closeComponent='importWallet = false'/>
     <WalletList class="my-2"/>
   </v-layout>
 </template>
 <script>
 import WalletCreation from "./WalletCreation.vue";
+import WalletImport from "./WalletImport.vue";
 import WalletList from "./WalletList.vue";
 
 export default {
   data: function() {
     return {
       createWallet: false,
+      importWallet: false,
     }
   },
   components: {
     WalletCreation,
+    WalletImport,
     WalletList
   }
 };
