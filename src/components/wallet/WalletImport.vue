@@ -1,24 +1,22 @@
 <template>
   <v-scale-transition>
     <v-layout column>
-      <div v-if="isValidAccount">
-        <v-layout row align-center>
-          <v-flex xs3>
-            <v-subheader>Address</v-subheader>
-          </v-flex>
-          <v-flex xs9>
-            <div class="monospaced-bold">{{account.address.pretty()}}</div>
-          </v-flex>
-        </v-layout>
-        <v-layout row align-center>
-          <v-flex xs3>
-            <v-subheader>Public Key</v-subheader>
-          </v-flex>
-          <v-flex xs9>
-            <div class="monospaced">{{account.publicKey}}</div>
-          </v-flex>
-        </v-layout>
-      </div>
+      <v-layout v-if="isValidAccount" row align-center>
+        <v-flex xs3>
+          <v-subheader>Address</v-subheader>
+        </v-flex>
+        <v-flex xs9>
+          <div class="monospaced-bold">{{account.address.pretty()}}</div>
+        </v-flex>
+      </v-layout>
+      <v-layout v-if="isValidAccount" row align-center>
+        <v-flex xs3>
+          <v-subheader>Public Key</v-subheader>
+        </v-flex>
+        <v-flex xs9>
+          <div class="monospaced">{{account.publicKey}}</div>
+        </v-flex>
+      </v-layout>
       <v-layout row>
         <v-flex xs3>
           <v-subheader>NEM2 node URL</v-subheader>
@@ -86,14 +84,12 @@ export default {
       const key =
         this.privateKey.length === 64 ? this.privateKey.toUpperCase() : false;
       if (key) {
-        console.log(key, "KEY");
         try {
           this.account = Account.createFromPrivateKey(
             key,
             NetworkType.MIJIN_TEST
           );
           this.isValidAccount = true;
-          console.log(this.account, "oijdfozejfzo");
         } catch (error) {
           this.isValidAccount = false;
         }
