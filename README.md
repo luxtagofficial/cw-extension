@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.org/aleixmorgadas/nem2-wallet-browserextension.svg?branch=master)](https://travis-ci.org/aleixmorgadas/nem2-wallet-browserextension)
 
-[NEM2][catapult], aka Catapult, Wallet as Firefox Extension.
+[NEM2][nem2], aka Catapult, Wallet as Firefox Extension.
 
 ## Vision
 
@@ -61,3 +61,5 @@ $> npm run watch & npm run web-ext:run
 ## License
 
 Copyright (c) 2018-2019 NEM Licensed under the Apache License 2.0
+
+[nem2]: https://nemtech.github.io/
