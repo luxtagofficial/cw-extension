@@ -7,11 +7,11 @@
         <v-btn color="primary mx-0" @click="reloadList">Reload List</v-btn>
       </div>
     </v-layout>
-    <Errors/>
+    <Errors :sharedState="sharedState"/>
     <div
-      v-if="s.wallets.length > 0 
-      && s.activeWallet 
-      && !s.error"
+      v-if="sharedState.wallets.length > 0 
+      && sharedState.activeWallet 
+      && !sharedState.error"
     >
       <AssetCreation v-show="createAsset" @closeComponent="createAsset = false"/>
       <AssetList class="my-2"/>
@@ -32,7 +32,7 @@ export default {
   },
   data() {
     return {
-      s: StateRepository.state,
+      sharedState: StateRepository.state,
       createAsset: false,
       reloadAssetNotifier: 0
     };

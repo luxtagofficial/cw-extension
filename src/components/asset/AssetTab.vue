@@ -35,7 +35,6 @@
 
 <script>
 import StateRepository from "../../infrastructure/StateRepository.js";
-import AssetTab from "./assetTab.vue";
 
 export default {
   name: "AssetTab",

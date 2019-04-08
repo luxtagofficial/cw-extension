@@ -1,22 +1,24 @@
 <template>
   <v-layout column>
     <h5 class="headline">Information</h5>
-    <Errors/>
+    <Errors :sharedState="sharedState"/>
     <div
-      v-if="s.wallets.length > 0 
-        && s.activeWallet 
-        && !s.error
-        && !s.loading_getAccountInfo"
+      v-if="sharedState.wallets.length > 0 
+        && sharedState.activeWallet 
+        && !sharedState.error
+        && !sharedState.loading_getAccountInfo"
     >
       <v-flex xs12>
         <v-card>
           <v-card-title primary-title>
             <div>
-              <h5 class="headline mb-0">{{s.activeWallet.name}}</h5>
+              <h5 class="headline mb-0">{{sharedState.activeWallet.name}}</h5>
               <div
                 class="monospaced clearfix homeLine"
-              >Address: {{s.activeWallet.account.address.pretty()}}</div>
-              <div class="monospaced clearfix homeLine">Public key: {{s.accountInfo.publicKey}}</div>
+              >Address: {{sharedState.activeWallet.account.address.pretty()}}</div>
+              <div
+                class="monospaced clearfix homeLine"
+              >Public key: {{sharedState.accountInfo.publicKey}}</div>
             </div>
           </v-card-title>
         </v-card>
@@ -33,7 +35,7 @@ export default {
     Errors
   },
   data() {
-    return { s: StateRepository.state };
+    return { sharedState: StateRepository.state };
   }
 };
 </script>

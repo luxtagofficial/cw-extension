@@ -30,11 +30,16 @@
 </template>
 
 <script>
-import StateRepository from "../infrastructure/StateRepository";
 export default {
+  name: "Errors",
+  props: {
+    sharedState: {
+      type: Object
+    }
+  },
   data() {
     return {
-      sharedState: StateRepository.state
+      index: 0
     };
   }
 };

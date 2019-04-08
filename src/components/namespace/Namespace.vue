@@ -10,12 +10,12 @@
         <v-btn color="primary mx-0" @click="reloadNamespaceNotifier++">Reload List</v-btn>
       </div>
     </v-layout>
+    <Errors :sharedState="sharedState" />
     <NamespaceRegistration v-if="registerNamespace" @closeComponent="registerNamespace = false"/>
-    <Errors/>
     <div
-      v-if="s.wallets.length > 0 
-      && s.activeWallet 
-      && !s.error"
+      v-if="sharedState.wallets.length > 0 
+      && sharedState.activeWallet 
+      && !sharedState.error"
     >
       <v-layout row justify-space-between align-center>
         <h5 class="subheading">List</h5>
@@ -39,7 +39,7 @@ export default {
   },
   data() {
     return {
-      s: StateRepository.state,
+      sharedState: StateRepository.state,
       registerNamespace: false,
       reloadNamespaceNotifier: 0
     };
