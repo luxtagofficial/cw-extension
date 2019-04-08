@@ -24,7 +24,7 @@ export default {
     wallets: function(val) {
       this.selectWallets = StateRepository.wallets().map(wallet => wallet.name);
     },
-    wallet: (val) => StateRepository.currentWallet(val)
+    wallet: (val) => StateRepository.onWalletChange(val)
   },
   created: function () {
     this.wallet = StateRepository.state.wallets.length == 0 ? null : StateRepository.state.wallets[0].name

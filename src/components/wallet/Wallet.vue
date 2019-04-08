@@ -13,8 +13,9 @@
         >Import Wallet</v-btn>
       </div>
     </v-layout>
-    <WalletCreation v-show="createWallet" v-on:closeComponent="createWallet = false"/>
-    <WalletImport v-show="importWallet" v-on:closeComponent="importWallet = false"/>
+    
+    <WalletCreation v-if="createWallet" v-on:closeComponent="createWallet = false"/>
+    <WalletImport v-if="importWallet" v-on:closeComponent="importWallet = false"/>
     <WalletList class="my-2"/>
   </v-layout>
 </template>
