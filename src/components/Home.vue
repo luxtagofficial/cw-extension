@@ -1,36 +1,39 @@
 <template>
   <v-layout column>
     <h5 class="headline">Information</h5>
-    <p
-      class="monospaced"
-      v-if="sharedState.activeWallet"
-    >Active Wallet Address: {{sharedState.activeWallet.account.address.pretty()}}</p>
-    {{accountInfo}}
+    <Errors/>
+    <div
+      v-if="s.wallets.length > 0 
+        && s.activeWallet 
+        && !s.error
+        && !s.loading_getAccountInfo"
+    >
+      <v-flex xs12>
+        <v-card>
+          <v-card-title primary-title>
+            <div>
+              <h5 class="headline mb-0">{{s.activeWallet.name}}</h5>
+              <div
+                class="monospaced clearfix homeLine"
+              >Address: {{s.activeWallet.account.address.pretty()}}</div>
+              <div class="monospaced clearfix homeLine">Public key: {{s.accountInfo.publicKey}}</div>
+            </div>
+          </v-card-title>
+        </v-card>
+      </v-flex>
+    </div>
   </v-layout>
 </template>
 <script>
-import { AccountHttp, Address } from "nem2-sdk";
 import StateRepository from "../infrastructure/StateRepository.js";
+import Errors from "./Errors.vue";
 
 export default {
-  data() {
-    return { sharedState: StateRepository.state, accountInfo: {} };
+  components: {
+    Errors
   },
-  created() {
-    console.log("activated");
-    const activeWallet = this.sharedState.activeWallet;
-    const accountHttp = new AccountHttp(activeWallet.node);
-    const address = Address.createFromRawAddress(
-      activeWallet.account.address.pretty()
-    );
-    accountHttp.getAccountInfo(address).subscribe(
-      accountInfo => {
-        console.log("accountInfo", accountInfo);
-        this.accountInfo = accountInfo;
-        console.log(this.accountInfo);
-      },
-      err => console.error(err)
-    );
+  data() {
+    return { s: StateRepository.state };
   }
 };
 </script>

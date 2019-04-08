@@ -40,12 +40,7 @@
                 ripple
               >
                 <v-list-tile-content class="my-2">
-                  <v-list-tile-title>{{ ns.name }}</v-list-tile-title>
-                  <v-list-tile-sub-title>
-                    <div class="monospaced-bold">
-                      {{ ns.hexId }}
-                    </div>
-                  </v-list-tile-sub-title>
+                  <v-list-tile-title>{{ ns.name }} - <span class="">{{ ns.hexId }}</span></v-list-tile-title>
                   <v-list-tile-sub-title>
                     <div class="monospaced">
                       {{ ns.expire }}

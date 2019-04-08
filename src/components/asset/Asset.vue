@@ -1,63 +1,47 @@
 <template>
   <v-layout column>
-    <v-layout
-      row
-      justify-space-between
-    >
-      <h5 class="headline">
-        Assets
-      </h5>
+    <v-layout row justify-space-between>
+      <h5 class="headline">Assets</h5>
       <div>
-        <v-btn
-          color="primary mx-0"
-          @click="createAsset = !createAsset"
-        >
-          Create Asset
-        </v-btn>
+        <v-btn color="primary mx-0" @click="createAsset = !createAsset">Create Asset</v-btn>
+        <v-btn color="primary mx-0" @click="reloadList">Reload List</v-btn>
       </div>
     </v-layout>
-    <AssetCreation
-      v-show="createAsset"
-      @closeComponent="createAsset = false"
-    />
-    <v-layout
-      row
-      justify-space-between
-      align-center
+    <Errors/>
+    <div
+      v-if="s.wallets.length > 0 
+      && s.activeWallet 
+      && !s.error"
     >
-      <h5 class="subheading">
-        List
-      </h5>
-      <div>
-        <v-btn
-          color="primary mx-0"
-          @click="reloadAssetNotifier++"
-        >
-          Reload List
-        </v-btn>
-      </div>
-    </v-layout>
-    <AssetList
-      class="my-2"
-      :reload-asset-notifier="reloadAssetNotifier"
-    />
+      <AssetCreation v-show="createAsset" @closeComponent="createAsset = false"/>
+      <AssetList class="my-2"/>
+    </div>
   </v-layout>
 </template>
 <script>
-import AssetCreation from './AssetCreation.vue';
-import AssetList from './AssetList.vue';
+import StateRepository from "../../infrastructure/StateRepository.js";
+import Errors from "../Errors.vue";
+import AssetCreation from "./AssetCreation.vue";
+import AssetList from "./AssetList.vue";
 
 export default {
   components: {
+    Errors,
     AssetCreation,
-    AssetList,
+    AssetList
   },
   data() {
     return {
+      s: StateRepository.state,
       createAsset: false,
-      reloadAssetNotifier: 0,
+      reloadAssetNotifier: 0
     };
   },
+  methods: {
+    reloadList: function(e) {
+      StateRepository.loadMosaics();
+    }
+  }
 };
 </script>
 <style scoped>
