@@ -1,16 +1,20 @@
 <template>
-  <v-layout column>
-    <v-layout row justify-space-between>
-      <h5 class="headline">Namespace</h5>
-      <div>
+  <v-layout column xs12>
+    <v-layout row mb-4>
+      <v-layout row fill-height justify-start pl-3 xs3>
+        <h5 class="headline pt-3">Namespace</h5>
+      </v-layout>
+      <v-layout row fill-height justify-end xs9>
+        <v-btn color="primary mx-0" @click="reloadNamespaceNotifier++">Reload List</v-btn>
         <v-btn
+          class="ml-3"
           color="primary mx-0"
           @click="registerNamespace = !registerNamespace"
         >Register Namespace</v-btn>
-        <v-btn color="primary mx-0" @click="reloadNamespaceNotifier++">Reload List</v-btn>
-      </div>
+      </v-layout>
     </v-layout>
-    <Errors :sharedState="sharedState" />
+
+    <Errors :sharedState="sharedState"/>
     <NamespaceRegistration v-if="registerNamespace" @closeComponent="registerNamespace = false"/>
     <div
       v-if="sharedState.wallets.length > 0 

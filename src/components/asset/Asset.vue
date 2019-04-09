@@ -1,11 +1,13 @@
 <template>
-  <v-layout column>
-    <v-layout row justify-space-between>
-      <h5 class="headline">Assets</h5>
-      <div>
-        <v-btn color="primary mx-0" @click="createAsset = !createAsset">Create Asset</v-btn>
+  <v-layout column xs12>
+    <v-layout row mb-4>
+      <v-layout row fill-height justify-start pl-3 xs3>
+        <h5 class="headline pt-3">Assets</h5>
+      </v-layout>
+      <v-layout row fill-height justify-end="" xs9>
         <v-btn color="primary mx-0" @click="reloadList">Reload List</v-btn>
-      </div>
+        <v-btn class="ml-3" color="primary mx-0" @click="createAsset = !createAsset">Create Asset</v-btn>
+      </v-layout>
     </v-layout>
     <Errors :sharedState="sharedState"/>
     <div
