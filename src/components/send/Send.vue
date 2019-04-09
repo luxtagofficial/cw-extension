@@ -1,11 +1,13 @@
 <template>
-<v-layout column>
-    <v-flex xs12>
-      <h5 class="headline mb-4">Send A Transfer Transaction</h5>
-    </v-flex>
+<v-layout column xs12>
+    <v-layout row mb-4>
+      <v-layout row fill-height justify-start pl-3 xs3>
+        <h5 class="headline pt-3">Send A Transfer Transaction</h5>
+      </v-layout>
+    </v-layout>
     <p class="mb-4">
         Current Node: 
-        <a :href="nodeURL">{{ nodeURL }}</a>
+        <a :href="nodeURL" target="_new">{{ nodeURL }}</a>
         (Cow)
     </p>
     <v-flex xs12>

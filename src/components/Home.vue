@@ -1,6 +1,10 @@
 <template>
-  <v-layout column>
-    <h5 class="headline">Information</h5>
+  <v-layout column xs12>
+    <v-layout row mb-4>
+      <v-layout row fill-height justify-start pl-3 xs12>
+        <h5 class="headline pt-3">Information</h5>
+      </v-layout>
+    </v-layout>
     <Errors :sharedState="sharedState"/>
     <div
       v-if="sharedState.wallets.length > 0 
@@ -16,9 +20,17 @@
               <div
                 class="monospaced clearfix homeLine"
               >Address: {{sharedState.activeWallet.account.address.pretty()}}</div>
-              <div
-                class="monospaced clearfix homeLine"
-              >Public key: {{sharedState.accountInfo.publicKey}}</div>
+              <div class="monospaced clearfix homeLine">
+                <span class="clearfix">Public key:</span>
+                <span class="clearfix">{{sharedState.accountInfo.publicKey}}</span>
+                <span class="clearfix">Current node:</span>
+
+                <a
+                  class="clearfix"
+                  :href="sharedState.activeWallet.node"
+                  target="_new"
+                >{{ sharedState.activeWallet.node }}</a>
+              </div>
             </div>
           </v-card-title>
         </v-card>
