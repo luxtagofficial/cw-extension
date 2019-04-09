@@ -35,16 +35,19 @@
           </v-card-title>
         </v-card>
       </v-flex>
+      <Transactions/>
     </div>
   </v-layout>
 </template>
 <script>
 import StateRepository from "../infrastructure/StateRepository.js";
 import Errors from "./Errors.vue";
+import Transactions from "./transactions/Transactions.vue";
 
 export default {
   components: {
-    Errors
+    Errors,
+    Transactions
   },
   data() {
     return { sharedState: StateRepository.state };
