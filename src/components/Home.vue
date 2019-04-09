@@ -27,7 +27,7 @@
 
                 <a
                   class="clearfix"
-                  :href="nodeURL"
+                  :href="sharedState.activeWallet.node"
                   target="_new"
                 >{{ sharedState.activeWallet.node }}</a>
               </div>
