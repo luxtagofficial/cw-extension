@@ -1,16 +1,16 @@
 <template>
   <v-dialog
     :value="value"
-    max-width="500"
+    :max-width="maxWidth"
     @input="toggleDialog"
   >
     <v-card>
       <v-card-title primary-title>
         <h3 class="headline mb-0">
-          Send this transaction?
+          {{ title }}
         </h3>
         <div>
-          Are you sure you want to send the the transaction with the following details?
+          {{ body }}
         </div>
       </v-card-title>
       <v-card-text>
@@ -44,16 +44,34 @@ import StateRepository from '../infrastructure/StateRepository.js';
 export default {
   name: 'Confirmation',
   props: {
+    value: {
+      type: Boolean,
+      default() {
+        return false;
+      },
+    },
     transaction: {
       type: Object,
       default() {
         return {};
       },
     },
-    value: {
-      type: Boolean,
+    title: {
+      type: String,
       default() {
-        return false;
+        return 'Send this transaction?';
+      },
+    },
+    body: {
+      type: String,
+      default() {
+        return 'Are you sure you want to send the the transaction with the following details?';
+      },
+    },
+    maxWidth: {
+      type: Number,
+      default() {
+        return 500;
       },
     },
   },
