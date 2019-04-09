@@ -1,7 +1,7 @@
 import { Account, NetworkType } from 'nem2-sdk';
 import getAccountInfo from '../components/utils/getAccountInfo';
 import getMosaicsByAddress from '../components/utils/getMosaicsByAddress';
-
+import getAccountTransactionsById from '../components/utils/getAccountTransactionsById';
 /* eslint-disable class-methods-use-this */
 
 // Ports & Adapters
@@ -25,11 +25,13 @@ class StateRepository {
       wallets: wallets != null ? jsonToWallets(wallets) : [],
       accountInfo: {},
       assets: false,
+      transactions: false,
       error: false,
       errorMessage: '',
       activeWallet: false,
       loading_getAccountInfo: false,
       loading_getMosaicsByAddress: false,
+      loading_getAccountTransactionsById: false,
     };
     this.state.activeWallet = this.state.wallets.length === 0 ? false : this.state.wallets[0];
   }
@@ -67,6 +69,7 @@ class StateRepository {
       this.state.accountInfo = accountInfo;
       this.state.loading_getAccountInfo = false;
       this.loadMosaics();
+      this.getAccountTransactionsById();
     } catch (error) {
       this.state.error = true;
       this.state.errorMessage = error === 'This wallet is not known by the network'
@@ -100,9 +103,31 @@ class StateRepository {
     } catch (error) {
       this.error = true;
       this.errorMessage = 'Error while loading mosaics';
-      this.loading_getMosaicsByAddress = false;
+      this.state.loading_getMosaicsByAddress = false;
       // eslint-disable-next-line no-console
       console.error(error);
+    }
+  }
+
+  async getAccountTransactionsById(id) {
+    if (this.state.accountInfo) {
+      try {
+        const currentId = id || undefined;
+        this.state.transactions = false;
+        this.state.loading_getAccountTransactionsById = true;
+        this.state.transactions = await getAccountTransactionsById(
+          this.state.activeWallet.node,
+          this.state.accountInfo,
+          currentId,
+        );
+        this.state.loading_getAccountTransactionsById = false;
+      } catch (error) {
+        this.error = true;
+        this.errorMessage = 'Error while loading transactions';
+        this.loading_getAccountTransactionsById = false;
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
     }
   }
 
@@ -114,6 +139,7 @@ class StateRepository {
   resetWalletData() {
     this.state.accountInfo = {};
     this.state.assets = false;
+    this.state.transactions = false;
   }
 }
 
