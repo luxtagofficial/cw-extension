@@ -8,7 +8,35 @@
         <v-btn color="primary mx-0" @click="reloadList">Reload Transactions</v-btn>
       </v-layout>
     </v-layout>
-    <div>Blank</div>
+    <v-data-table :headers="headers" :items="tx" class="elevation-1">
+      <template v-slot:items="props">
+        <td class="text-xs-right">
+          <span class="clearfix">
+            <pre>{{ props.item.time }}</pre>
+          </span>
+          <span class="clearfix">
+            <pre>{{ props.item.blockNumber }}</pre>
+          </span>
+        </td>
+        <td class="text-xs-right">
+          <span class="clearfix">
+            <pre>{{ props.item.from }}</pre>
+          </span>
+          <span class="clearfix">
+            <pre>{{ props.item.to }}</pre>
+          </span>
+        </td>
+        <td class="text-xs-right">
+          <span class="clearfix">
+            <pre>{{ props.item.amount }}</pre>
+          </span>
+          <span class="clearfix">
+            <pre>({{ props.item.fee }})</pre>
+          </span>
+        </td>
+        <td class="text-xs-right">{{ props.item.type }}</td>
+      </template>
+    </v-data-table>
   </v-layout>
 </template>
 <script>
@@ -16,7 +44,26 @@ export default {
   name: "Transactions",
   components: {},
   data() {
-    return {};
+    return {
+      headers: [
+        { text: "Time / Block", value: "time" },
+        { text: "Sender / Recipient", value: "from" },
+        { text: "Amount / (Fee)", value: "amount" },
+        { text: "Type", value: "asset" }
+      ],
+      tx: [
+        {
+          time: "2019-07-04 15:10",
+          from: "SD4GWL-PNPHVJ-MCV3ZL-2BXGNV-RT6XMG-YMP6KW-I5JB",
+          to: "SD4GWL-PNPHVJ-MCV3ZL-2BXGNV-RT6XMG-YMP6KW-I5JB",
+          amount: "133546354",
+          fee: "12",
+          asset: "assetname",
+          blockNumber: 123456789,
+          type: "Transfer"
+        }
+      ]
+    };
   },
   props: {
     sharedState: {
