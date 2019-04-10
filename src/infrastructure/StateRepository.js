@@ -85,7 +85,7 @@ class StateRepository {
   currentWallet(walletName) {
     return new Promise((resolve, reject) => {
       const activeWallet = this.state.wallets.find(x => x.name === walletName);
-      if (typeof activeWallet !== 'undefined') {
+      if (!activeWallet) {
         this.state.activeWallet = activeWallet;
         resolve(activeWallet);
       } else {
