@@ -1,6 +1,7 @@
 import { Account, NetworkType } from 'nem2-sdk';
 import getAccountInfo from '../components/utils/getAccountInfo';
 import getMosaicsByAddress from '../components/utils/getMosaicsByAddress';
+import { getNamespacesByAddress } from '../components/utils/getNamespacesByAddress';
 import getAccountTransactionsById from '../components/utils/getAccountTransactionsById';
 import { removeDuplicatesAndSortByBlockNumber } from '../components/utils/formatTransaction';
 /* eslint-disable class-methods-use-this */
@@ -27,12 +28,14 @@ class StateRepository {
       accountInfo: false,
       assets: false,
       transactions: false,
+      namespaces: false,
       error: false,
       errorMessage: '',
       activeWallet: false,
       loading_getAccountInfo: false,
       loading_getMosaicsByAddress: false,
       loading_getAccountTransactionsById: false,
+      loading_getNamespacesByAddress: false,
     };
     this.state.activeWallet = this.state.wallets.length === 0 ? false : this.state.wallets[0];
   }
@@ -80,6 +83,7 @@ class StateRepository {
       this.state.accountInfo = await getAccountInfo(activeWallet);
       this.state.loading_getAccountInfo = false;
       this.loadMosaics();
+      this.loadNamespaces();
       this.getAccountTransactionsById('init');
     } catch (error) {
       this.state.error = true;
@@ -108,13 +112,27 @@ class StateRepository {
     try {
       this.state.assets = false;
       this.state.loading_getMosaicsByAddress = true;
-      const assets = await getMosaicsByAddress(this.state.activeWallet);
-      this.state.assets = assets;
+      this.state.assets = await getMosaicsByAddress(this.state.activeWallet);
       this.state.loading_getMosaicsByAddress = false;
     } catch (error) {
       this.error = true;
       this.errorMessage = 'Error while loading mosaics';
       this.state.loading_getMosaicsByAddress = false;
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
+  }
+
+  async loadNamespaces() {
+    try {
+      this.state.namespaces = false;
+      this.state.loading_getNamespacesByAddress = true;
+      this.state.namespaces = await getNamespacesByAddress(this.state.activeWallet);
+      this.state.loading_getNamespacesByAddress = false;
+    } catch (error) {
+      this.error = true;
+      this.errorMessage = 'Error while loading mosaics';
+      this.state.loading_getNamespacesByAddress = false;
       // eslint-disable-next-line no-console
       console.error(error);
     }
@@ -170,6 +188,7 @@ class StateRepository {
     this.state.accountInfo = false;
     this.state.assets = false;
     this.state.transactions = false;
+    this.state.namespaces = false;
   }
 }
 
