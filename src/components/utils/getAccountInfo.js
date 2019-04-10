@@ -15,9 +15,9 @@ const getAccountInfo = (wallet) => {
         // @TODO: rationalize
         if (
           err.response
-          && JSON.parse(err.response.text).code === 4
+          && JSON.parse(err.response.text).code === 'ResourceNotFound'
         ) {
-          reject(new Error('This wallet is not known by the network'));
+          reject(new Error('ResourceNotFound'));
         } else {
           reject(new Error('error at getAccountInfo', JSON.stringify(err)));
         }

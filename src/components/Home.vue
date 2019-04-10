@@ -19,13 +19,10 @@
         </h5>
       </v-layout>
     </v-layout>
-    <Errors :shared-state="sharedState" />
     <div
       v-if="
         sharedState.wallets.length > 0 &&
-          sharedState.activeWallet &&
-          !sharedState.error &&
-          !sharedState.loading_getAccountInfo
+          sharedState.activeWallet
       "
     >
       <v-flex xs12>
@@ -36,11 +33,20 @@
                 {{ sharedState.activeWallet.name }}
               </h5>
               <div class="monospaced clearfix homeLine">
-                Address: {{ sharedState.activeWallet.account.address.pretty() }}
+                Address:
               </div>
               <div class="monospaced clearfix homeLine">
-                <span class="clearfix">Public key:</span>
-                <span class="clearfix">{{
+                {{ sharedState.activeWallet.account.address.pretty() }}
+              </div>
+              <div class="monospaced clearfix homeLine">
+                <span
+                  v-show="sharedState.accountInfo"
+                  class="clearfix"
+                >Public key:</span>
+                <span
+                  v-show="sharedState.accountInfo"
+                  class="clearfix"
+                >{{
                   sharedState.accountInfo.publicKey
                 }}</span>
                 <span class="clearfix">Current node:</span>
@@ -55,6 +61,16 @@
           </v-card-title>
         </v-card>
       </v-flex>
+    </div>
+    <Errors :shared-state="sharedState" />
+    <div
+      v-if="
+        sharedState.wallets.length > 0 &&
+          sharedState.activeWallet &&
+          !sharedState.error &&
+          sharedState.accountInfo
+      "
+    >
       <div v-if="sharedState.loading_getAccountTransactionsById">
         <v-progress-linear :indeterminate="true" />
       </div>
@@ -78,6 +94,11 @@ export default {
   },
   data() {
     return { sharedState: StateRepository.state };
+  },
+  created() {
+    if (StateRepository.state.activeWallet && !StateRepository.state.accountInfo) {
+      StateRepository.onWalletChange(StateRepository.state.activeWallet.name);
+    }
   },
 };
 </script>

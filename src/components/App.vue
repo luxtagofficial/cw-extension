@@ -8,7 +8,11 @@
       <v-container grid-list-md>
         <v-layout row justify-space-between align-center>
           <h4>NEM2 Wallet 0.0.4</h4>
-          <WalletSelector/>
+          <WalletSelector
+            :walletName="sharedState.activeWallet.name"
+            :wallets="sharedState.wallets.map(({name})=>name)"
+          />
+          </walletselector>
         </v-layout>
         <v-layout justify-start row>
           <v-flex shrink pa-0>
@@ -120,6 +124,7 @@
   </v-app>
 </template>
 <script>
+import StateRepository from '../infrastructure/StateRepository';
 import WalletSelector from "./WalletSelector.vue";
 
 export default {
@@ -128,6 +133,7 @@ export default {
   },
   data() {
     return {
+      sharedState: StateRepository.state,
       drawer: true,
       items: [
         { title: "Home", icon: "dashboard" },
