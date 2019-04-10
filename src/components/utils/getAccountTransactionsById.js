@@ -6,7 +6,7 @@ import {
 import {
     toArray, flatMap, map,
 } from 'rxjs/operators';
-import formatTransaction from './formatTransaction';
+import { formatTransaction } from './formatTransaction';
 
 const getAccountTransactionsById = (
     endpoint,
@@ -16,7 +16,7 @@ const getAccountTransactionsById = (
     try {
         const accountHttp = new AccountHttp(endpoint);
         const { publicKey } = accountInfo;
-        const pageSize = 50;
+        const pageSize = 25;
         const publicAccount = PublicAccount
             .createFromPublicKey(publicKey, NetworkType.MIJIN_TEST);
 

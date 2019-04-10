@@ -4,7 +4,6 @@ import {
  TransactionType, Address,
 } from 'nem2-sdk';
 
-
 const formatDate = (d) => {
  const date = d.getDate();
  const month = d.getMonth() + 1;
@@ -46,7 +45,7 @@ const networkCurrencyIdToName = (id) => {
 };
 
 
-const formatTransaction = (tx) => {
+export const formatTransaction = (tx) => {
  const assetId = tx.mosaics && tx.mosaics[0] ? networkCurrencyIdToName(tx.mosaics[0].id.toHex()) : '';
  const amount = tx.mosaics && tx.mosaics[0] ? tx.mosaics[0].amount.compact() / 10e5 : 0;
  const recipient = tx.recipient ? new Address(tx.recipient.address).pretty() : '';
@@ -66,4 +65,9 @@ const formatTransaction = (tx) => {
  };
 };
 
-export default formatTransaction;
+export const removeDuplicatesAndSortByBlockNumber = (array) => {
+    const noDuplicate = array.filter((item, index, self) => index === self.findIndex(t => (
+        t.place === array.place && t.id === item.id
+    )));
+    return noDuplicate.sort((a, b) => b.blockNumber - a.blockNumber);
+};

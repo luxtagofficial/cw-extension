@@ -27,9 +27,16 @@
       >
         <v-btn
           color="primary mx-0"
-          @click="reloadList"
+          @click="refresh"
         >
-          Reload Transactions
+          Refresh
+        </v-btn>
+        <v-btn
+          class="ml-3"
+          color="primary mx-0"
+          @click="loadMore"
+        >
+          Load more
         </v-btn>
       </v-layout>
     </v-layout>
@@ -42,6 +49,7 @@
           :headers="headers"
           :items="transactions"
           disable-initial-sort
+          :rows-per-page-items="rowsPerPageOptions"
         >
           <template v-slot:items="props">
             <td class="text-xs-right">
@@ -86,7 +94,7 @@ export default {
   props: {
     transactions: {
       default() {
-        return []
+        return [];
       },
       type: Array,
     },
@@ -100,11 +108,17 @@ export default {
         { text: 'Type', value: 'assetId' },
       ],
       tx: this.transactions,
+      rowsPerPageOptions: [
+        25, 50, { text: 'All', value: -1 },
+      ],
     };
   },
   methods: {
-    reloadList(e) {
-      StateRepository.getAccountTransactionsById();
+    refresh() {
+      StateRepository.getAccountTransactionsById('refresh');
+    },
+    loadMore() {
+      StateRepository.getAccountTransactionsById('more');
     },
   },
 };

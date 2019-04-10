@@ -2,6 +2,7 @@ import { Account, NetworkType } from 'nem2-sdk';
 import getAccountInfo from '../components/utils/getAccountInfo';
 import getMosaicsByAddress from '../components/utils/getMosaicsByAddress';
 import getAccountTransactionsById from '../components/utils/getAccountTransactionsById';
+import { removeDuplicatesAndSortByBlockNumber } from '../components/utils/formatTransaction';
 /* eslint-disable class-methods-use-this */
 
 // Ports & Adapters
@@ -69,7 +70,7 @@ class StateRepository {
       this.state.accountInfo = accountInfo;
       this.state.loading_getAccountInfo = false;
       this.loadMosaics();
-      this.getAccountTransactionsById();
+      this.getAccountTransactionsById('init');
     } catch (error) {
       this.state.error = true;
       this.state.errorMessage = error === 'This wallet is not known by the network'
@@ -109,25 +110,44 @@ class StateRepository {
     }
   }
 
-  async getAccountTransactionsById(id) {
-    if (this.state.accountInfo) {
-      try {
-        const currentId = id || undefined;
-        this.state.transactions = false;
-        this.state.loading_getAccountTransactionsById = true;
-        this.state.transactions = await getAccountTransactionsById(
-          this.state.activeWallet.node,
-          this.state.accountInfo,
-          currentId,
-        );
-        this.state.loading_getAccountTransactionsById = false;
-      } catch (error) {
-        this.error = true;
-        this.errorMessage = 'Error while loading transactions';
-        this.loading_getAccountTransactionsById = false;
-        // eslint-disable-next-line no-console
-        console.error(error);
+  async getAccountTransactionsById(mode) {
+    let currentId;
+    try {
+      if (this.state.accountInfo) {
+        switch (mode) {
+          case 'more':
+            currentId = this.state.transactions.length > 0
+              ? this.state.transactions[this.state.transactions.length - 1].id
+              : undefined;
+            break;
+          case 'init':
+          case 'refresh':
+          default:
+            currentId = undefined;
+            break;
+        }
       }
+
+      if (mode === 'init') this.state.transactions = false;
+      this.state.loading_getAccountTransactionsById = true;
+      const newTransactions = await getAccountTransactionsById(
+        this.state.activeWallet.node,
+        this.state.accountInfo,
+        currentId,
+      );
+
+      const oldTransactions = this.state.transactions !== false ? this.state.transactions : [];
+      this.state.transactions = removeDuplicatesAndSortByBlockNumber([
+        ...oldTransactions,
+        ...newTransactions,
+      ]);
+      this.state.loading_getAccountTransactionsById = false;
+    } catch (error) {
+      this.error = true;
+      this.errorMessage = 'Error while loading transactions';
+      this.loading_getAccountTransactionsById = false;
+      // eslint-disable-next-line no-console
+      console.error(error);
     }
   }
 
