@@ -200,3 +200,68 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+
+=======================================================================
+nem2-library-js Subcomponents:
+
+The nem2-library-js contains subcomponents with separate copyright
+notices and license terms. Your use of the source code for the these
+subcomponents is subject to the terms and conditions of the following
+licenses.
+
+
+========================================================================
+For bufferutil:
+========================================================================
+
+See license/LICENSE-bufferutil.txt
+
+========================================================================
+For crypto-js:
+========================================================================
+
+See license/LICENSE-crypto-js.txt
+
+========================================================================
+For flatbuffers:
+========================================================================
+
+See license/LICENSE-flatbuffers.txt
+
+========================================================================
+For js-sha3:
+========================================================================
+
+See license/LICENSE-js-sha3.txt
+
+========================================================================
+For lodash:
+========================================================================
+
+See license/LICENSE-lodash.txt
+
+========================================================================
+For ripemd160:
+========================================================================
+
+See license/LICENSE-ripemd160.txt
+
+========================================================================
+For superagent:
+========================================================================
+
+See license/LICENSE-superagent.txt
+
+========================================================================
+For utf-8-validate:
+========================================================================
+
+See license/LICENSE-utf-8-validate.txt
+
+========================================================================
+For ws:
+========================================================================
+
+See license/LICENSE-ws.txt
+

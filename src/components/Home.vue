@@ -1,37 +1,105 @@
 <template>
-  <v-layout column>
-    <h5 class="headline">Information</h5>
-    <p
-      class="monospaced"
-      v-if="sharedState.activeWallet"
-    >Active Wallet Address: {{sharedState.activeWallet.account.address.pretty()}}</p>
-    {{accountInfo}}
+  <v-layout
+    column
+    xs12
+  >
+    <v-layout
+      row
+      mb-4
+    >
+      <v-layout
+        row
+        fill-height
+        justify-start
+        pl-3
+        xs12
+      >
+        <h5 class="headline pt-3">
+          Information
+        </h5>
+      </v-layout>
+    </v-layout>
+    <div
+      v-if="
+        sharedState.wallets.length > 0 &&
+          sharedState.activeWallet
+      "
+    >
+      <v-flex xs12>
+        <v-card>
+          <v-card-title primary-title>
+            <div>
+              <h5 class="headline mb-0">
+                {{ sharedState.activeWallet.name }}
+              </h5>
+              <div class="monospaced clearfix homeLine">
+                Address:
+              </div>
+              <div class="monospaced clearfix homeLine">
+                {{ sharedState.activeWallet.account.address.pretty() }}
+              </div>
+              <div class="monospaced clearfix homeLine">
+                <span
+                  v-show="sharedState.accountInfo"
+                  class="clearfix"
+                >Public key:</span>
+                <span
+                  v-show="sharedState.accountInfo"
+                  class="clearfix"
+                >{{
+                  sharedState.accountInfo.publicKey
+                }}</span>
+                <span class="clearfix">Current node:</span>
+                <a
+                  class="clearfix"
+                  :href="sharedState.activeWallet.node"
+                  target="_new"
+                >
+                  {{ sharedState.activeWallet.node }}</a>
+              </div>
+            </div>
+          </v-card-title>
+        </v-card>
+      </v-flex>
+    </div>
+    <Errors :shared-state="sharedState" />
+    <div
+      v-if="
+        sharedState.wallets.length > 0 &&
+          sharedState.activeWallet &&
+          !sharedState.error &&
+          sharedState.accountInfo
+      "
+    >
+      <div v-if="sharedState.loading_getAccountTransactionsById">
+        <v-progress-linear :indeterminate="true" />
+      </div>
+      <div
+        v-if="sharedState.transactions && sharedState.transactions.length > 0"
+      >
+        <Transactions :transactions="sharedState.transactions" />
+      </div>
+    </div>
   </v-layout>
 </template>
 <script>
-import { AccountHttp, Address } from "nem2-sdk";
-import StateRepository from "../infrastructure/StateRepository.js";
+import StateRepository from '../infrastructure/StateRepository';
+import Errors from './Errors.vue';
+import Transactions from './transactions/Transactions.vue';
 
 export default {
+  components: {
+    Errors,
+    Transactions,
+  },
   data() {
-    return { sharedState: StateRepository.state, accountInfo: {} };
+    return { sharedState: StateRepository.state };
   },
   created() {
-    console.log("activated");
-    const activeWallet = this.sharedState.activeWallet;
-    const accountHttp = new AccountHttp(activeWallet.node);
-    const address = Address.createFromRawAddress(
-      activeWallet.account.address.pretty()
-    );
-    accountHttp.getAccountInfo(address).subscribe(
-      accountInfo => {
-        console.log("accountInfo", accountInfo);
-        this.accountInfo = accountInfo;
-        console.log(this.accountInfo);
-      },
-      err => console.error(err)
-    );
-  }
+    if (StateRepository.state.activeWallet && !StateRepository.state.accountInfo) {
+      StateRepository.onWalletChange(StateRepository.state.activeWallet.name);
+    }
+  },
 };
 </script>
 <style scoped>

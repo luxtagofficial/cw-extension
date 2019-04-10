@@ -200,3 +200,54 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+=======================================================================
+nem2-sdk-typescript-javascript Subcomponents:
+
+The nem2-sdk-typescript-javascript contains subcomponents with separate copyright
+notices and license terms. Your use of the source code for the these
+subcomponents is subject to the terms and conditions of the following
+licenses.
+
+
+========================================================================
+For js-joda:
+========================================================================
+
+See license/LICENSE-js-joda.txt
+
+========================================================================
+For nem2-library-js:
+========================================================================
+
+See license/LICENSE-nem2-library-js.txt
+
+========================================================================
+For request:
+========================================================================
+
+See license/LICENSE-request.txt
+
+========================================================================
+For request-promise-native:
+========================================================================
+
+See license/LICENSE-request-promise-native.txt
+
+========================================================================
+For rxjs:
+========================================================================
+
+See license/LICENSE-rxjs.txt
+
+========================================================================
+For utf8:
+========================================================================
+
+See license/LICENSE-utf8.txt
+
+========================================================================
+For ws:
+========================================================================
+
+See license/LICENSE-ws.txt

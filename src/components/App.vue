@@ -2,23 +2,39 @@
   <v-app>
     <v-content>
       <v-alert :value="true" type="warning" class="ma-0">
-        Please be aware this is a Wallet for development proposes, it has no security and the private keys are stored in plain text. 
+        Please be aware this is a Wallet for development proposes, it has no security and the private keys are stored in plain text.
         <strong>DO NOT USE IN MAIN NET or PRODUCTION PRIVATE NETWORKS</strong>
       </v-alert>
-      <v-container grid-list-md >
+      <v-container grid-list-md>
         <v-layout row justify-space-between align-center>
-          <h4>NEM2 Wallet 0.0.2</h4>
-          <WalletSelector />
+          <h4>NEM2 Wallet 0.0.4</h4>
+          <WalletSelector
+            :walletName="sharedState.activeWallet.name"
+            :wallets="sharedState.wallets.map(({name})=>name)"
+          />
+          </walletselector>
         </v-layout>
-        <v-layout row>
-          <v-flex sm>
-            <v-navigation-drawer permanent floating>
+        <v-layout justify-start row>
+          <v-flex shrink pa-0>
+            <v-navigation-drawer
+              permanent
+              floating
+              v-model="drawer"
+              :mini-variant.sync="mini"
+              hide-overlay
+              stateless
+            >
               <v-toolbar flat>
                 <v-list>
                   <v-list-tile>
                     <v-list-tile-title class="title">Menu</v-list-tile-title>
                   </v-list-tile>
                 </v-list>
+                <v-list-tile-action>
+                  <v-btn icon @click.stop="mini = !mini">
+                    <v-icon>chevron_left</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
               </v-toolbar>
 
               <v-divider></v-divider>
@@ -99,7 +115,7 @@
               </v-list>
             </v-navigation-drawer>
           </v-flex>
-          <v-flex xs10 pl-4>
+          <v-flex grow pl-3 ml-2>
             <router-view></router-view>
           </v-flex>
         </v-layout>
@@ -108,11 +124,24 @@
   </v-app>
 </template>
 <script>
-import WalletSelector from './WalletSelector.vue';
+import StateRepository from '../infrastructure/StateRepository';
+import WalletSelector from "./WalletSelector.vue";
 
 export default {
   components: {
-    WalletSelector,
+    WalletSelector
+  },
+  data() {
+    return {
+      sharedState: StateRepository.state,
+      drawer: true,
+      items: [
+        { title: "Home", icon: "dashboard" },
+        { title: "About", icon: "question_answer" }
+      ],
+      mini: false,
+      right: null
+    };
   }
 };
 </script>

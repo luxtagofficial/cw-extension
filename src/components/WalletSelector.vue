@@ -1,34 +1,41 @@
 <template>
   <span>
-    <v-select v-if="selectWallets.length != 0"
-      :items="selectWallets"
-      v-model="wallet"
+    <v-select
+      v-if="walletName"
+      v-model="walletName"
+      :items="wallets"
       prepend-icon="payment"
       label="No Wallet Selected"
       solo
-    ></v-select>
-    <div v-else><v-btn small color="error" to="/wallet">No wallets</v-btn></div>
+    />
+    <div v-else><v-btn
+      small
+      color="error"
+      to="/wallet"
+    >No wallets</v-btn></div>
   </span>
 </template>
 <script>
-import StateRepository from "../infrastructure/StateRepository.js";
+import StateRepository from '../infrastructure/StateRepository';
 
 export default {
-  data: () => ({
-    wallet: null,
-    wallets: StateRepository.state.wallets,
-    selectWallets: StateRepository.wallets().map(wallet => wallet.name),
-  }),
-  methods: {},
-  watch: {
-    wallets: function(val) {
-      this.selectWallets = StateRepository.wallets().map(wallet => wallet.name);
-    },
-    wallet: (val) => StateRepository.currentWallet(val)
+  props: {
+    // eslint-disable-next-line vue/require-default-prop
+    walletName: String,
+    // eslint-disable-next-line vue/require-default-prop
+    wallets: Array,
   },
-  created: function () {
-    this.wallet = StateRepository.state.wallets.length == 0 ? null : StateRepository.state.wallets[0].name
-  }
+  data: () => ({
+    sharedState: StateRepository.state,
+  }),
+  watch: {
+    walletName:
+    (val) => {
+      if (val) {
+        StateRepository.onWalletChange(val);
+      }
+    },
+  },
 };
 </script>
 <style scoped>

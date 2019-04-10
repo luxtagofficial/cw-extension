@@ -1,7 +1,36 @@
 .monospaced {
   font-family: 'Courier New', Courier, monospace
 }
+
 .monospaced-bold {
   font-family: 'Courier New', Courier, monospace;
   font-weight: bold;
+}
+
+.clearfix {
+  display: block;
+  width: 100%;
+  float: left;
+  clear: both;
+  overflow: hidden;
+}
+
+.p17{
+  padding-left: 17px !important;
+}
+
+.homeLine {
+  margin: 5px 0;
+}
+
+.centered{
+  text-align: center;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.pointer{
+  cursor: pointer;
 }
