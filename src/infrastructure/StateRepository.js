@@ -24,7 +24,7 @@ class StateRepository {
     const wallets = localStorage.getItem('wallets');
     this.state = {
       wallets: wallets != null ? jsonToWallets(wallets) : [],
-      accountInfo: {},
+      accountInfo: false,
       assets: false,
       transactions: false,
       error: false,
@@ -44,6 +44,10 @@ class StateRepository {
   storeWallet(walletName, account, node) {
     this.state.wallets.push({ name: walletName, account, node });
     localStorage.setItem('wallets', walletsToJSON(this.state.wallets));
+    if (!this.state.activeWallet) {
+      const newWallet = this.state.wallets[0];
+      this.state.activeWallet = newWallet;
+    }
   }
 
   removeWallet(wallet) {
@@ -51,12 +55,19 @@ class StateRepository {
     this.state.wallets.forEach((value, index) => {
       if (value.name === wallet.name) walletIndex = index;
     });
-    if (this.state.activeWallet && wallet.name === this.state.activeWallet.name) {
-      this.resetWalletData();
-      this.resetErrors();
-      this.state.activeWallet = false;
-    }
+
     if (walletIndex !== undefined) this.state.wallets.splice(walletIndex, 1);
+
+    if (this.state.activeWallet && wallet.name === this.state.activeWallet.name) {
+      if (this.state.wallets.length > 0) {
+        // eslint-disable-next-line prefer-destructuring
+        this.state.activeWallet = this.state.wallets[0];
+      } else {
+        this.resetWalletData();
+        this.resetErrors();
+        this.state.activeWallet = false;
+      }
+    }
     localStorage.setItem('wallets', walletsToJSON(this.state.wallets));
   }
 
@@ -66,14 +77,13 @@ class StateRepository {
       this.state.loading_getAccountInfo = true;
       this.resetErrors();
       const activeWallet = await this.currentWallet(walletName);
-      const accountInfo = await getAccountInfo(activeWallet);
-      this.state.accountInfo = accountInfo;
+      this.state.accountInfo = await getAccountInfo(activeWallet);
       this.state.loading_getAccountInfo = false;
       this.loadMosaics();
       this.getAccountTransactionsById('init');
     } catch (error) {
       this.state.error = true;
-      this.state.errorMessage = error === 'This wallet is not known by the network'
+      this.state.errorMessage = error.toString() === 'Error: ResourceNotFound'
         ? 'This wallet is not known by the network'
         : 'An error occured while getting the wallet account information';
       // eslint-disable-next-line no-console
@@ -85,7 +95,7 @@ class StateRepository {
   currentWallet(walletName) {
     return new Promise((resolve, reject) => {
       const activeWallet = this.state.wallets.find(x => x.name === walletName);
-      if (!activeWallet) {
+      if (activeWallet) {
         this.state.activeWallet = activeWallet;
         resolve(activeWallet);
       } else {
@@ -157,7 +167,7 @@ class StateRepository {
   }
 
   resetWalletData() {
-    this.state.accountInfo = {};
+    this.state.accountInfo = false;
     this.state.assets = false;
     this.state.transactions = false;
   }
