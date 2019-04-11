@@ -28,17 +28,19 @@
       <v-flex xs12>
         <v-card>
           <v-card-title primary-title>
-            <div>
-              <h5 class="headline mb-0">
+            <div class="monospaced">
+              <h5 class="headline mb-0 mb-1">
                 {{ sharedState.activeWallet.name }}
               </h5>
-              <div class="monospaced clearfix homeLine">
-                Address:
+              <div class="clearfix homeLine">
+                <div class="clearfix">
+                  Address:
+                </div>
+                <div class="clearfix">
+                  {{ sharedState.activeWallet.account.address.pretty() }}
+                </div>
               </div>
-              <div class="monospaced clearfix homeLine">
-                {{ sharedState.activeWallet.account.address.pretty() }}
-              </div>
-              <div class="monospaced clearfix homeLine">
+              <div class="clearfix homeLine">
                 <span
                   v-show="sharedState.accountInfo"
                   class="clearfix"
@@ -49,6 +51,8 @@
                 >{{
                   sharedState.accountInfo.publicKey
                 }}</span>
+              </div>
+              <div class="clearfix homeLine">
                 <span class="clearfix">Current node:</span>
                 <a
                   class="clearfix"

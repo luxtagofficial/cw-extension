@@ -14,9 +14,9 @@ const expirationText = (expiration) => {
   const expired = expiration < 0;
   switch (expired) {
     case true:
-      return [true, `Expired for ${-expiration} blocks`];
+      return [true, `Expired for ${-expiration.toLocaleString()} blocks`];
     default:
-      return [false, `Expires in ${expiration} blocks`];
+      return [false, `Expires in ${expiration.toLocaleString()} blocks`];
   }
 };
 

@@ -24,7 +24,11 @@
               hide-overlay
               stateless
             >
-              <v-toolbar flat>
+              <v-toolbar
+                class="pointer"
+                flat
+                @click.stop="mini = !mini"
+              >
                 <v-list>
                   <v-list-tile>
                     <v-list-tile-title class="title">Menu</v-list-tile-title>

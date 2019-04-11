@@ -19,7 +19,7 @@
           pl-3
           xs3
         >
-          <h5 class="headline pt-3">
+          <h5 class="headline pt-3 pl-2">
             Transactions
           </h5>
         </v-layout>
@@ -65,7 +65,7 @@
                     <pre>{{ props.item.time }}</pre>
                   </span>
                   <span class="clearfix">
-                    <pre>{{ props.item.blockNumber }}</pre>
+                    <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
                   </span>
                 </td>
                 <td class="text-xs-right">
