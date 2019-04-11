@@ -19,7 +19,7 @@
           pl-3
           xs3
         >
-          <h5 class="headline pt-3">
+          <h5 class="headline pt-3 pl-2">
             Transactions
           </h5>
         </v-layout>
