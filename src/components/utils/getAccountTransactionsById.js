@@ -16,7 +16,7 @@ const getAccountTransactionsById = (
     try {
         const accountHttp = new AccountHttp(endpoint);
         const { publicKey } = accountInfo;
-        const pageSize = 25;
+        const pageSize = 100;
         const publicAccount = PublicAccount
             .createFromPublicKey(publicKey, NetworkType.MIJIN_TEST);
 
