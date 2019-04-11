@@ -6,7 +6,7 @@ import {
 import {
     toArray, flatMap, map,
 } from 'rxjs/operators';
-import { formatTransaction } from './formatTransaction';
+import { formatTransactions } from './formatTransactions';
 
 const getAccountTransactionsById = (
     endpoint,
@@ -24,7 +24,8 @@ const getAccountTransactionsById = (
             .transactions(publicAccount, new QueryParams(pageSize, currentId))
             .pipe(
                 flatMap(x => x),
-                map(formatTransaction),
+                map(formatTransactions),
+                flatMap(x => x),
                 toArray(),
             )
             .subscribe((formattedTransactions) => {

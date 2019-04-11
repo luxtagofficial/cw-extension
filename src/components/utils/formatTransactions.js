@@ -44,11 +44,11 @@ const networkCurrencyIdToName = (id) => {
  }
 };
 
-
-export const formatTransaction = (tx) => {
+const formatTransaction = (tx) => {
  const assetId = tx.mosaics && tx.mosaics[0] ? networkCurrencyIdToName(tx.mosaics[0].id.toHex()) : '';
  const amount = tx.mosaics && tx.mosaics[0] ? tx.mosaics[0].amount.compact() / 10e5 : 0;
  const recipient = tx.recipient ? new Address(tx.recipient.address).pretty() : '';
+ const type = tx.aggregate ? `${txTypeNameFromTypeId(tx.type)} [${tx.aggregate}]` : txTypeNameFromTypeId(tx.type);
  const fee = 0;
 
  return {
@@ -59,10 +59,21 @@ export const formatTransaction = (tx) => {
      assetId,
      fee: `${fee}`,
      blockNumber: tx.transactionInfo.height.compact(),
-     type: txTypeNameFromTypeId(tx.type),
+     type,
      transactionHash: tx.transactionInfo.hash,
      id: tx.transactionInfo.id,
  };
+};
+
+export const formatTransactions = (tx) => {
+    if (tx.innerTransactions) {
+        return tx.innerTransactions.map((t) => {
+            // eslint-disable-next-line no-param-reassign
+            t.aggregate = txTypeNameFromTypeId(tx.type);
+            return formatTransaction(t);
+        });
+    }
+    return [formatTransaction(tx)];
 };
 
 export const removeDuplicatesAndSortByBlockNumber = (array) => {

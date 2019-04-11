@@ -3,7 +3,7 @@ import getAccountInfo from '../components/utils/getAccountInfo';
 import getMosaicsByAddress from '../components/utils/getMosaicsByAddress';
 import { getNamespacesByAddress } from '../components/utils/getNamespacesByAddress';
 import getAccountTransactionsById from '../components/utils/getAccountTransactionsById';
-import { removeDuplicatesAndSortByBlockNumber } from '../components/utils/formatTransaction';
+import { removeDuplicatesAndSortByBlockNumber } from '../components/utils/formatTransactions';
 /* eslint-disable class-methods-use-this */
 
 // Ports & Adapters
