@@ -14,7 +14,7 @@
                 <v-list-tile-title>{{ a.title }}</v-list-tile-title>
                 <v-list-tile-sub-title
                   class="text--primary"
-                >Balance: {{ parseInt(a.balance).toLocaleString() }} [{{ a.amount }}]</v-list-tile-sub-title>
+                >Balance: {{ parseInt(a.balance).toLocaleString() }} [{{ (a.amount/Math.pow(10, a.divisibility)).toLocaleString() }}]</v-list-tile-sub-title>
                 <v-list-tile-sub-title>{{ a.expirationText }}</v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
@@ -23,7 +23,7 @@
             <div class="p17">
               <v-list-tile-title>Meta ID: {{ a.metaId }}</v-list-tile-title>
               <v-list-tile-sub-title>Owner: {{ a.owner }}</v-list-tile-sub-title>
-              <v-list-tile-sub-title>supply: {{ a.supply.toLocaleString() }} | divisibility: {{ a.divisibility }} | supplyMutable: {{a.supplyMutable}} | transferable: {{a.transferable}}</v-list-tile-sub-title>
+              <v-list-tile-sub-title>supply: {{ a.supply.toLocaleString() }} | divisibility: {{ a.divisibility }} | supplyMutable: {{ a.supplyMutable }} | transferable: {{ a.transferable }}</v-list-tile-sub-title>
             </div>
           </v-list-tile-content>
         </v-list-group>

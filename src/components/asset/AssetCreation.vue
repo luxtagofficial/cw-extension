@@ -27,13 +27,13 @@
 
       <v-layout>
         <v-flex xs3>
-          <v-subheader>Divisibility</v-subheader>
+          <v-subheader>Divisibility (number of decimals)</v-subheader>
         </v-flex>
         <v-flex xs9>
           <v-text-field
             v-model="divisibility"
             class="ma-0 pa-0"
-            label="Duration (blocks)"
+            label="Divisibility (number of decimals)"
             type="number"
             solo
             required
