@@ -65,7 +65,7 @@
                     <pre>{{ props.item.time }}</pre>
                   </span>
                   <span class="clearfix">
-                    <pre>{{ props.item.blockNumber }}</pre>
+                    <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
                   </span>
                 </td>
                 <td class="text-xs-right">
