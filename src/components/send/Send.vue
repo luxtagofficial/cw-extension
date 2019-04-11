@@ -62,32 +62,33 @@
           sm
           class="ma-4"
         >
-          <v-text-field
+          <v-select
             v-model="currentMosaicName"
-            label="Attach Mosaic Hex"
-            placeholder="Mosaic ID Here"
+            :items="sharedState.assets.map(({id})=>id)"
+            label="Chose an asset"
             solo
-          >
-            <template slot="append">
+          />
+
+          <v-layout row>
+            <v-flex xs-11>
+              <v-text-field
+                v-model="currentMosaicAmount"
+                label="Asset Amount"
+                placeholder="ex. 10"
+                solo
+              />
+            </v-flex>
+
+            <v-flex xs-1>
               <v-btn
-                :disabled="currentMosaicName == ''"
-                fab
-                small
+                :disabled="currentMosaicName === ''"
                 color="primary"
                 @click="addMosaic"
               >
                 <v-icon>add</v-icon>
               </v-btn>
-            </template>
-          </v-text-field>
-
-          <v-text-field
-            v-model="currentMosaicAmount"
-            label="Asset Amount"
-            placeholder="ex. 10"
-            solo
-          />
-
+            </v-flex>
+          </v-layout>
           <template v-for="(mosaic, index) in mosaics">
             <v-list
               :key="index"
@@ -256,6 +257,22 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-layout
+      row
+      mb-4
+    >
+      <v-layout
+        row
+        fill-height
+        justify-start
+        pl-3
+        xs3
+      >
+        <h5 class="headline pt-3">
+          My assets
+        </h5>
+      </v-layout>
+    </v-layout>
     <Errors :shared-state="sharedState" />
     <div
       v-if="sharedState.wallets.length > 0
@@ -359,7 +376,7 @@ export default {
             (txAnnouncmentResponse) => {
               if (
                 txAnnouncmentResponse.message
-                == 'packet 9 was pushed to the network via /transaction'
+                === 'packet 9 was pushed to the network via /transaction'
               ) {
                 this.txHash = this.signedTx.hash;
                 this.mosaics = [];
