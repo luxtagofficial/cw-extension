@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="modal"
-    max-width="80%"
+    max-width="600px"
   >
     <v-layout>
       <v-flex
@@ -22,6 +22,13 @@
               </span>
 
               <span class="clearfix bold">
+                blockNumber:
+              </span>
+              <span class="clearfix  mb-2">
+                {{ tx.blockNumber.toLocaleString() }}
+              </span>
+
+              <span class="clearfix bold">
                 transactionHash:
               </span>
               <span class="clearfix  mb-2">
@@ -35,26 +42,23 @@
                 {{ tx.signer }}
               </span>
 
-              <span class="clearfix bold">
-                recipient:
-              </span>
-              <span class="clearfix  mb-2">
-                {{ tx.recipient }}
-              </span>
+              <div v-if="tx.recipient !== ''">
+                <span class="clearfix bold">
+                  recipient:
+                </span>
+                <span class="clearfix  mb-2">
+                  {{ tx.recipient }}
+                </span>
+              </div>
 
-              <span class="clearfix bold">
-                amount:
-              </span>
-              <span class="clearfix  mb-2">
-                {{ tx.amount.toLocaleString()  }}
-              </span>
-
-              <span class="clearfix bold">
-                assetId:
-              </span>
-              <span class="clearfix  mb-2">
-                {{ tx.assetId }}
-              </span>
+              <div v-if="tx.amount > 0">
+                <span class="clearfix bold">
+                  amount:
+                </span>
+                <span class="clearfix  mb-2">
+                  {{ tx.amount.toLocaleString() }}
+                </span>
+              </div>
 
               <span class="clearfix bold">
                 fee:
@@ -63,12 +67,27 @@
                 {{ tx.fee }}
               </span>
 
-              <span class="clearfix bold">
-                blockNumber:
-              </span>
+              <div v-if="tx.recipient !== ''">
+                <span class="clearfix bold">
+                  assetId:
+                </span>
+              </div>
+
               <span class="clearfix  mb-2">
-                {{ tx.blockNumber.toLocaleString() }}
+                {{ tx.assetId }}
               </span>
+
+              <div
+                v-for="(bodyItem, index) in tx.body"
+                :key="index"
+              >
+                <span class="clearfix bold">
+                  {{ bodyItem.key }}
+                </span>
+                <span class="clearfix  mb-2">
+                  {{ bodyItem.value }}
+                </span>
+              </div>
             </div>
           </v-card-title>
         </v-card>
