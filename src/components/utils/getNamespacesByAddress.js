@@ -1,8 +1,8 @@
 import {
-  NamespaceHttp, UInt64, BlockchainHttp, Address, AliasActionType,
+  NamespaceHttp, BlockchainHttp,
 } from 'nem2-sdk';
 import {
-  mergeMap, tap, map, flatMap, toArray,
+  mergeMap, map,
 } from 'rxjs/operators';
 import { formatNamespaces } from './formatNamespaces';
 

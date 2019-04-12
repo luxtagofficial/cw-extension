@@ -1,15 +1,12 @@
-import { AccountHttp, Address } from 'nem2-sdk';
+import { AccountHttp } from 'nem2-sdk';
+import { formatAccountInfo } from './formatAccountInfo';
 
 const getAccountInfo = (wallet) => {
   return new Promise((resolve, reject) => {
     const accountHttp = new AccountHttp(wallet.node);
     accountHttp.getAccountInfo(wallet.account.address).subscribe(
       (ai) => {
-        resolve({
-          address: ai.address.address,
-          addressPretty: new Address(ai.address.address).pretty(),
-          publicKey: ai.publicKey,
-        });
+        resolve(formatAccountInfo(ai));
       },
       (err) => {
         // @TODO: rationalize

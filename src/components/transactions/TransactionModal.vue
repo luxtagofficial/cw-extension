@@ -11,32 +11,32 @@
           <v-card-title primary-title>
             <div class="monospaced">
               <h3 class="headline mb-0">
-                {{ tx.type }}
+                {{ tx.type2 }} {{ tx.type1 }}
               </h3>
 
               <span class="clearfix bold">
-                ID:
+                ID
               </span>
               <span class="clearfix  mb-2">
                 {{ tx.id }}
               </span>
 
               <span class="clearfix bold">
-                blockNumber:
+                blockNumber
               </span>
               <span class="clearfix  mb-2">
                 {{ tx.blockNumber.toLocaleString() }}
               </span>
 
               <span class="clearfix bold">
-                transactionHash:
+                transactionHash
               </span>
               <span class="clearfix  mb-2">
                 {{ tx.transactionHash }}
               </span>
 
               <span class="clearfix bold">
-                signer:
+                signer
               </span>
               <span class="clearfix  mb-2">
                 {{ tx.signer }}
@@ -44,7 +44,7 @@
 
               <div v-if="tx.recipient !== ''">
                 <span class="clearfix bold">
-                  recipient:
+                  recipient
                 </span>
                 <span class="clearfix  mb-2">
                   {{ tx.recipient }}
@@ -53,7 +53,7 @@
 
               <div v-if="tx.amount > 0">
                 <span class="clearfix bold">
-                  amount:
+                  amount
                 </span>
                 <span class="clearfix  mb-2">
                   {{ tx.amount.toLocaleString() }}
@@ -61,20 +61,10 @@
               </div>
 
               <span class="clearfix bold">
-                fee:
+                fee
               </span>
               <span class="clearfix  mb-2">
                 {{ tx.fee }}
-              </span>
-
-              <div v-if="tx.recipient !== ''">
-                <span class="clearfix bold">
-                  assetId:
-                </span>
-              </div>
-
-              <span class="clearfix  mb-2">
-                {{ tx.assetId }}
               </span>
 
               <div
