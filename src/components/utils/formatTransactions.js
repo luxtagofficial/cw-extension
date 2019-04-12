@@ -6,7 +6,7 @@ import {
 
 import { networkCurrencyIdToName } from './nerworkCurrencyToName';
 
-const formatDate = (d) => {
+ const formatDate = (d) => {
  const date = d.getDate();
  const month = d.getMonth() + 1;
  const year = d.getFullYear();
