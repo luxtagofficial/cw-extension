@@ -21,7 +21,7 @@ When you find that _nem2-wallet-browserextension_ could have XYZ, __think about 
 ## Tools (I use)
 
 - npm or yarn
-- [visual studio code](https://code.visualstudio.com/) or your prefered IDE
+- [visual studio code](https://code.visualstudio.com/) or your preferred IDE
 - [web-ext](https://github.com/mozilla/web-ext)
 
 ```bash
