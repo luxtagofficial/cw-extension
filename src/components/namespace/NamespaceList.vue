@@ -12,7 +12,7 @@
           :value="true"
           type="info"
         >
-          This account does not own nor hold any asset.
+          This account does not own any namespace.
         </v-alert>
       </v-flex>
     </div>

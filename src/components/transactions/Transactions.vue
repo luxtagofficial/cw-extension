@@ -60,7 +60,7 @@
                 class="pointer"
                 @click="showModal(props.item.id)"
               >
-                <td class="text-xs-right">
+                <td class="text-xs-left">
                   <span class="clearfix">
                     <pre>{{ props.item.time }}</pre>
                   </span>
@@ -68,24 +68,29 @@
                     <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
                   </span>
                 </td>
-                <td class="text-xs-right">
+                <td class="text-xs-left">
+                  <span class="clearfix">
+                    <pre>{{ props.item.type1 }}</pre>
+                  </span>
+                  <span class="clearfix">
+                    <pre>{{ props.item.type2 }}</pre>
+                  </span>
+                </td>
+                <td class="text-xs-left">
+                  <span class="clearfix">
+                    <pre>{{ props.item.mainProp1 }}</pre>
+                  </span>
+                  <span class="clearfix">
+                    <pre>{{ props.item.mainProp2 }}</pre>
+                  </span>
+                </td>
+                <td class="text-xs-left">
                   <span class="clearfix">
                     <pre>{{ props.item.signer }}</pre>
                   </span>
                   <span class="clearfix">
                     <pre>{{ props.item.recipient }}</pre>
                   </span>
-                </td>
-                <td class="text-xs-right">
-                  <span class="clearfix">
-                    <pre>{{ props.item.amount }} ({{ props.item.fee }})</pre>
-                  </span>
-                  <span class="clearfix">
-                    <pre>{{ props.item.assetId }}</pre>
-                  </span>
-                </td>
-                <td class="text-xs-right">
-                  {{ props.item.type }}
                 </td>
               </tr>
             </template>
@@ -122,9 +127,9 @@ export default {
     return {
       headers: [
         { text: 'Time / Block', value: 'blockNumber' },
+        { text: 'Type', value: 'type1' },
+        { text: 'Main properties', value: 'mainProp1' },
         { text: 'Signer / Recipient', value: 'recipient' },
-        { text: 'Amount (Fee) / Asset', value: 'amount' },
-        { text: 'Type', value: 'assetId' },
       ],
       tx: this.transactions,
       rowsPerPageOptions: [
@@ -133,6 +138,9 @@ export default {
       activeTransaction: this.transactions[0],
       modal: false,
     };
+  },
+  computed: {
+
   },
   methods: {
     refresh() {

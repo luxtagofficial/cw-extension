@@ -81,6 +81,7 @@ const getMosaicsByAddress = async (wallet) => {
         .map(pcn => namespaceHttp.getLinkedMosaicId(new NamespaceId(pcn)).toPromise());
       const primaryCurrencyIds = await Promise.all(primaryCurrencyIdsProms);
       const primaryCurrencyHexIds = primaryCurrencyIds.map(id => id.toHex());
+
       mosaicService
         .mosaicsAmountViewFromAddress(address)
         .pipe(
@@ -103,6 +104,7 @@ const getMosaicsByAddress = async (wallet) => {
               supplyMutable: x.mosaicInfo.isSupplyMutable(),
               transferable: x.mosaicInfo.isTransferable(),
               owner: new Address(x.mosaicInfo.owner.address.address).pretty(),
+              id: x.mosaicInfo.mosaicId.toHex(),
             };
           }),
           toArray(),
