@@ -4,6 +4,8 @@ import {
  TransactionType, Address,
 } from 'nem2-sdk';
 
+import { networkCurrencyIdToName } from './nerworkCurrencyToName';
+
 const formatDate = (d) => {
  const date = d.getDate();
  const month = d.getMonth() + 1;
@@ -36,14 +38,6 @@ const txTypeNameFromTypeId = (typeId) => {
  }
 };
 
-const networkCurrencyIdToName = (id) => {
- switch (id) {
-     case '77a1969932d987d7': return 'cat:currency';
-     case '0651fba41c7d4e2f': return 'cat:harvest';
-     default: return id;
- }
-};
-
 const getBody = (tx) => {
     // The body items will be displayed iteratively as the keys depend on the transaction type
     // The key order will dictate the display order
@@ -65,18 +59,18 @@ const getBody = (tx) => {
                         { key: `Amount ${int}`, value: mosaic.amount.compact().toLocaleString() },
                         {
                             key: `Asset ID ${int}`,
-                            value: networkCurrencyIdToName(mosaic.id.toHex().toUpperCase()),
+                            value: networkCurrencyIdToName(mosaic.id.toHex()),
                         },
                     );
                 });
             }
 
             mainProp1 = tx.mosaics.length === 1
-                ? networkCurrencyIdToName(tx.mosaics[0].id.toHex().toUpperCase())
+                ? networkCurrencyIdToName(tx.mosaics[0].id.toHex())
                 : '';
 
             mainProp2 = tx.mosaics.length === 1
-                ? networkCurrencyIdToName(tx.mosaics[0].amount.compact().toLocaleString())
+                ? tx.mosaics[0].amount.compact().toLocaleString()
                 : 'multi';
             break;
 

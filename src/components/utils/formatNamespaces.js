@@ -38,7 +38,7 @@ export const formatNamespaces = (namespacesInfo, blockHeight) => namespacesInfo.
       break;
   }
   const expireWithin = ns.namespaceInfo.endHeight.compact() - blockHeight;
-  const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`;
+  const expireText = expireWithin > 0 ? `expire within ${expireWithin.toLocaleString()} blocks` : `expired ${(-expireWithin).toLocaleString()} blocks ago`;
   return {
     name,
     hexId: ns.namespaceInfo.id.toHex().toUpperCase(),
