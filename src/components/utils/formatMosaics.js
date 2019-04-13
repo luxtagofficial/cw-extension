@@ -9,9 +9,15 @@ const expirationText = (expiration) => {
  const expired = expiration < 0;
  switch (expired) {
    case true:
-     return [true, `Expired for ${(-expiration).toLocaleString()} blocks`];
+     return {
+       isActive: true,
+       text: `Expired for ${(-expiration).toLocaleString()} blocks`,
+     };
    default:
-     return [false, `Expires in ${expiration.toLocaleString()} blocks`];
+     return {
+      isActive: false,
+      text: `Expires in ${expiration.toLocaleString()} blocks`,
+    };
  }
 };
 
@@ -65,8 +71,12 @@ export const formatMosaics = (mosaic, blockHeight) => {
    metaId: mosaic.mosaicInfo.metaId,
    balance: mosaic.relativeAmount().toString(10),
    amount: mosaic.amount.compact(),
-   active: height === 1 ? true : !expirationText(expiration)[0],
-   expirationText: height === 1 ? '' : expirationText(expiration)[1],
+   active: mosaic.mosaicInfo.duration.compact() === 0
+    ? true
+    : !expirationText(expiration).isActive,
+   expirationText: mosaic.mosaicInfo.duration.compact() === 0
+    ? 'unlimited'
+    : expirationText(expiration).text,
    divisibility: mosaic.mosaicInfo.divisibility,
    supply: mosaic.mosaicInfo.supply.compact(),
    supplyMutable: mosaic.mosaicInfo.isSupplyMutable(),
