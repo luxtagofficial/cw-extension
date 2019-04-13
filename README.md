@@ -11,6 +11,8 @@ A browser wallet to facilitate the integration with web applications and Catapul
 
 ## Contributing
 
+This project uses [C4(Collective Code Construction Contract)](https://rfc.zeromq.org/spec:42/C4/) process for contributions.
+
 - [Alpha Milestone Scope](https://github.com/aleixmorgadas/nem2-wallet-browserextension/wiki/Alpha-Milestone)
 - [Non Planned Features](https://github.com/aleixmorgadas/nem2-wallet-browserextension/wiki/Non-Planned-Features)
 - [Development Guidelines](https://github.com/aleixmorgadas/nem2-wallet-browserextension/wiki/Development-Guidelines)
@@ -60,6 +62,6 @@ $> npm run watch & npm run web-ext:run
 
 ## License
 
-Copyright (c) 2018-2019 NEM Licensed under the Apache License 2.0
+Copyright (c) 2019 Aleix Morgadas Licensed under the Apache License 2.0
 
 [nem2]: https://nemtech.github.io/
