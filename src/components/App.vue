@@ -116,6 +116,16 @@
                     <v-list-tile-title>Developer mode</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
+
+                <v-list-tile @click to="/about">
+                  <v-list-tile-action>
+                    <v-icon>info</v-icon>
+                  </v-list-tile-action>
+
+                  <v-list-tile-content>
+                    <v-list-tile-title>About</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
               </v-list>
             </v-navigation-drawer>
           </v-flex>
