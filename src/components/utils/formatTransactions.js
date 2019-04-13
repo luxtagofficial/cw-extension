@@ -144,7 +144,9 @@ const getBody = (tx) => {
                 },
                 {
                     key: 'Duration (blocks)',
-                    value: tx.mosaicProperties.duration.compact().toLocaleString(),
+                    value: tx.mosaicProperties.duration.compact() === 0
+                        ? 'unlimited'
+                        : tx.mosaicProperties.duration.compact().toLocaleString(),
                 },
                 {
                     key: 'Levy mutable',
@@ -159,7 +161,7 @@ const getBody = (tx) => {
                     value: tx.mosaicProperties.transferable,
                 },
             );
-
+ 
             mainProp1 = '';
             mainProp2 = tx.mosaicId.toHex().toUpperCase();
             break;
@@ -176,8 +178,10 @@ const getBody = (tx) => {
                     value: tx.delta.compact().toLocaleString(),
                 },
             );
-
-            mainProp1 = tx.direction === 0 ? 'Decrease' : 'Increase';
+            
+            mainProp1 = tx.direction === 0 
+                ? `Decreased by ${tx.delta.compact().toLocaleString()}`
+                : `Increased by ${tx.delta.compact().toLocaleString()}`;
             mainProp2 = tx.mosaicId.toHex().toUpperCase();
             break;
 
