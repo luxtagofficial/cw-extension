@@ -21,7 +21,8 @@
     "rxjs": "^6.4.0",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
-    "vuetify": "^1.5.11"
+    "vuetify": "^1.5.11",
+    "vuex": "^3.1.0"
   },
   "devDependencies": {
     "concurrently": "^4.1.0",
