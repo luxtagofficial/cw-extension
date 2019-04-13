@@ -1,5 +1,4 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
 import Vuetify from 'vuetify';
 import VueRouter from 'vue-router';
 import App from './components/App.vue';
@@ -10,7 +9,7 @@ import Namespace from './components/namespace/Namespace.vue';
 import Asset from './components/asset/Asset.vue';
 import Wallet from './components/wallet/Wallet.vue';
 import DeveloperMode from './components/developermode/DeveloperMode.vue';
-import store from './infrastructure/Store';
+import store from './store';
 
 import 'vuetify/dist/vuetify.min.css';
 
@@ -33,7 +32,6 @@ Vue.use(Vuetify, {
   iconfont: 'md',
 });
 Vue.use(VueRouter);
-Vue.use(Vuex);
 
 // eslint-disable-next-line no-new
 new Vue({
