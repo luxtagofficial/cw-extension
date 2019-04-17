@@ -1,9 +1,16 @@
 <template>
   <v-scale-transition>
-    <v-layout column>
+    <v-layout
+      column
+      class="mb-3"
+    >
       <v-layout row>
         <v-flex xs12>
-          <v-subheader>Namespace creation</v-subheader>
+          <v-subheader
+            class="mb-3"
+          >
+            <h3>Asset creation</h3>
+          </v-subheader>
         </v-flex>
         <v-flex xs9 /></v-flex>
       </v-layout>
@@ -16,7 +23,7 @@
           <v-text-field
             v-model="supply"
             class="ma-0 pa-0"
-            label="Supply (unit)"
+            label="Integer in the range of 0 and 9,000,000,000"
             type="number"
             solo
             required
@@ -33,7 +40,7 @@
           <v-text-field
             v-model="divisibility"
             class="ma-0 pa-0"
-            label="Divisibility (number of decimals)"
+            label="Integer in the range of 0 and 6"
             type="number"
             solo
             required
@@ -50,7 +57,7 @@
           <v-text-field
             v-model="duration"
             class="ma-0 pa-0"
-            label="Duration (blocks)"
+            label="Fill 0 for unlimited duration"
             type="number"
             solo
             required
@@ -170,7 +177,7 @@ export default {
   data() {
     return {
       sharedState: StateRespository.state,
-      supply: 0,
+      supply: 1,
       divisibility: 0,
       duration: 0,
       supplyMutable: false,
@@ -200,12 +207,12 @@ export default {
     },
     divisibility: {
       handler(e) {
-        this.disabledSendTransaction = !(parseInt(e, 10) >= 0);
+        this.disabledSendTransaction = !(parseInt(e, 10) >= 0 && parseInt(e, 10) <= 6);
       },
     },
     supply: {
       handler(e) {
-        this.disabledSendTransaction = !(parseInt(e, 10) >= 0);
+        this.disabledSendTransaction = !(parseInt(e, 10) > 0 && parseInt(e, 10) <= 9000000000);
       },
     },
     duration: {
@@ -230,7 +237,7 @@ export default {
         {
           icon: 'add',
           key: 'Duration (blocks)',
-          value: this.duration,
+          value: this.duration === 0 ? 'unlimited' : this.duration,
         },
         {
           icon: 'add',
@@ -267,7 +274,9 @@ export default {
           transferable: this.transferable,
           levyMutable: this.levyMutable,
           divisibility: parseInt(this.divisibility, 10),
-          duration: UInt64.fromUint(parseInt(this.duration, 10)),
+          duration: this.duration === 0
+            ? undefined
+            : UInt64.fromUint(parseInt(this.duration, 10)),
         }),
         NetworkType.MIJIN_TEST,
       );

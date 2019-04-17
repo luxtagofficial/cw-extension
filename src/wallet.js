@@ -9,6 +9,8 @@ import Namespace from './components/namespace/Namespace.vue';
 import Asset from './components/asset/Asset.vue';
 import Wallet from './components/wallet/Wallet.vue';
 import DeveloperMode from './components/developermode/DeveloperMode.vue';
+import About from './components/About.vue';
+import store from './store';
 
 import 'vuetify/dist/vuetify.min.css';
 
@@ -19,6 +21,7 @@ const routes = [
   { path: '/wallet', component: Wallet },
   { path: '/developer-mode', component: DeveloperMode },
   { path: '/handler', component: Handler },
+  { path: '/about', component: About },
   { path: '/', component: Home },
 ];
 
@@ -35,6 +38,7 @@ Vue.use(VueRouter);
 // eslint-disable-next-line no-new
 new Vue({
   el: '#app',
+  store,
   components: {
     App,
   },

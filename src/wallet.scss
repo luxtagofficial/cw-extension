@@ -15,8 +15,30 @@
   overflow: hidden;
 }
 
-.p17{
-  padding-left: 17px !important;
+.asset-list-header{
+  display: block;
+  position: relative;
+  float: left;
+  overflow: hidden;
+}
+
+.asset-list-header-container{
+  width:100%;
+  clear:both;
+}
+
+.asset-list-header-left{
+  width:64%;
+}
+
+.asset-list-header-right{
+  width:36%;
+  text-align: right;
+}
+
+.asset-detail{
+  padding-left: 27px !important;
+  padding-bottom: 9px !important;
 }
 
 .homeLine {

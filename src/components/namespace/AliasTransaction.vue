@@ -36,10 +36,11 @@
           :tx-send-data="txSendResults"
         />
       </v-layout>
-      <Dialog
-        :is-show="isDialogShow"
-        @transmitTransaction="sendTransaction"
-        @close="dialogClosed"
+      <Confirmation
+        v-model="isDialogShow"
+        :transactions="transactions"
+        @sent="txSent"
+        @error="txError"
       >
         <v-list>
           <v-list-tile
@@ -56,19 +57,18 @@
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
-      </Dialog>
+      </Confirmation>
     </v-layout>
   </v-scale-transition>
 </template>
 <script>
 import {
-  NetworkType, NamespaceType, Deadline, TransactionHttp,
+  NetworkType, NamespaceType, Deadline,
   AliasActionType, MosaicId, NamespaceId, AddressAliasTransaction,
   MosaicAliasTransaction, AliasType,
   Address,
 } from 'nem2-sdk';
-import StateRepository from '../../infrastructure/StateRepository.js';
-import Dialog from './Dialog.vue';
+import Confirmation from '../Confirmation.vue';
 import SendConfirmation from './SendConfirmation.vue';
 
 function mosaicOrAddress(input) {
@@ -80,7 +80,7 @@ function mosaicOrAddress(input) {
 
 export default {
   components: {
-    Dialog,
+    Confirmation,
     SendConfirmation,
   },
   props: {
@@ -103,17 +103,14 @@ export default {
   },
   data() {
     return {
-      sharedState: StateRepository.state,
       aliasInput: '',
+      transactions: [],
       isDialogShow: false,
       dialogDetails: [],
       txSendResults: [],
     };
   },
   computed: {
-    activeWallet() {
-      return this.sharedState.activeWallet;
-    },
     isSubNamespace() {
       return this.namespaceType === NamespaceType.SubNamespace;
     },
@@ -126,27 +123,6 @@ export default {
   },
   methods: {
     showDialog() {
-      this.dialogDetails = [
-        {
-          icon: 'add',
-          key: 'AliasActionType',
-          value: this.aliasActionType === 0 ? 'Link' : 'Unlink',
-        },
-        {
-          icon: 'add',
-          key: 'NamespaceName',
-          value: this.namespaceName,
-        },
-        {
-          icon: 'add',
-          key: 'Alias',
-          value: this.currentAlias ? this.currentAlias : this.aliasInput,
-        },
-      ];
-      this.isDialogShow = true;
-    },
-    sendTransaction() {
-      if (this.activeWallet == null) return;
       const {
         namespaceName, currentAlias, currentAliasType, aliasActionType, aliasInput,
       } = this;
@@ -187,19 +163,34 @@ export default {
           NetworkType.MIJIN_TEST,
         );
       }
-      const { account } = this.activeWallet;
-      const endpoint = this.activeWallet.node;
-      const signedTx = account.sign(transaction);
-      const txHttp = new TransactionHttp(endpoint);
-      txHttp.announce(signedTx).subscribe(console.log, console.error);
-      this.txSendResults = [{
-        txHash: signedTx.hash,
-        nodeURL: endpoint,
-      }];
+      this.transactions = [transaction];
+      this.dialogDetails = [
+        {
+          icon: 'add',
+          key: 'AliasActionType',
+          value: this.aliasActionType === 0 ? 'Link' : 'Unlink',
+        },
+        {
+          icon: 'add',
+          key: 'NamespaceName',
+          value: this.namespaceName,
+        },
+        {
+          icon: 'add',
+          key: 'Alias',
+          value: this.currentAlias ? this.currentAlias : this.aliasInput,
+        },
+      ];
+      this.isDialogShow = true;
     },
-    dialogClosed() {
-      this.isDialogShow = false;
-      this.dialogDetails = [];
+    txSent(result) {
+      this.txSendResults.push({
+        txHash: result.txHash,
+        nodeURL: result.nodeURL,
+      });
+    },
+    txError(error) {
+      console.error(error);
     },
   },
 };
