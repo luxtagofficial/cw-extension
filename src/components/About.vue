@@ -32,7 +32,7 @@
             class="mx-1"
           >https://github.com/aleixmorgadas/nem2-wallet-browserextension</a> licenced under
           <img
-            src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"
+            src="https://img.shields.io/badge/License-GPL%20v3-blue.svg"
             class="ml-1"
           >
         </v-layout>
