@@ -48,7 +48,7 @@
     "doc": "docs"
   },
   "homepage": "https://github.com/aleixmorgadas/nem2-wallet-browserextension#readme",
-  "license": "Apache2.0",
+  "license": "GPLv3",
   "main": "index.js",
   "repository": {
     "type": "git",
