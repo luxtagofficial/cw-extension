@@ -76,7 +76,7 @@
 
 <script>
     import StateRepository from '../../infrastructure/StateRepository';
-    import AddFilter from './addFilter'
+    import AddFilter from './AddFilter'
     import Errors from '../Errors'
 
     export default {
