@@ -90,11 +90,9 @@ import store from '../../store/index';
 export default {
   name: 'WalletList',
   store,
-  computed: {
-    ...mapState([
-      'wallet',
-    ]),
-  },
+  computed: mapState([
+    'wallet',
+  ]),
   methods: {
     removeWallet(wallet) {
       this.$store.dispatch('wallet/REMOVE_WALLET', wallet);
