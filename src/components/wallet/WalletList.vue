@@ -1,23 +1,23 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <v-layout column>
-    <div v-if="noWallets">
+    <div v-if="wallet.wallets.length === 0">
       <v-alert
         :value="true"
         type="error"
@@ -26,7 +26,7 @@
       </v-alert>
     </div>
     <div
-      v-if="!noWallets"
+      v-if="wallet.wallets.length > 0"
       class="py-0"
     >
       <v-flex xs12>
@@ -46,7 +46,7 @@
           tag="v-list"
           class="py-0"
         >
-          <template v-for="(wallet, index) in wallets">
+          <template v-for="(wallet, index) in wallet.wallets">
             <v-list-tile
               :key="wallet.name"
               avatar
@@ -74,7 +74,7 @@
               </v-list-tile-action>
             </v-list-tile>
             <v-divider
-              v-if="index + 1 < wallets.length"
+              v-if="index + 1 < wallet.walletsNumber"
               :key="index"
             />
           </template>
@@ -84,26 +84,24 @@
   </v-layout>
 </template>
 <script>
-import StateRepository from '../../infrastructure/StateRepository';
+import { mapState } from 'vuex';
+import store from '../../store/index';
 
 export default {
-  data() {
-    return {
-      noWallets: StateRepository.wallets().length === 0,
-      wallets: StateRepository.state.wallets,
-    };
-  },
-  watch: {
-    wallets() {
-      this.noWallets = StateRepository.wallets().length === 0;
-    },
+  name: 'WalletList',
+  store,
+  computed: {
+    ...mapState([
+      'wallet',
+    ]),
   },
   methods: {
     removeWallet(wallet) {
-      StateRepository.removeWallet(wallet);
+      this.$store.dispatch('wallet/REMOVE_WALLET', wallet);
     },
   },
 };
 </script>
+
 <style scoped>
 </style>

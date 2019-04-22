@@ -34,21 +34,18 @@ const jsonToWallets = json => JSON.parse(json).map(wallet => ({
 // Ports & Adapters
 class StateRepository {
   constructor() {
-    const wallets = localStorage.getItem('wallets');
+/*     const wallets = localStorage.getItem('wallets');
     this.state = {
       wallets: wallets != null ? jsonToWallets(wallets) : [],
       accountInfo: false,
-      assets: false,
       transactions: false,
       namespaces: false,
-      error: false,
-      errorMessage: '',
       activeWallet: false,
       loading_getAccountInfo: false,
       loading_getMosaicsByAddress: false,
       loading_getAccountTransactionsById: false,
       loading_getNamespacesByAddress: false,
-    };
+    }; */
   }
 
   wallets() {
@@ -59,7 +56,7 @@ class StateRepository {
     try {
       this.resetWalletData();
       this.state.loading_getAccountInfo = true;
-      this.resetErrors();
+      this.resetErrors(); // errors/RESET_ERRORS
       const activeWallet = await this.currentWallet(walletName);
       this.state.accountInfo = await getAccountInfo(activeWallet);
       this.state.loading_getAccountInfo = false;
@@ -160,7 +157,7 @@ class StateRepository {
     }
   }
 
-  resetErrors() {
+  resetErrors() { // errors/RESET_ERRORS
     this.state.error = false;
     this.state.errorMessage = '';
   }

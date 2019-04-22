@@ -26,7 +26,7 @@
       </v-flex>
       <v-flex xs9>
         <div class="monospaced-bold">
-          {{ account.address.pretty() }}
+          {{ account ? account.address.pretty() : '' }}
         </div>
       </v-flex>
     </v-layout>
@@ -39,7 +39,7 @@
       </v-flex>
       <v-flex xs9>
         <div class="monospaced">
-          {{ account.publicKey }}
+          {{ account ? account.publicKey : '' }}
         </div>
       </v-flex>
     </v-layout>
@@ -52,7 +52,7 @@
       </v-flex>
       <v-flex xs9>
         <div class="monospaced">
-          {{ account.privateKey }}
+          {{ account ? account.privateKey : '' }}
           <v-icon
             @click="regenerateAccount"
           >
@@ -132,7 +132,7 @@ export default {
       this.$store.dispatch('wallet/ADD_WALLET', newWallet);
       this.node = '';
       this.walletName = '';
-      this.account = {};
+      this.account = false;
     },
   },
 };

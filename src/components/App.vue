@@ -26,10 +26,10 @@
         <v-layout row justify-space-between align-center>
           <h4>NEM2 Wallet 0.0.4</h4>
           <WalletSelector
-            :walletName="wallet.activeWallet.name"
+            v-if="wallet.activeWallet"
+            :wallet-name="wallet.activeWallet.name"
             :wallets="wallet.wallets.map(({name})=>name)"
           />
-          </walletselector>
         </v-layout>
         <v-layout justify-start row>
           <v-flex shrink pa-0>

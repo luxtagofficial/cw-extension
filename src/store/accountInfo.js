@@ -54,6 +54,10 @@ const actions = {
     }
     commit('setLoading_getAccountInfo', false);
   },
+  async ERASE_ACCOUNT_INFO({ commit }) {
+    commit('accountInfo', false);
+    commit('setLoading_getAccountInfo', false);
+  },
 };
 
 export default {
