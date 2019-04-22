@@ -30,9 +30,6 @@
       </v-layout>
 
       <v-layout row>
-        <v-flex xs3>
-          <v-subheader>Asset Id</v-subheader>
-        </v-flex>
         <v-flex xs9>
           <v-text-field
             v-model="activeAsset"
