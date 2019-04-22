@@ -51,9 +51,19 @@ const mutations = {
   addWallet(state, newWallet) {
     state.wallets.push(newWallet);
   },
+  addWalletsFromStorage(state, wallets) {
+    state.wallets = wallets;
+  },
 };
 
 const actions = {
+  async INIT_APPLICATION({ commit }) {
+    const localStorageWallets = localStorage.getItem('wallets');
+    if (localStorageWallets === null) return;
+    const wallets = jsonToWallets(localStorageWallets);
+    await commit('addWalletsFromStorage', wallets);
+    await commit('setActiveWallet', wallets[0]);
+  },
   ADD_WALLET({ commit, getters }, walletData) {
     const newWallet = new Wallet(walletData);
     const walletsToStore = [...getters.GET_WALLETS, newWallet];
@@ -70,7 +80,6 @@ const actions = {
       .find(wallet => wallet.name === newActiveWalletName);
 
     context.commit('setActiveWallet', newActiveWallet);
-
   },
 };
 

@@ -156,25 +156,30 @@
 </template>
 <script>
 import { mapState } from 'vuex';
+import store from '../store/index';
 import WalletSelector from './WalletSelector.vue';
 
 export default {
   components: {
     WalletSelector,
   },
+  store,
   data() {
     return {
       drawer: true,
       items: [
-        { title: "Home", icon: "dashboard" },
-        { title: "About", icon: "question_answer" }
+        { title: 'Home', icon: 'dashboard' },
+        { title: 'About', icon: 'question_answer' },
       ],
       mini: false,
-      right: null
+      right: null,
     };
   },
   computed: mapState([
     'wallet',
   ]),
+  created() {
+    this.$store.dispatch('wallet/INIT_APPLICATION');
+  },
 };
 </script>
