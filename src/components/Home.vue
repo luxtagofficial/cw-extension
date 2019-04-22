@@ -94,18 +94,14 @@
           accountInfo.accountInfo
       "
     >
-    <!--
-      <div v-if="sharedState.loading_getAccountTransactionsById">
+      <div v-if="transactions.loading_getAccountTransactionsById">
         <v-progress-linear :indeterminate="true" />
       </div>
       <div
-        v-if="sharedState.transactions && sharedState.transactions.length > 0"
+        v-if="transactions.transactions && transactions.transactions.length > 0"
       >
-
-        <Transactions :transactions="sharedState.transactions" />
-
+        <Transactions />
       </div>
-         -->
     </div>
   </v-layout>
 </template>
@@ -123,6 +119,7 @@ export default {
     'wallet',
     'accountInfo',
     'application',
+    'transactions',
   ]),
 };
 </script>

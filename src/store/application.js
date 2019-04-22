@@ -40,7 +40,7 @@ const mutations = {
   setError(state, errMsg) {
     state.error = true;
     state.errorMessage = errMsg;
-  }
+  },
 };
 
 const actions = {

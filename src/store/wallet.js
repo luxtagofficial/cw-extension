@@ -25,6 +25,7 @@ import {
 } from '../infrastructure/wallet';
 
 import { Wallet } from './wallet-types';
+import { GET_TRANSACTIONS_MODES } from './transactions-types';
 
 const state = {
   activeWallet: false,
@@ -60,6 +61,7 @@ const mutations = {
 };
 
 const actions = {
+  // @TODO:Move application initialization to a more suitable place (application store?)
   async INIT_APPLICATION({ dispatch, commit }) {
     const localStorageWallets = localStorage.getItem('wallets');
     if (!(localStorageWallets.length > 0)) return;
@@ -71,7 +73,7 @@ const actions = {
 
     await dispatch('FETCH_WALLET_DATA', activeWallet);
   },
-  async ADD_WALLET({ commit, getters, dispatch }, walletData) {
+  async ADD_WALLET({ commit, getters }, walletData) {
     const newWallet = new Wallet(walletData);
 
     // no wallet name duplicate @TODO add snackbar message
@@ -105,11 +107,15 @@ const actions = {
 
     const wallets = getters.GET_WALLETS;
 
+    dispatch('application/RESET_ERRORS', null, { root: true });
+
+    // @TODO:Refactor erase account info and move to a more suitable place
+    dispatch('accountInfo/ERASE_ACCOUNT_INFO', null, { root: true });
+    dispatch('transactions/ERASE_TRANSACTIONS', null, { root: true });
+
     if (getters.GET_ACTIVE_WALLET.name === walletName) {
       if (wallets.length > 0) {
         commit('setActiveWallet', getters.GET_WALLETS[0]);
-        dispatch('application/RESET_ERRORS', null, { root: true });
-        dispatch('accountInfo/ERASE_ACCOUNT_INFO', null, { root: true });
       } else {
         commit('setActiveWallet', false);
       }
@@ -120,15 +126,16 @@ const actions = {
   async FETCH_WALLET_DATA({ dispatch }, wallet) {
     if (wallet === false) return;
     try {
-      await dispatch(
-        'accountInfo/FETCH_ACCOUNT_INFO',
-        wallet,
-        { root: true },
-      );
+      await dispatch('accountInfo/FETCH_ACCOUNT_INFO', wallet, { root: true });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error, 'FETCH_WALLET_DATA');
+      return;
     }
+    await dispatch(
+      'transactions/GET_TRANSACTIONS_BY_ID',
+      { wallet, mode: GET_TRANSACTIONS_MODES.INIT }, { root: true },
+    );
   },
 };
 

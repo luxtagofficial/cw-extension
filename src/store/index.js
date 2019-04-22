@@ -22,6 +22,7 @@ import Vuex from 'vuex';
 import wallet from './wallet';
 import accountInfo from './accountInfo';
 import application from './application';
+import transactions from './transactions';
 
 Vue.use(Vuex);
 
@@ -32,6 +33,7 @@ export default new Vuex.Store({
     wallet,
     application,
     accountInfo,
+    transactions,
   },
   strict: debug,
 });

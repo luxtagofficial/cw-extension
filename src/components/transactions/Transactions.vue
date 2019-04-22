@@ -48,14 +48,14 @@
         >
           <v-btn
             color="primary mx-0"
-            @click="refresh"
+            @click="refresh(activeWallet)"
           >
             Refresh
           </v-btn>
           <v-btn
             class="ml-3"
             color="primary mx-0"
-            @click="loadMore"
+            @click="loadMore(activeWallet)"
           >
             Load more
           </v-btn>
@@ -68,7 +68,7 @@
         <v-layout child-flex>
           <v-data-table
             :headers="headers"
-            :items="transactions"
+            :items="transactions.transactions"
             disable-initial-sort
             :rows-per-page-items="rowsPerPageOptions"
           >
@@ -115,30 +115,26 @@
         </v-layout>
       </v-container>
     </v-layout>
-
-    <TransactionModal
-      :modal="modal"
-      :tx="activeTransaction"
-      @close="modalClosed"
-    />
+    <div v-if="activeTransaction">
+      <TransactionModal
+        :modal="modal"
+        :tx="activeTransaction"
+        @close="modalClosed"
+      />
+    </div>
   </v-layout>
 </template>
 <script>
-import StateRepository from '../../infrastructure/StateRepository';
+import { mapState } from 'vuex';
+import store from '../../store/index';
 import TransactionModal from './TransactionModal.vue';
+import { GET_TRANSACTIONS_MODES } from '../../store/transactions-types';
 
 export default {
   name: 'Transactions',
+  store,
   components: {
     TransactionModal,
-  },
-  props: {
-    transactions: {
-      default() {
-        return [];
-      },
-      type: Array,
-    },
   },
   data() {
     return {
@@ -148,26 +144,36 @@ export default {
         { text: 'Main properties', value: 'mainProp1' },
         { text: 'Signer / Recipient', value: 'recipient' },
       ],
-      tx: this.transactions,
       rowsPerPageOptions: [
         25, 50, { text: 'All', value: -1 },
       ],
-      activeTransaction: this.transactions[0],
       modal: false,
+      activeTransaction: false,
     };
   },
   computed: {
-
+    ...mapState([
+      'transactions',
+    ]),
+    activeWallet() {
+      return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
+    },
   },
   methods: {
-    refresh() {
-      StateRepository.getAccountTransactionsById('refresh');
+    refresh(wallet) {
+      this.$store.dispatch(
+        'transactions/GET_TRANSACTIONS_BY_ID',
+        { wallet, mode: GET_TRANSACTIONS_MODES.REFRESH },
+      );
     },
-    loadMore() {
-      StateRepository.getAccountTransactionsById('more');
+    loadMore(wallet) {
+      this.$store.dispatch(
+        'transactions/GET_TRANSACTIONS_BY_ID',
+        { wallet, mode: GET_TRANSACTIONS_MODES.MORE },
+      );
     },
     showModal(clickedTx) {
-      this.activeTransaction = this.transactions.find(t => t.id === clickedTx);
+      this.activeTransaction = this.transactions.transactions.find(t => t.id === clickedTx);
       this.modal = true;
     },
     modalClosed() {
@@ -176,5 +182,6 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 </style>
