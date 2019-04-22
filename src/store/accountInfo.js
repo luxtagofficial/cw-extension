@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-shadow */
 /**
  * Copyright (C) 2019 Contributors as noted in the AUTHORS file
  *
@@ -16,22 +18,36 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+import getAccountInfo from '../components/utils/getAccountInfo';
 
-import Vue from 'vue';
-import Vuex from 'vuex';
-import wallet from './wallet';
-import accountInfo from './accountInfo';
-import application from './application';
+const state = {
+  accountInfo: false,
+  loading_getAccountInfo: false,
+};
 
-Vue.use(Vuex);
-
-const debug = process.env.NODE_ENV !== 'production';
-
-export default new Vuex.Store({
-  modules: {
-    wallet,
-    application,
-    accountInfo,
+const getters = {
+  GET_ACCOUNT_INFO() {
+    return state.accountInfo;
   },
-  strict: debug,
-});
+};
+
+const mutations = {
+  setAccountInfo(state, accountInfo) {
+    state.accountInfo = accountInfo;
+  },
+};
+
+const actions = {
+  async FETCH_ACCOUNT_INFO({ commit }, wallet) {
+    const accountInfo = await getAccountInfo(wallet);
+    commit('setAccountInfo', accountInfo);
+  },
+};
+
+export default {
+  namespaced: true,
+  state,
+  getters,
+  actions,
+  mutations,
+};

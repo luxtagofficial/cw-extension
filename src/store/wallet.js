@@ -57,12 +57,14 @@ const mutations = {
 };
 
 const actions = {
-  async INIT_APPLICATION({ commit }) {
+  async INIT_APPLICATION({ dispatch, commit }) {
     const localStorageWallets = localStorage.getItem('wallets');
     if (localStorageWallets === null) return;
     const wallets = jsonToWallets(localStorageWallets);
     await commit('addWalletsFromStorage', wallets);
-    await commit('setActiveWallet', wallets[0]);
+    const activeWallet = wallets[0];
+    await commit('setActiveWallet', activeWallet);
+    await dispatch('FETCH_WALLET_DATA', activeWallet);
   },
   ADD_WALLET({ commit, getters }, walletData) {
     const newWallet = new Wallet(walletData);
@@ -76,7 +78,7 @@ const actions = {
     const walletsToStore = [...getters.GET_WALLETS, newWallet];
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
-  SET_ACTIVE_WALLET(context, newActiveWalletName) {
+  SET_ACTIVE_WALLET({ commit, dispatch }, newActiveWalletName) {
     if (state.activeWallet.name === newActiveWalletName) return;
     if (state.wallets.map(({ name }) => name)
       .indexOf(newActiveWalletName) === 0) return;
@@ -84,7 +86,20 @@ const actions = {
     const newActiveWallet = state.wallets
       .find(wallet => wallet.name === newActiveWalletName);
 
-    context.commit('setActiveWallet', newActiveWallet);
+    commit('setActiveWallet', newActiveWallet);
+    dispatch('FETCH_WALLET_DATA', newActiveWallet);
+  },
+  async FETCH_WALLET_DATA({ dispatch }, wallet) {
+    try {
+      await dispatch(
+        'accountInfo/FETCH_ACCOUNT_INFO',
+        wallet,
+        { root: true },
+      );
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error, 'FETCH_WALLET_DATA');
+    }
   },
 };
 
