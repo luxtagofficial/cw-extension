@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-param-reassign */
 /**
  * Copyright (C) 2019 Contributors as noted in the AUTHORS file
  *
@@ -17,21 +19,83 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const state = {
+import {
+  walletsToJSON,
+  jsonToWallets,
+} from '../infrastructure/wallet';
 
+import { Wallet } from './wallet-types';
+
+const state = {
+  activeWallet: false,
+  wallets: [],
 };
+
+/*
+    this.state.activeWallet = this.state.wallets.length === 0 ? false : this.state.wallets[0];
+*/
 
 const getters = {
-
-};
-
-const actions = {
-
+  GET_WALLETS() {
+    return state.wallets;
+  },
+  GET_ACTIVE_WALLET() {
+    return state.activeWallet;
+  },
 };
 
 const mutations = {
-
+  setActiveWallet(state, newActiveWallet) {
+    state.activeWallet = newActiveWallet;
+  },
+  addWallet(state, newWallet) {
+    state.wallets.push(newWallet);
+  },
 };
+
+const actions = {
+  ADD_WALLET({ commit, getters }, walletData) {
+    const newWallet = new Wallet(walletData);
+    const walletsToStore = [...getters.GET_WALLETS, newWallet];
+    if (!getters.GET_ACTIVE_WALLET) commit('setActiveWallet', newWallet);
+    commit('addWallet', newWallet);
+    localStorage.setItem('wallets', walletsToJSON(walletsToStore));
+  },
+  SET_ACTIVE_WALLET(context, newActiveWalletName) {
+    if (state.activeWallet.name === newActiveWalletName) return;
+    if (state.wallets.map(({ name }) => name)
+      .indexOf(newActiveWalletName) === 0) return;
+
+    const newActiveWallet = state.wallets
+      .find(wallet => wallet.name === newActiveWalletName);
+
+    context.commit('setActiveWallet', newActiveWallet);
+
+  },
+};
+
+/*
+removeWallet(wallet) {
+  let walletIndex;
+  this.state.wallets.forEach((value, index) => {
+    if (value.name === wallet.name) walletIndex = index;
+  });
+
+  if (walletIndex !== undefined) this.state.wallets.splice(walletIndex, 1);
+
+  if (this.state.activeWallet && wallet.name === this.state.activeWallet.name) {
+    if (this.state.wallets.length > 0) {
+      // eslint-disable-next-line prefer-destructuring
+      this.state.activeWallet = this.state.wallets[0];
+    } else {
+      this.resetWalletData();
+      this.resetErrors();
+      this.state.activeWallet = false;
+    }
+  }
+  localStorage.setItem('wallets', walletsToJSON(this.state.wallets));
+}
+*/
 
 export default {
   namespaced: true,

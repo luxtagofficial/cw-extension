@@ -33,25 +33,12 @@
   </span>
 </template>
 <script>
-import StateRepository from '../infrastructure/StateRepository';
-
 export default {
   props: {
     // eslint-disable-next-line vue/require-default-prop
     walletName: String,
     // eslint-disable-next-line vue/require-default-prop
     wallets: Array,
-  },
-  data: () => ({
-    sharedState: StateRepository.state,
-  }),
-  watch: {
-    walletName:
-    (val) => {
-      if (val) {
-        StateRepository.onWalletChange(val);
-      }
-    },
   },
 };
 </script>

@@ -39,7 +39,7 @@
       </v-flex>
       <v-flex xs9>
         <div class="monospaced">
-          { account.publicKey }}
+          {{ account.publicKey }}
         </div>
       </v-flex>
     </v-layout>
@@ -52,7 +52,7 @@
       </v-flex>
       <v-flex xs9>
         <div class="monospaced">
-          {{account.privateKey}}
+          {{ account.privateKey }}
           <v-icon
             @click="regenerateAccount"
           >
@@ -110,34 +110,30 @@
 </template>
 <script>
 import { NetworkType, Account } from 'nem2-sdk';
-import StateRepository from '../../infrastructure/StateRepository';
+import store from '../../store/index';
 
 export default {
-  data() {
-    return {
-      sharedState: StateRepository.state,
-      account: Account.generateNewAccount(NetworkType.MIJIN_TEST),
-      node: '',
-      walletName: '',
-    };
-  },
+  store,
+  data: () => ({
+    account: Account.generateNewAccount(NetworkType.MIJIN_TEST),
+    node: '',
+    walletName: '',
+  }),
   methods: {
     regenerateAccount() {
       this.account = Account.generateNewAccount(NetworkType.MIJIN_TEST);
     },
     save() {
-      if (
-        this.sharedState.wallets.findIndex(
-          ({ name }) => name === this.walletName,
-        ) === -1
-      ) {
-        StateRepository.storeWallet(this.walletName, this.account, this.node);
-        this.node = '';
-        this.walletName = '';
-      }
+      const newWallet = {
+        name: this.walletName,
+        account: this.account,
+        node: this.node,
+      };
+      this.$store.dispatch('wallet/ADD_WALLET', newWallet);
     },
   },
 };
+
 </script>
 <style scoped>
 </style>

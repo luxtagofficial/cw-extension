@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import { Account, NetworkType } from 'nem2-sdk';
 import getAccountInfo from '../components/utils/getAccountInfo';
 import getMosaicsByAddress from '../components/utils/getMosaicsByAddress';
@@ -25,13 +24,6 @@ import getAccountTransactionsById from '../components/utils/getAccountTransactio
 import { removeDuplicatesAndSortByBlockNumber } from '../components/utils/formatTransactions';
 /* eslint-disable class-methods-use-this */
 
-// Ports & Adapters
-
-const walletsToJSON = wallets => JSON.stringify(wallets.map(wallet => ({
-  name: wallet.name,
-  privateKey: wallet.account.privateKey,
-  node: wallet.node,
-})));
 
 const jsonToWallets = json => JSON.parse(json).map(wallet => ({
   name: wallet.name,
@@ -39,6 +31,7 @@ const jsonToWallets = json => JSON.parse(json).map(wallet => ({
   node: wallet.node,
 }));
 
+// Ports & Adapters
 class StateRepository {
   constructor() {
     const wallets = localStorage.getItem('wallets');
@@ -56,41 +49,10 @@ class StateRepository {
       loading_getAccountTransactionsById: false,
       loading_getNamespacesByAddress: false,
     };
-    this.state.activeWallet = this.state.wallets.length === 0 ? false : this.state.wallets[0];
   }
 
   wallets() {
     return this.state.wallets;
-  }
-
-  storeWallet(walletName, account, node) {
-    this.state.wallets.push({ name: walletName, account, node });
-    localStorage.setItem('wallets', walletsToJSON(this.state.wallets));
-    if (!this.state.activeWallet) {
-      const newWallet = this.state.wallets[0];
-      this.state.activeWallet = newWallet;
-    }
-  }
-
-  removeWallet(wallet) {
-    let walletIndex;
-    this.state.wallets.forEach((value, index) => {
-      if (value.name === wallet.name) walletIndex = index;
-    });
-
-    if (walletIndex !== undefined) this.state.wallets.splice(walletIndex, 1);
-
-    if (this.state.activeWallet && wallet.name === this.state.activeWallet.name) {
-      if (this.state.wallets.length > 0) {
-        // eslint-disable-next-line prefer-destructuring
-        this.state.activeWallet = this.state.wallets[0];
-      } else {
-        this.resetWalletData();
-        this.resetErrors();
-        this.state.activeWallet = false;
-      }
-    }
-    localStorage.setItem('wallets', walletsToJSON(this.state.wallets));
   }
 
   async onWalletChange(walletName) {
@@ -162,16 +124,16 @@ class StateRepository {
     try {
       if (this.state.accountInfo) {
         switch (mode) {
-          case 'more':
-            currentId = this.state.transactions.length > 0
-              ? this.state.transactions[this.state.transactions.length - 1].id
-              : undefined;
-            break;
-          case 'init':
-          case 'refresh':
-          default:
-            currentId = undefined;
-            break;
+        case 'more':
+          currentId = this.state.transactions.length > 0
+            ? this.state.transactions[this.state.transactions.length - 1].id
+            : undefined;
+          break;
+        case 'init':
+        case 'refresh':
+        default:
+          currentId = undefined;
+          break;
         }
       }
 

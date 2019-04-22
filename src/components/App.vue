@@ -26,8 +26,8 @@
         <v-layout row justify-space-between align-center>
           <h4>NEM2 Wallet 0.0.4</h4>
           <WalletSelector
-            :walletName="sharedState.activeWallet.name"
-            :wallets="sharedState.wallets.map(({name})=>name)"
+            :walletName="wallet.activeWallet.name"
+            :wallets="wallet.wallets.map(({name})=>name)"
           />
           </walletselector>
         </v-layout>
@@ -147,7 +147,7 @@
             </v-navigation-drawer>
           </v-flex>
           <v-flex grow pl-3 ml-2>
-            <router-view></router-view>
+            <router-view />
           </v-flex>
         </v-layout>
       </v-container>
@@ -155,16 +155,15 @@
   </v-app>
 </template>
 <script>
-import StateRepository from '../infrastructure/StateRepository';
-import WalletSelector from "./WalletSelector.vue";
+import { mapState } from 'vuex';
+import WalletSelector from './WalletSelector.vue';
 
 export default {
   components: {
-    WalletSelector
+    WalletSelector,
   },
   data() {
     return {
-      sharedState: StateRepository.state,
       drawer: true,
       items: [
         { title: "Home", icon: "dashboard" },
@@ -173,6 +172,9 @@ export default {
       mini: false,
       right: null
     };
-  }
+  },
+  computed: mapState([
+    'wallet',
+  ]),
 };
 </script>
