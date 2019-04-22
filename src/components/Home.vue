@@ -36,6 +36,9 @@
         </h5>
       </v-layout>
     </v-layout>
+
+    <Errors />
+
     <div
       v-if="
         wallet.wallets.length > 0 &&
@@ -65,9 +68,9 @@
                 <span
                   v-show="accountInfo.accountInfo"
                   class="clearfix"
-                >{{
-                  accountInfo.accountInfo.publicKey
-                }}</span>
+                >
+                  {{ accountInfo.accountInfo.publicKey }}
+                </span>
               </div>
               <div class="clearfix homeLine">
                 <span class="clearfix">Current node:</span>
@@ -83,29 +86,27 @@
         </v-card>
       </v-flex>
     </div>
-    <!--
-    <Errors :shared-state="sharedState" />
-
     <div
       v-if="
         wallet.wallets.length > 0 &&
-          sharedState.activeWallet &&
-          !sharedState.error &&
-          sharedState.accountInfo
+          wallet.activeWallet &&
+          !application.error &&
+          accountInfo.accountInfo
       "
     >
+    <!--
       <div v-if="sharedState.loading_getAccountTransactionsById">
         <v-progress-linear :indeterminate="true" />
       </div>
       <div
         v-if="sharedState.transactions && sharedState.transactions.length > 0"
       >
-  
+
         <Transactions :transactions="sharedState.transactions" />
 
       </div>
+         -->
     </div>
-          -->
   </v-layout>
 </template>
 <script>
@@ -121,6 +122,7 @@ export default {
   computed: mapState([
     'wallet',
     'accountInfo',
+    'application',
   ]),
 };
 </script>

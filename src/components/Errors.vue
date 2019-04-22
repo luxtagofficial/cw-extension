@@ -17,13 +17,15 @@
 
 <template>
   <v-layout column>
-    <div class="mt-3 mb-3" v-if="sharedState.loading_getAccountInfo">
+    <div
+      v-if="accountInfo.loading_getAccountInfo"
+      class="mt-3 mb-3"
+    >
       <v-progress-linear
         :indeterminate="true"
       />
     </div>
-
-    <div v-if="sharedState.wallets.length === 0">
+    <div v-if="wallet.wallets.length === 0">
       <v-alert
         :value="true"
         type="error"
@@ -32,8 +34,8 @@
       </v-alert>
     </div>
 
-    <div v-if="sharedState.wallets.length > 0">
-      <div v-if="!sharedState.activeWallet">
+    <div v-if="wallet.wallets.length > 0">
+      <div v-if="!wallet.activeWallet">
         <v-alert
           :value="true"
           type="error"
@@ -42,12 +44,13 @@
         </v-alert>
       </div>
 
-      <div v-if="sharedState.activeWallet">
-        <div v-if="sharedState.error">
+      <div v-if="wallet.activeWallet">
+        <div v-if="application.error">
           <v-alert
             :value="true"
-            type="error">
-            {{ sharedState.errorMessage }}
+            type="error"
+          >
+            {{ application.errorMessage }}
           </v-alert>
         </div>
       </div>
@@ -56,14 +59,15 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'Errors',
-  props: {
-    // eslint-disable-next-line vue/require-default-prop
-    errors: {
-      type: Object,
-    },
-  },
+  computed: mapState([
+    'wallet',
+    'accountInfo',
+    'application',
+  ]),
 };
 </script>
 

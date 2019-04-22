@@ -18,41 +18,39 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
-import getAccountInfo from '../components/utils/getAccountInfo';
-
 const state = {
-  accountInfo: false,
-  loading_getAccountInfo: false,
+  error: false,
+  errorMessage: '',
 };
 
 const getters = {
-  GET_ACCOUNT_INFO() {
-    return state.accountInfo;
+  GET_ERROR_STATE() {
+    return state.error;
+  },
+  GET_ERROR_MESSAGE() {
+    return state.errorMessage;
   },
 };
 
 const mutations = {
-  setAccountInfo(state, accountInfo) {
-    state.accountInfo = accountInfo;
+  resetErrors(state) {
+    state.error = false;
+    state.errorMessage = '';
   },
-  setLoading_getAccountInfo(state, bool) {
-    state.loading_getAccountInfo = bool;
-  },
+  setError(state, errMsg) {
+    state.error = true;
+    state.errorMessage = errMsg;
+  }
 };
 
 const actions = {
-  async FETCH_ACCOUNT_INFO({ commit, dispatch }, wallet) {
-    commit('setLoading_getAccountInfo', true);
-    dispatch('application/RESET_ERRORS', null, { root: true });
-    try {
-      const accountInfo = await getAccountInfo(wallet);
-      commit('setAccountInfo', accountInfo);
-    } catch (error) {
-      dispatch('application/SET_ERROR', error, { root: true });
-      // eslint-disable-next-line no-console
-      console.error(error, 'FETCH_ACCOUNT_INFO');
-    }
-    commit('setLoading_getAccountInfo', false);
+  RESET_ERRORS({ commit }) {
+    commit('resetErrors');
+  },
+  SET_ERROR({ commit }, errorMessage) {
+    const errMsg = typeof errorMessage === 'string'
+      ? errorMessage : errorMessage.toString();
+    commit('setError', errMsg);
   },
 };
 
