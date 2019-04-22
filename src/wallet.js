@@ -30,7 +30,7 @@ import Wallet from './components/wallet/Wallet.vue';
 import DeveloperMode from './components/developermode/DeveloperMode.vue';
 import About from './components/About.vue';
 import store from './store';
-import Filter from './components/filter/Filter';
+import Filter from './components/filter/Filter.vue';
 
 import 'vuetify/dist/vuetify.min.css';
 
@@ -43,7 +43,7 @@ const routes = [
   { path: '/handler', component: Handler },
   { path: '/about', component: About },
   { path: '/', component: Home },
-  {path:'/filter',component:Filter}
+  { path: '/filter', component: Filter },
 ];
 
 const router = new VueRouter({
