@@ -40,7 +40,9 @@
         <v-subheader>Public Key</v-subheader>
       </v-flex>
       <v-flex xs9>
-        <div class="monospaced">{{account.publicKey}}</div>
+        <div class="monospaced">
+          {{ account.publicKey }}
+        </div>
       </v-flex>
     </v-layout>
     <v-layout row>
@@ -107,12 +109,12 @@
 </template>
 <script>
 import { NetworkType, Account } from 'nem2-sdk';
-import StateRepository from '../../infrastructure/StateRepository';
+import store from '../../store/index';
 
 export default {
+  store,
   data() {
     return {
-      sharedState: StateRepository.state,
       node: '',
       walletName: '',
       account: {},
@@ -123,24 +125,20 @@ export default {
   watch: {
     privateKey() {
       this.createFromPrivateKey(this.privateKey);
-    }
+    },
   },
   methods: {
-    regenerateAccount() {
-      this.account = Account.generateNewAccount(NetworkType.MIJIN_TEST);
-    },
     save() {
-      if (
-        this.sharedState.wallets.findIndex(
-          ({ name }) => name === this.walletName,
-        ) === -1
-      ) {
-        StateRepository.storeWallet(this.walletName, this.account, this.node);
-        this.node = '';
-        this.walletName = '';
-        this.privateKey = '';
-        this.account = {};
-      }
+      const newWallet = {
+        name: this.walletName,
+        account: this.account,
+        node: this.node,
+      };
+      this.$store.dispatch('wallet/ADD_WALLET', newWallet);
+      this.node = '';
+      this.walletName = '';
+      this.privateKey = '';
+      this.account = {};
     },
     createFromPrivateKey() {
       const key = this.privateKey.length === 64

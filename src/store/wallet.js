@@ -66,9 +66,14 @@ const actions = {
   },
   ADD_WALLET({ commit, getters }, walletData) {
     const newWallet = new Wallet(walletData);
-    const walletsToStore = [...getters.GET_WALLETS, newWallet];
-    if (!getters.GET_ACTIVE_WALLET) commit('setActiveWallet', newWallet);
+
+    // no wallet name duplicate @TODO add snackbar message
+    if (getters.GET_WALLETS.map(({ name }) => name).indexOf(walletData.name) > -1) return;
+
     commit('addWallet', newWallet);
+    if (!getters.GET_ACTIVE_WALLET) commit('setActiveWallet', newWallet);
+
+    const walletsToStore = [...getters.GET_WALLETS, newWallet];
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
   SET_ACTIVE_WALLET(context, newActiveWalletName) {

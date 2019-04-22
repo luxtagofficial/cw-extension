@@ -130,6 +130,9 @@ export default {
         node: this.node,
       };
       this.$store.dispatch('wallet/ADD_WALLET', newWallet);
+      this.node = '';
+      this.walletName = '';
+      this.account = {};
     },
   },
 };
