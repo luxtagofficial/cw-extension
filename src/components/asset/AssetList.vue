@@ -22,7 +22,8 @@
     </div>
     <div
       v-if="!assets.loading_getMosaicsByAddress
-        && assets.assets.length === 0"
+        && assets.assets[wallet.activeWallet.name]
+        && assets.assets[wallet.activeWallet.name].length === 0"
     >
       <v-flex xs12>
         <v-alert
@@ -35,7 +36,8 @@
     </div>
     <div
       v-if="!assets.loading_getMosaicsByAddress
-        && assets.assets.length > 0"
+        && assets.assets[wallet.activeWallet.name]
+        && assets.assets[wallet.activeWallet.name].length > 0"
     >
       <div>
         <v-tabs
@@ -53,7 +55,7 @@
           <v-tab-item :key="2">
             <AssetTab
               :assets="filterByOwner(
-                assets.assets,
+                assets.assets[wallet.activeWallet.name],
                 wallet.activeWallet.account.address.pretty()
               )"
               owned-assets
@@ -66,7 +68,7 @@
             Assets Balance
           </v-tab>
           <v-tab-item :key="1">
-            <AssetTab :assets="filterZeros(assets.assets)" />
+            <AssetTab :assets="filterZeros(assets.assets[wallet.activeWallet.name])" />
           </v-tab-item>
         </v-tabs>
       </div>
