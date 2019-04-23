@@ -67,7 +67,7 @@ const actions = {
     if (!localStorageWallets) return;
 
     const wallets = jsonToWallets(localStorageWallets);
-    if (!(wallets > 0)) return;
+    if (!(wallets.length > 0)) return;
 
     await commit('addWalletsFromStorage', wallets);
     const activeWallet = wallets[0];
