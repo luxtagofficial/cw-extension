@@ -43,18 +43,18 @@ export const formatNamespaces = (namespacesInfo, blockHeight) => namespacesInfo.
   let aliasText;
   let aliasType;
   switch (ns.namespaceInfo.alias.type) {
-    case 1:
-      aliasText = (new UInt64(ns.namespaceInfo.alias.mosaicId)).toHex().toUpperCase();
-      aliasType = 'mosaic alias:';
-      break;
-    case 2:
-      aliasText = Address.createFromEncoded(ns.namespaceInfo.alias.address).pretty();
-      aliasType = 'address alias:';
-      break;
-    default:
-      aliasText = '';
-      aliasType = 'no alias';
-      break;
+  case 1:
+    aliasText = (new UInt64(ns.namespaceInfo.alias.mosaicId)).toHex().toUpperCase();
+    aliasType = 'mosaic alias:';
+    break;
+  case 2:
+    aliasText = Address.createFromEncoded(ns.namespaceInfo.alias.address).pretty();
+    aliasType = 'address alias:';
+    break;
+  default:
+    aliasText = '';
+    aliasType = 'no alias';
+    break;
   }
   const expireWithin = ns.namespaceInfo.endHeight.compact() - blockHeight;
   const expireText = expireWithin > 0 ? `expire within ${expireWithin.toLocaleString()} blocks` : `expired ${(-expireWithin).toLocaleString()} blocks ago`;
