@@ -48,14 +48,14 @@
         >
           <v-btn
             color="primary mx-0"
-            @click="refresh(activeWallet)"
+            @click="refresh(wallet.activeWallet)"
           >
             Refresh
           </v-btn>
           <v-btn
             class="ml-3"
             color="primary mx-0"
-            @click="loadMore(activeWallet)"
+            @click="loadMore(wallet.activeWallet)"
           >
             Load more
           </v-btn>
@@ -68,7 +68,7 @@
         <v-layout child-flex>
           <v-data-table
             :headers="headers"
-            :items="transactions.transactions"
+            :items="transactions.transactions[wallet.activeWallet.name]"
             disable-initial-sort
             :rows-per-page-items="rowsPerPageOptions"
           >
@@ -128,7 +128,7 @@
 import { mapState } from 'vuex';
 import store from '../../store/index';
 import TransactionModal from './TransactionModal.vue';
-import { GET_TRANSACTIONS_MODES } from '../../store/transactions-types';
+import { GET_TRANSACTIONS_MODES } from '../../infrastructure/transactions/transactions-types';
 
 export default {
   name: 'Transactions',
@@ -151,14 +151,10 @@ export default {
       activeTransaction: false,
     };
   },
-  computed: {
-    ...mapState([
-      'transactions',
-    ]),
-    activeWallet() {
-      return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-    },
-  },
+  computed: mapState([
+    'transactions',
+    'wallet',
+  ]),
   methods: {
     refresh(wallet) {
       this.$store.dispatch(
@@ -173,7 +169,8 @@ export default {
       );
     },
     showModal(clickedTx) {
-      this.activeTransaction = this.transactions.transactions.find(t => t.id === clickedTx);
+      this.activeTransaction = this.transactions.transactions[this.wallet.activeWallet.name]
+        .find(t => t.id === clickedTx);
       this.modal = true;
     },
     modalClosed() {

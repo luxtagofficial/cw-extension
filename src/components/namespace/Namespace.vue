@@ -43,7 +43,10 @@
       >
         <v-btn
           color="primary mx-0"
-          @click="reloadList(activeWallet)"
+          @click="reloadList({
+            wallet: wallet.activeWallet,
+            mode: GET_NAMESPACES_MODES.RELOAD
+          })"
         >
           Reload List
         </v-btn>
@@ -72,7 +75,8 @@
       </div>
       <div
         v-if="!namespaces.loading_getNamespacesByAddress
-          && namespaces.namespaces.length === 0"
+          && namespaces.namespaces[wallet.activeWallet.name]
+          && namespaces.namespaces[wallet.activeWallet.name].length === 0"
       >
         <v-flex xs12>
           <v-alert
@@ -85,7 +89,8 @@
       </div>
       <div
         v-if="!namespaces.loading_getNamespacesByAddress
-          && namespaces.namespaces.length > 0"
+          && namespaces.namespaces[wallet.activeWallet.name]
+          && namespaces.namespaces[wallet.activeWallet.name].length > 0"
       >
         <NamespaceList class="my-2" />
       </div>
@@ -98,6 +103,7 @@ import store from '../../store/index';
 import Errors from '../Errors.vue';
 import NamespaceRegistration from './NamespaceRegistration.vue';
 import NamespaceList from './NamespaceList.vue';
+import { GET_NAMESPACES_MODES } from '../../infrastructure/namespaces/namespaces-types';
 
 export default {
   name: 'Namespace',
@@ -110,18 +116,14 @@ export default {
   data() {
     return {
       registerNamespace: false,
+      GET_NAMESPACES_MODES,
     };
   },
-  computed: {
-    ...mapState([
-      'wallet',
-      'application',
-      'namespaces',
-    ]),
-    activeWallet() {
-      return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-    },
-  },
+  computed: mapState([
+    'wallet',
+    'application',
+    'namespaces',
+  ]),
   methods: {
     reloadList(wallet) {
       this.$store.dispatch('namespaces/GET_NAMESPACES_BY_ADDRESS', { wallet });

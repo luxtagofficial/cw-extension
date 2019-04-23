@@ -26,14 +26,15 @@ const state = {
 };
 
 const getters = {
-  GET_ACCOUNT_INFO() {
-    return state.accountInfo;
+  GET_ACCOUNT_INFO(state, getters, rootState) {
+    return state.accountInfo[rootState.wallet.activeWallet.name];
   },
 };
 
 const mutations = {
-  setAccountInfo(state, accountInfo) {
-    state.accountInfo = accountInfo;
+  setAccountInfo(state, { wallet, accountInfo }) {
+    if (!state.accountInfo) state.accountInfo = {};
+    state.accountInfo[wallet.name] = accountInfo;
   },
   setLoading_getAccountInfo(state, bool) {
     state.loading_getAccountInfo = bool;
@@ -41,21 +42,22 @@ const mutations = {
 };
 
 const actions = {
-  async FETCH_ACCOUNT_INFO({ commit, dispatch }, wallet) {
+  async CLEAR_ACCOUNT_INFO({ commit }, wallet) {
+    commit('setAccountInfo', { wallet, accountInfo: false });
+    commit('setLoading_getAccountInfo', false);
+  },
+  async FETCH_ACCOUNT_INFO({ commit, dispatch, getters }, wallet) {
+    if (getters.GET_ACCOUNT_INFO) return;
     commit('setLoading_getAccountInfo', true);
     dispatch('application/RESET_ERRORS', null, { root: true });
     try {
       const accountInfo = await getAccountInfo(wallet);
-      commit('setAccountInfo', accountInfo);
+      commit('setAccountInfo', { wallet, accountInfo });
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });
       // eslint-disable-next-line no-console
       console.error(error, 'FETCH_ACCOUNT_INFO');
     }
-    commit('setLoading_getAccountInfo', false);
-  },
-  async CLEAR_ACCOUNT_INFO({ commit }) {
-    commit('setAccountInfo', false);
     commit('setLoading_getAccountInfo', false);
   },
 };

@@ -25,7 +25,9 @@ import {
 } from '../infrastructure/wallet/wallet';
 
 import { Wallet } from '../infrastructure/wallet/wallet-types';
-import { GET_TRANSACTIONS_MODES } from './transactions-types';
+import { GET_TRANSACTIONS_MODES } from '../infrastructure/transactions/transactions-types';
+import { GET_NAMESPACES_MODES } from '../infrastructure/namespaces/namespaces-types';
+import { GET_ASSETS_MODES } from '../infrastructure/assets/assets-types';
 
 const state = {
   activeWallet: false,
@@ -67,8 +69,7 @@ const actions = {
     if (!localStorageWallets) return;
 
     const wallets = jsonToWallets(localStorageWallets);
-    if (!(wallets > 0)) return;
-
+    if (!(wallets.length > 0)) return;
     await commit('addWalletsFromStorage', wallets);
     const activeWallet = wallets[0];
     await commit('setActiveWallet', activeWallet);
@@ -90,7 +91,7 @@ const actions = {
     const walletsToStore = [...getters.GET_WALLETS];
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
-  SET_ACTIVE_WALLET({ commit, dispatch, getters }, newActiveWalletName) {
+  async SET_ACTIVE_WALLET({ commit, dispatch, getters }, newActiveWalletName) {
     if (getters.GET_ACTIVE_WALLET.name === newActiveWalletName) return;
     const wallets = getters.GET_WALLETS;
     if (wallets.map(({ name }) => name)
@@ -99,7 +100,7 @@ const actions = {
     const newActiveWallet = wallets
       .find(wallet => wallet.name === newActiveWalletName);
 
-    commit('setActiveWallet', newActiveWallet);
+    await commit('setActiveWallet', newActiveWallet);
     dispatch('FETCH_WALLET_DATA', newActiveWallet);
   },
   async REMOVE_WALLET({ commit, getters, dispatch }, walletName) {
@@ -135,17 +136,17 @@ const actions = {
       console.error(error, 'FETCH_WALLET_DATA');
       return;
     }
-    await dispatch(
+    dispatch(
       'transactions/GET_TRANSACTIONS_BY_ID',
       { wallet, mode: GET_TRANSACTIONS_MODES.INIT }, { root: true },
     );
-    await dispatch(
+    dispatch(
       'namespaces/GET_NAMESPACES_BY_ADDRESS',
-      { wallet }, { root: true },
+      { wallet, mode: GET_NAMESPACES_MODES.ON_WALLET_CHANGE }, { root: true },
     );
-    await dispatch(
+    dispatch(
       'assets/GET_ASSETS_BY_ADDRESS',
-      { wallet }, { root: true },
+      { wallet, mode: GET_ASSETS_MODES.ON_WALLET_CHANGE }, { root: true },
     );
   },
 };

@@ -29,8 +29,8 @@ const state = {
 };
 
 const getters = {
-  GET_TRANSACTIONS() {
-    return state.transactions;
+  GET_TRANSACTIONS(state, getters, rootState) {
+    return state.transactions[rootState['wallet/activeWallet.name']];
   },
   GET_FIRST_TRANSACTION() {
     return state.transactions[0];
@@ -38,41 +38,43 @@ const getters = {
 };
 
 const mutations = {
-  setAccountTransactions(state, accountTransactions) {
-    state.transactions = accountTransactions;
+  setAccountTransactions(state, { wallet, transactions }) {
+    if (!state.transactions) state.transactions = {};
+    state.transactions[wallet.name] = transactions;
   },
   setLoading_getAccountTransactionsById(state, bool) {
     state.loading_getAccountTransactionsById = bool;
   },
-  clearTransactons(state) {
-    state.transactons = false;
+  clearTransactons(state, wallet) {
+    state.transactons[wallet.name] = false;
   },
 };
 
 const actions = {
-  async CLEAR_TRANSACTIONS({ commit }) {
-    commit('setAccountTransactions', false);
+  async CLEAR_TRANSACTIONS({ commit }, wallet) {
+    commit('setAccountTransactions', { wallet, transactions: false });
   },
   async GET_TRANSACTIONS_BY_ID({ commit, dispatch, getters }, { wallet, mode }) {
     await commit('setLoading_getAccountTransactionsById', true);
+    const actualTransactions = getters.GET_TRANSACTIONS;
     let currentId;
     try {
       switch (mode) {
       case 'more':
         // eslint-disable-next-line no-case-declarations
-        const actualTtransactions = getters.GET_TRANSACTIONS;
-        currentId = actualTtransactions && actualTtransactions.length > 0
-          ? actualTtransactions[actualTtransactions.length - 1].id
+        currentId = actualTransactions && actualTransactions.length > 0
+          ? actualTransactions[actualTransactions.length - 1].id
           : undefined;
         break;
       case 'init':
+        currentId = typeof actualTransactions === 'undefined'
+          ? undefined : actualTransactions[actualTransactions.length - 1];
+        break;
       case 'refresh':
       default:
         currentId = undefined;
         break;
       }
-
-      if (mode === 'init') await commit('clearTransactons');
 
       const newTransactions = await getAccountTransactionsById(
         wallet,
@@ -81,10 +83,13 @@ const actions = {
 
       const oldTransactions = getters.GET_TRANSACTIONS || [];
 
-      await commit('setAccountTransactions', removeDuplicatesAndSortByBlockNumber([
-        ...oldTransactions,
-        ...newTransactions,
-      ]));
+      await commit('setAccountTransactions', {
+        wallet,
+        transactions: removeDuplicatesAndSortByBlockNumber([
+          ...oldTransactions,
+          ...newTransactions,
+        ]),
+      });
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });
       // eslint-disable-next-line no-console

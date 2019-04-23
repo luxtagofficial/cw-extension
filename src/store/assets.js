@@ -19,6 +19,7 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 import getMosaicsByAddress from '../infrastructure/assets/getMosaicsByAddress';
+import { GET_ASSETS_MODES } from '../infrastructure/assets/assets-types';
 
 const state = {
   assets: false,
@@ -26,33 +27,33 @@ const state = {
 };
 
 const getters = {
-  GET_ASSETS() {
-    return state.assets;
+  GET_ASSETS(state, getters, rootState) {
+    return state.assets[rootState['wallet/activeWallet.name']];
   },
 };
 
 const mutations = {
-  setAccountAssets(state, assets) {
-    state.assets = assets;
+  setAccountAssets(state, { wallet, assets }) {
+    if (!state.assets) state.assets = {};
+    state.assets[wallet.name] = assets;
   },
   setLoading_getMosaicsByAddress(state, bool) {
     state.loading_getMosaicsByAddress = bool;
   },
-  clearAssets(state) {
-    state.assets = false;
-  },
 };
 
 const actions = {
-  async CLEAR_ASSETS({ commit }) {
-    commit('clearAssets', false);
+  async CLEAR_ASSETS({ commit }, wallet) {
+    commit('setAccountAssets', { wallet, assets: false });
   },
-  async GET_ASSETS_BY_ADDRESS({ commit, dispatch }, { wallet }) {
+  async GET_ASSETS_BY_ADDRESS({ commit, dispatch, getters }, { wallet, mode }) {
+    if (mode === GET_ASSETS_MODES.ON_WALLET_CHANGE && getters.GET_ASSETS) return;
+
     await commit('setLoading_getMosaicsByAddress', true);
+
     try {
-      await dispatch('CLEAR_ASSETS');
-      const namespaces = await getMosaicsByAddress(wallet);
-      commit('setAccountAssets', namespaces);
+      const assets = await getMosaicsByAddress(wallet);
+      commit('setAccountAssets', { wallet, assets });
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });
       // eslint-disable-next-line no-console
