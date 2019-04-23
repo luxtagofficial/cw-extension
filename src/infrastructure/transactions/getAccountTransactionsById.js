@@ -33,10 +33,10 @@ const getAccountTransactionsById = (
 ) => new Promise(async (resolve, reject) => {
   try {
       const accountHttp = new AccountHttp(wallet.node);
-      const { publicKey } = wallet.account;
       const pageSize = 50;
-      const publicAccount = PublicAccount
-          .createFromPublicKey(publicKey, NetworkType.MIJIN_TEST);
+      const publicAccount = wallet.isWatchOnly
+        ? wallet.publicAccount
+        : PublicAccount.createFromPublicKey(wallet.account.publicKey, NetworkType.MIJIN_TEST);
 
       accountHttp
           .transactions(publicAccount, new QueryParams(pageSize, currentId))
