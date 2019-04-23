@@ -110,7 +110,8 @@
         <v-progress-linear :indeterminate="true" />
       </div>
       <div
-        v-if="transactions.transactions && transactions.transactions.length > 0"
+        v-if="transactions.transactions[wallet.activeWallet.name]
+          && transactions.transactions[wallet.activeWallet.name].length > 0"
       >
         <Transactions />
       </div>

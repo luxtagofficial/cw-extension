@@ -30,22 +30,26 @@
           mb-4
           mt-4
         >
-          <v-layout
-            row
-            fill-height
-            justify-start
-            pl-3
-            xs3
+          <h5 class="headline pt-3 pl-2">
+            Transactions
+          </h5>
+        </v-layout>
+        <v-layout
+          row
+          fill-height
+          justify-end
+          xs9
+        >
+          <v-btn
+            color="primary mx-0"
+            @click="refresh(wallet.activeWallet)"
           >
-            <h5 class="headline pt-3 pl-2">
-              Transactions
-            </h5>
-          </v-layout>
-          <v-layout
-            row
-            fill-height
-            justify-end
-            xs9
+            Refresh
+          </v-btn>
+          <v-btn
+            class="ml-3"
+            color="primary mx-0"
+            @click="loadMore(wallet.activeWallet)"
           >
             <v-btn
               color="primary mx-0"
@@ -62,13 +66,17 @@
             </v-btn>
           </v-layout>
         </v-layout>
-
-        <v-layout>
-          <v-layout
-            row
-            fill-height
-            justify-end
-            xs9
+      </v-layout>
+      <v-container
+        fluid
+        fill-height
+      >
+        <v-layout child-flex>
+          <v-data-table
+            :headers="headers"
+            :items="transactions.transactions[wallet.activeWallet.name]"
+            disable-initial-sort
+            :rows-per-page-items="rowsPerPageOptions"
           >
             <v-btn
               class="ml-3"
@@ -154,6 +162,7 @@ import TransactionModal from './TransactionModal.vue';
 import { GET_TRANSACTIONS_MODES } from '../../store/transactions-types';
 import AddressInput from '../AddressInput.vue';
 
+
 export default {
   name: 'Transactions',
   store,
@@ -176,15 +185,10 @@ export default {
       activeTransaction: false,
     };
   },
-  computed: {
-    ...mapState([
-      'transactions',
-      'application',
-    ]),
-    activeWallet() {
-      return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-    },
-  },
+  computed: mapState([
+    'transactions',
+    'wallet',
+  ]),
   methods: {
     refresh(wallet) {
       this.$store.dispatch(
@@ -199,7 +203,8 @@ export default {
       );
     },
     showModal(clickedTx) {
-      this.activeTransaction = this.transactions.transactions.find(t => t.id === clickedTx);
+      this.activeTransaction = this.transactions.transactions[this.wallet.activeWallet.name]
+        .find(t => t.id === clickedTx);
       this.modal = true;
     },
     modalClosed() {

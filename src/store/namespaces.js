@@ -19,6 +19,7 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { getNamespacesByAddress } from '../infrastructure/namespaces/getNamespacesByAddress';
+import { GET_NAMESPACES_MODES } from '../infrastructure/namespaces/namespaces-types';
 
 const state = {
   namespaces: false,
@@ -26,33 +27,31 @@ const state = {
 };
 
 const getters = {
-  GET_NAMESPACES() {
-    return state.namespaces;
+  GET_NAMESPACES(state, getters, rootState) {
+    return state.namespaces[rootState['wallet/activeWallet.name']];
   },
 };
 
 const mutations = {
-  setAccountNamespaces(state, namespaces) {
-    state.namespaces = namespaces;
+  setAccountNamespaces(state, { wallet, namespaces }) {
+    if (!state.namespaces) state.namespaces = {};
+    state.namespaces[wallet.name] = namespaces;
   },
   setLoading_getNamespacesByAddress(state, bool) {
     state.loading_getNamespacesByAddress = bool;
   },
-  clearNamespaces(state) {
-    state.namespaces = false;
-  },
 };
 
 const actions = {
-  async CLEAR_NAMESPACES({ commit }) {
-    commit('setAccountNamespaces', false);
+  async CLEAR_NAMESPACES({ commit }, wallet) {
+    commit('setAccountNamespaces', { wallet, namespaces: false });
   },
-  async GET_NAMESPACES_BY_ADDRESS({ commit, dispatch }, { wallet }) {
+  async GET_NAMESPACES_BY_ADDRESS({ commit, dispatch, getters }, { wallet, mode }) {
     await commit('setLoading_getNamespacesByAddress', true);
+    if (mode === GET_NAMESPACES_MODES.ON_WALLET_CHANGE && getters.GET_NAMESPACES) return;
     try {
-      await dispatch('CLEAR_NAMESPACES');
       const namespaces = await getNamespacesByAddress(wallet);
-      commit('setAccountNamespaces', namespaces);
+      commit('setAccountNamespaces', { wallet, namespaces });
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });
       // eslint-disable-next-line no-console

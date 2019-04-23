@@ -21,7 +21,9 @@
 import { PublicAccount, NetworkType } from 'nem2-sdk';
 import { walletsToJSON, jsonToWallets } from '../infrastructure/wallet/wallet';
 import { Wallet, WoWallet } from '../infrastructure/wallet/wallet-types';
-import { GET_TRANSACTIONS_MODES } from './transactions-types';
+import { GET_TRANSACTIONS_MODES } from '../infrastructure/transactions/transactions-types';
+import { GET_NAMESPACES_MODES } from '../infrastructure/namespaces/namespaces-types';
+import { GET_ASSETS_MODES } from '../infrastructure/assets/assets-types';
 
 const state = {
   activeWallet: false,
@@ -71,7 +73,6 @@ const actions = {
 
     const wallets = jsonToWallets(localStorageWallets);
     if (!(wallets.length > 0)) return;
-
     await commit('addWalletsFromStorage', wallets);
     const activeWallet = wallets[0];
     await commit('setActiveWallet', activeWallet);
@@ -96,7 +97,6 @@ const actions = {
     ];
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
-
   async ADD_WATCH_ONLY_WALLET({ getters, commit, dispatch }, walletData) {
     const newWoWallet = new WoWallet(walletData);
     await commit('addWallet', newWoWallet);
@@ -110,7 +110,6 @@ const actions = {
 
     dispatch('SET_ACTIVE_WALLET', newWoWallet.name);
   },
-
   async SET_ACTIVE_WALLET({ commit, dispatch, getters }, newActiveWalletName) {
     if (getters.GET_ACTIVE_WALLET.name === newActiveWalletName) return;
     const wallets = await getters.GET_WALLETS;
@@ -120,7 +119,7 @@ const actions = {
     const newActiveWallet = wallets.find(wallet => wallet.name === newActiveWalletName);
     console.log(newActiveWallet, 'newActiveWallet')
 
-    commit('setActiveWallet', newActiveWallet);
+    await commit('setActiveWallet', newActiveWallet);
     dispatch('FETCH_WALLET_DATA', newActiveWallet);
   },
 
@@ -160,7 +159,7 @@ const actions = {
       console.error(error, 'FETCH_WALLET_DATA');
       return;
     }
-
+    
     if (wallet.isWatchOnly && !wallet.publicAccount) {
       const accountInfo = await getters['accountInfo/GET_ACCOUNT_INFO'].publicKey;
       const publicAccount = PublicAccount.createFromPublicKey(
@@ -174,14 +173,19 @@ const actions = {
         commit('setWalletPublicAccount', { walletIndex, publicAccount });
       }
     }
-
-    await dispatch(
+    
+    dispatch(
       'transactions/GET_TRANSACTIONS_BY_ID',
-      { wallet, mode: GET_TRANSACTIONS_MODES.INIT },
-      { root: true },
+      { wallet, mode: GET_TRANSACTIONS_MODES.INIT }, { root: true },
     );
-    await dispatch('namespaces/GET_NAMESPACES_BY_ADDRESS', { wallet }, { root: true });
-    await dispatch('assets/GET_ASSETS_BY_ADDRESS', { wallet }, { root: true });
+    dispatch(
+      'namespaces/GET_NAMESPACES_BY_ADDRESS',
+      { wallet, mode: GET_NAMESPACES_MODES.ON_WALLET_CHANGE }, { root: true },
+    );
+    dispatch(
+      'assets/GET_ASSETS_BY_ADDRESS',
+      { wallet, mode: GET_ASSETS_MODES.ON_WALLET_CHANGE }, { root: true },
+    );
   },
 };
 

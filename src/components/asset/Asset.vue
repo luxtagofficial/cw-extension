@@ -43,7 +43,7 @@
       >
         <v-btn
           color="primary mx-0"
-          @click="reloadList(activeWallet)"
+          @click="reloadList(wallet.activeWallet)"
         >
           Reload List
         </v-btn>
@@ -91,16 +91,11 @@ export default {
       reloadAssetNotifier: 0,
     };
   },
-  computed: {
-    ...mapState([
-      'wallet',
-      'application',
-      'assets',
-    ]),
-    activeWallet() {
-      return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-    },
-  },
+  computed: mapState([
+    'wallet',
+    'application',
+    'assets',
+  ]),
   methods: {
     reloadList(wallet) {
       this.$store.dispatch('assets/GET_ASSETS_BY_ADDRESS', { wallet });
