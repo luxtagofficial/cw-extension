@@ -210,7 +210,7 @@
           Send this transaction?
         </v-card-title>
         <v-card-text>
-          Are you sure you want to send the the transaction with the following details?
+          Are you sure you that you want to send a transaction with the following details?
           <v-list>
             <v-list-tile>
               <v-list-tile-action>
@@ -316,6 +316,7 @@ import {
   Mosaic,
 } from 'nem2-sdk';
 import { mapState } from 'vuex';
+import store from '../store/index';
 import SendConfirmation from './SendConfirmation.vue';
 import Errors from '../Errors.vue';
 import AssetList from '../asset/AssetList.vue';
@@ -326,6 +327,7 @@ export default {
     Errors,
     AssetList,
   },
+  store,
   data() {
     return {
       txMessage: '',
