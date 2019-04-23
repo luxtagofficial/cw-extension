@@ -1,3 +1,20 @@
+// Copyright (C) 2019 Contributors as noted in the AUTHORS file
+// 
+// This file is part of nem2-wallet-browserextension.
+// 
+// nem2-wallet-browserextension is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// nem2-wallet-browserextension is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+
 <template>
   <v-scale-transition>
     <v-layout column>
@@ -29,7 +46,8 @@
             class="ma-0 pa-0"
             label="Namespace name"
             solo
-            required></v-text-field>
+            required
+          />
         </v-flex>
       </v-layout>
       <v-layout
@@ -44,7 +62,8 @@
             v-model="parentNamespaceName"
             class="ma-0 pa-0"
             label="Parent Namespace name"
-            solo></v-text-field>
+            solo
+          />
         </v-flex>
       </v-layout>
       <v-layout
@@ -61,7 +80,8 @@
             label="Duration"
             type="number"
             solo
-            required></v-text-field>
+            required
+          />
         </v-flex>
       </v-layout>
       <v-layout column>
@@ -88,10 +108,11 @@
           Send Transaction
         </v-btn>
       </v-layout>
-      <Dialog
-        :is-show="isDialogShow"
-        @transmitTransaction="sendTransaction"
-        @close="dialogClosed"
+      <Confirmation
+        v-model="isDialogShow"
+        :transactions="transactions"
+        @sent="txSent"
+        @error="txError"
       >
         <v-list>
           <v-list-tile
@@ -108,26 +129,24 @@
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
-      </Dialog>
+      </Confirmation>
     </v-layout>
   </v-scale-transition>
 </template>
 <script>
 import {
-  NetworkType, RegisterNamespaceTransaction, NamespaceType, Deadline, UInt64, TransactionHttp,
+  NetworkType, RegisterNamespaceTransaction, NamespaceType, Deadline, UInt64,
 } from 'nem2-sdk';
-import StateRepository from '../../infrastructure/StateRepository.js';
-import Dialog from './Dialog.vue';
+import Confirmation from '../Confirmation.vue';
 import SendConfirmation from './SendConfirmation.vue';
 
 export default {
   components: {
-    Dialog,
+    Confirmation,
     SendConfirmation,
   },
   data() {
     return {
-      sharedState: StateRepository.state,
       namespaceType: NamespaceType.RootNamespace,
       namespaceTypes: [
         { type: NamespaceType.RootNamespace, label: 'RootNamespace' },
@@ -136,15 +155,13 @@ export default {
       namespaceName: '',
       parentNamespaceName: '',
       duration: 0,
+      transactions: [],
       isDialogShow: false,
       dialogDetails: [],
       txSendResults: [],
     };
   },
   computed: {
-    activeWallet() {
-      return this.sharedState.activeWallet;
-    },
     isSubNamespace() {
       return this.namespaceType === NamespaceType.SubNamespace;
     },
@@ -157,27 +174,6 @@ export default {
   },
   methods: {
     showDialog() {
-      this.dialogDetails = [
-        {
-          icon: 'add',
-          key: 'NamespaceType',
-          value: this.namespaceType === 0 ? 'RootNamespace' : 'SubNamespace',
-        },
-        {
-          icon: 'add',
-          key: 'Namespace name',
-          value: this.namespaceType === 0 ? this.namespaceName : (`${this.parentNamespaceName}.${this.namespaceName}`),
-        },
-        {
-          icon: 'add',
-          key: 'Duration',
-          value: this.duration,
-        },
-      ];
-      this.isDialogShow = true;
-    },
-    sendTransaction() {
-      if (this.activeWallet == null) return;
       const { duration } = this;
       const { namespaceName, parentNamespaceName } = this;
       let registerNamespaceTransaction;
@@ -201,19 +197,34 @@ export default {
         default:
           return;
       }
-      const { account } = this.activeWallet;
-      const endpoint = this.activeWallet.node;
-      const signedTx = account.sign(registerNamespaceTransaction);
-      const txHttp = new TransactionHttp(endpoint);
-      txHttp.announce(signedTx).subscribe(console.log, console.error);
-      this.txSendResults = [{
-        txHash: signedTx.hash,
-        nodeURL: endpoint,
-      }];
+      this.transactions = [registerNamespaceTransaction];
+      this.dialogDetails = [
+        {
+          icon: 'add',
+          key: 'NamespaceType',
+          value: this.namespaceType === 0 ? 'RootNamespace' : 'SubNamespace',
+        },
+        {
+          icon: 'add',
+          key: 'Namespace name',
+          value: this.namespaceType === 0 ? this.namespaceName : (`${this.parentNamespaceName}.${this.namespaceName}`),
+        },
+        {
+          icon: 'add',
+          key: 'Duration',
+          value: this.duration,
+        },
+      ];
+      this.isDialogShow = true;
     },
-    dialogClosed() {
-      this.isDialogShow = false;
-      this.dialogDetails = [];
+    txSent(result) {
+      this.txSendResults.push({
+        txHash: result.txHash,
+        nodeURL: result.nodeURL,
+      });
+    },
+    txError(error) {
+      console.error(error);
     },
   },
 };

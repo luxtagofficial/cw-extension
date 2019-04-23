@@ -1,34 +1,58 @@
+// Copyright (C) 2019 Contributors as noted in the AUTHORS file
+// 
+// This file is part of nem2-wallet-browserextension.
+// 
+// nem2-wallet-browserextension is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// nem2-wallet-browserextension is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+
 <template>
   <span>
-    <v-select v-if="selectWallets.length != 0"
-      :items="selectWallets"
-      v-model="wallet"
+    <v-select
+      v-if="walletName"
+      v-model="walletName"
+      :items="wallets"
       prepend-icon="payment"
       label="No Wallet Selected"
       solo
-    ></v-select>
-    <div v-else><v-btn small color="error" to="/wallet">No wallets</v-btn></div>
+    />
+    <div v-else><v-btn
+      small
+      color="error"
+      to="/wallet"
+    >No wallets</v-btn></div>
   </span>
 </template>
 <script>
-import StateRepository from "../infrastructure/StateRepository.js";
+import StateRepository from '../infrastructure/StateRepository';
 
 export default {
-  data: () => ({
-    wallet: null,
-    wallets: StateRepository.state.wallets,
-    selectWallets: StateRepository.wallets().map(wallet => wallet.name),
-  }),
-  methods: {},
-  watch: {
-    wallets: function(val) {
-      this.selectWallets = StateRepository.wallets().map(wallet => wallet.name);
-    },
-    wallet: (val) => StateRepository.onWalletChange(val)
+  props: {
+    // eslint-disable-next-line vue/require-default-prop
+    walletName: String,
+    // eslint-disable-next-line vue/require-default-prop
+    wallets: Array,
   },
-  created: function () {
-    this.wallet = StateRepository.state.wallets.length == 0 ? null : StateRepository.state.wallets[0].name
-  }
+  data: () => ({
+    sharedState: StateRepository.state,
+  }),
+  watch: {
+    walletName:
+    (val) => {
+      if (val) {
+        StateRepository.onWalletChange(val);
+      }
+    },
+  },
 };
 </script>
 <style scoped>

@@ -1,26 +1,51 @@
+// Copyright (C) 2019 Contributors as noted in the AUTHORS file
+// 
+// This file is part of nem2-wallet-browserextension.
+// 
+// nem2-wallet-browserextension is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// nem2-wallet-browserextension is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+
 <template>
   <v-layout column>
-    <div v-show="noWallets">
-      <v-layout
-        column
-        justify-center
-        ma-5
-        text
-        class="text-md-center"
-      >
-        <v-icon
-          x-large
-          color="orange darken-2"
-        >
-          warning
-        </v-icon>
-        <span>You have no wallets configured</span>
-      </v-layout>
+    <div v-if="sharedState.loading_getNamespacesByAddress">
+      <v-progress-linear :indeterminate="true" />
     </div>
     <div
-      v-show="!noWallets"
-      class="py-0"
+      v-if="!sharedState.loading_getNamespacesByAddress
+        && sharedState.namespaces.length === 0"
     >
+      <v-flex xs12>
+        <v-alert
+          :value="true"
+          type="info"
+        >
+          This account does not own any namespace.
+        </v-alert>
+      </v-flex>
+    </div>
+    <div
+      v-if="!sharedState.loading_getNamespacesByAddress
+        && sharedState.namespaces.length > 0"
+    >
+      <v-layout
+        row
+        justify-start
+        pl-3
+      >
+        <h6 class="headline pt-3">
+          List of owned namespaces
+        </h6>
+      </v-layout>
       <v-list
         three-line
         class="py-0"
@@ -30,7 +55,7 @@
           tag="v-list"
           class="py-0"
         >
-          <template v-for="(ns, index) in namespaces">
+          <template v-for="(ns, index) in sharedState.namespaces">
             <v-layout
               :key="ns.name"
               column
@@ -40,7 +65,9 @@
                 ripple
               >
                 <v-list-tile-content class="my-2">
-                  <v-list-tile-title>{{ ns.name }} - <span class="">{{ ns.hexId }}</span></v-list-tile-title>
+                  <v-list-tile-title>
+                    {{ ns.name }} - <span class="">{{ ns.hexId }}</span>
+                  </v-list-tile-title>
                   <v-list-tile-sub-title>
                     <div class="monospaced">
                       {{ ns.expire }}
@@ -63,8 +90,8 @@
               </v-list-tile>
               <v-layout>
                 <AliasTransaction
-                  class="pa-3"
                   v-show="ns.expand.isExpandMore"
+                  class="pa-3"
                   :alias-action-type="ns.expand.aliasActionType"
                   :namespace-name="ns.expand.namespaceName"
                   :current-alias="ns.expand.currentAlias"
@@ -73,7 +100,7 @@
               </v-layout>
             </v-layout>
             <v-divider
-              v-if="index + 1 < namespaces.length"
+              v-if="index + 1 < sharedState.namespaces.length"
               :key="index"
             />
           </template>
@@ -81,70 +108,11 @@
       </v-list>
     </div>
   </v-layout>
+  </div>
 </template>
 <script>
-import {
-  NamespaceHttp, UInt64, BlockchainHttp, Address, AliasActionType,
-} from 'nem2-sdk';
-import { mergeMap } from 'rxjs/operators';
-import StateRepository from '../../infrastructure/StateRepository.js';
-import AliasTransaction from './AliasTransaction';
-
-
-function info2view(namespacesInfo, blockHeight) {
-  return namespacesInfo.filter((ns, index, namespaces) => {
-    for (let i = 0; i < index; i += 1) {
-      if (ns === namespaces[i]) return false;
-    }
-    return true;
-  }).sort((a, b) => {
-    const nameA = a.namespaceInfo.metaId;
-    const nameB = b.namespaceInfo.metaId;
-    if (nameA < nameB) {
-      return -1;
-    }
-    if (nameA > nameB) {
-      return 1;
-    }
-    return 0;
-  }).map((ns, index, original) => {
-    const name = ns.namespaceInfo.levels.map(level => original.find(n => n.namespaceInfo.id.equals(level))).map(n => n.namespaceName.name).join('.');
-    let aliasText;
-    let aliasType;
-    switch (ns.namespaceInfo.alias.type) {
-      case 1:
-        aliasText = (new UInt64(ns.namespaceInfo.alias.mosaicId)).toHex().toUpperCase();
-        aliasType = 'mosaic alias:';
-        break;
-      case 2:
-        aliasText = Address.createFromEncoded(ns.namespaceInfo.alias.address).pretty();
-        aliasType = 'address alias:';
-        break;
-      default:
-        aliasText = '';
-        aliasType = 'no alias';
-        break;
-    }
-    const expireWithin = ns.namespaceInfo.endHeight.compact() - blockHeight;
-    const expireText = expireWithin > 0 ? `expire within ${expireWithin} blocks` : `expired ${-expireWithin} blocks ago`;
-    return {
-      name,
-      hexId: ns.namespaceInfo.id.toHex().toUpperCase(),
-      type: aliasType,
-      alias: aliasText,
-      expire: expireText,
-      expand: {
-        isExpandMore: false,
-        namespaceName: name,
-        aliasActionType:
-          ns.namespaceInfo.alias.type === 0 ? AliasActionType.Link : AliasActionType.Unlink,
-        currentAliasType: ns.namespaceInfo.alias.type,
-        currentAlias: ns.namespaceInfo.alias.type === 0 ? '' : aliasText,
-      },
-    };
-  });
-}
-
+import StateRepository from '../../infrastructure/StateRepository';
+import AliasTransaction from './AliasTransaction.vue';
 
 export default {
   components: { AliasTransaction },
@@ -158,58 +126,8 @@ export default {
   },
   data() {
     return {
-      noWallets: StateRepository.wallets().length === 0,
       sharedState: StateRepository.state,
-      namespaces: [],
     };
-  },
-  computed: {
-    activeWallet() {
-      return this.sharedState.activeWallet;
-    },
-  },
-  watch: {
-    activeWallet: {
-      handler() {
-        this.reloadNamespaces();
-      },
-    },
-    reloadNamespaceNotifier: {
-      handler() {
-        this.reloadNamespaces();
-      },
-    },
-  },
-  mounted() {
-    this.reloadNamespaces();
-  },
-  methods: {
-    async reloadNamespaces() {
-      if (this.activeWallet == null) return;
-      this.namespaces = [];
-      const namespaces = {};
-      const endpoint = this.activeWallet.node;
-      const { address } = this.activeWallet.account;
-      const blockChainHttp = new BlockchainHttp(endpoint);
-      const blockHeight = (await blockChainHttp.getBlockchainHeight().toPromise()).compact();
-      const namespaceHttp = new NamespaceHttp(endpoint);
-      namespaceHttp.getNamespacesFromAccount(address).pipe(
-        mergeMap((namespacesInfo) => {
-          const namespaceIds = namespacesInfo.map((x) => {
-            namespaces[x.id.toHex().toUpperCase()] = { namespaceInfo: x };
-            return x.id;
-          });
-          return namespaceHttp.getNamespacesName(namespaceIds);
-        }),
-      ).subscribe((namespacesName) => {
-        const namespacesInfo = namespacesName.map((namespaceName) => {
-          const namespace = namespaces[namespaceName.namespaceId.toHex().toUpperCase()];
-          namespace.namespaceName = namespaceName;
-          return namespace;
-        });
-        this.namespaces = info2view(namespacesInfo, blockHeight);
-      });
-    },
   },
 };
 

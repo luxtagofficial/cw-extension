@@ -1,29 +1,43 @@
-import { AccountHttp, Address } from 'nem2-sdk';
+/**
+ * Copyright (C) 2019 Contributors as noted in the AUTHORS file
+ *
+ * This file is part of nem2-wallet-browserextension.
+ *
+ * nem2-wallet-browserextension is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * nem2-wallet-browserextension is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-const getAccountInfo = (wallet) => {
-  return new Promise((resolve, reject) => {
-    const accountHttp = new AccountHttp(wallet.node);
-    accountHttp.getAccountInfo(wallet.account.address).subscribe(
-      (ai) => {
-        resolve({
-          address: ai.address.address,
-          addressPretty: new Address(ai.address.address).pretty(),
-          publicKey: ai.publicKey,
-        });
-      },
-      (err) => {
-        // @TODO: rationalize
-        if (
-          err.response
-          && JSON.parse(err.response.text).code === 4
-        ) {
-          reject(new Error('This wallet is not known by the network'));
-        } else {
-          reject(new Error('error at getAccountInfo', JSON.stringify(err)));
-        }
-      },
-    );
-  });
-};
+import { AccountHttp } from 'nem2-sdk';
+import { formatAccountInfo } from './formatAccountInfo';
+
+const getAccountInfo = wallet => new Promise((resolve, reject) => {
+  const accountHttp = new AccountHttp(wallet.node);
+  accountHttp.getAccountInfo(wallet.account.address).subscribe(
+    (ai) => {
+      resolve(formatAccountInfo(ai));
+    },
+    (err) => {
+      // @TODO: rationalize
+      if (
+        err.response
+          && JSON.parse(err.response.text).code === 'ResourceNotFound'
+      ) {
+        reject(new Error('ResourceNotFound'));
+      } else {
+        reject(new Error('error at getAccountInfo', JSON.stringify(err)));
+      }
+    },
+  );
+});
 
 export default getAccountInfo;

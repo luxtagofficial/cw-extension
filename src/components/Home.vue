@@ -1,3 +1,20 @@
+// Copyright (C) 2019 Contributors as noted in the AUTHORS file
+// 
+// This file is part of nem2-wallet-browserextension.
+// 
+// nem2-wallet-browserextension is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// nem2-wallet-browserextension is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+
 <template>
   <v-layout
     column
@@ -19,30 +36,40 @@
         </h5>
       </v-layout>
     </v-layout>
-    <Errors :shared-state="sharedState" />
     <div
       v-if="
         sharedState.wallets.length > 0 &&
-          sharedState.activeWallet &&
-          !sharedState.error &&
-          !sharedState.loading_getAccountInfo
+          sharedState.activeWallet
       "
     >
       <v-flex xs12>
         <v-card>
           <v-card-title primary-title>
-            <div>
-              <h5 class="headline mb-0">
+            <div class="monospaced">
+              <h5 class="headline mb-0 mb-1">
                 {{ sharedState.activeWallet.name }}
               </h5>
-              <div class="monospaced clearfix homeLine">
-                Address: {{ sharedState.activeWallet.account.address.pretty() }}
+              <div class="clearfix homeLine">
+                <div class="clearfix">
+                  Address:
+                </div>
+                <div class="clearfix">
+                  {{ sharedState.activeWallet.account.address.pretty() }}
+                </div>
               </div>
-              <div class="monospaced clearfix homeLine">
-                <span class="clearfix">Public key:</span>
-                <span class="clearfix">{{
+              <div class="clearfix homeLine">
+                <span
+                  v-show="sharedState.accountInfo"
+                  class="clearfix"
+                >Public key:</span>
+                <span
+                  v-show="sharedState.accountInfo"
+                  class="clearfix"
+                >{{
                   sharedState.accountInfo.publicKey
                 }}</span>
+              </div>
+              <div class="clearfix homeLine">
                 <span class="clearfix">Current node:</span>
                 <a
                   class="clearfix"
@@ -55,6 +82,16 @@
           </v-card-title>
         </v-card>
       </v-flex>
+    </div>
+    <Errors :shared-state="sharedState" />
+    <div
+      v-if="
+        sharedState.wallets.length > 0 &&
+          sharedState.activeWallet &&
+          !sharedState.error &&
+          sharedState.accountInfo
+      "
+    >
       <div v-if="sharedState.loading_getAccountTransactionsById">
         <v-progress-linear :indeterminate="true" />
       </div>
@@ -78,6 +115,11 @@ export default {
   },
   data() {
     return { sharedState: StateRepository.state };
+  },
+  created() {
+    if (StateRepository.state.activeWallet && !StateRepository.state.accountInfo) {
+      StateRepository.onWalletChange(StateRepository.state.activeWallet.name);
+    }
   },
 };
 </script>
