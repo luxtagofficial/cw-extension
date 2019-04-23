@@ -136,6 +136,10 @@ const actions = {
       'transactions/GET_TRANSACTIONS_BY_ID',
       { wallet, mode: GET_TRANSACTIONS_MODES.INIT }, { root: true },
     );
+    await dispatch(
+      'namespaces/GET_NAMESPACES_BY_ADDRESS',
+      { wallet }, { root: true },
+    );
   },
 };
 

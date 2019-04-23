@@ -1,19 +1,19 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <v-layout
@@ -43,7 +43,7 @@
       >
         <v-btn
           color="primary mx-0"
-          @click="reloadList"
+          @click="reloadList(activeWallet)"
         >
           Reload List
         </v-btn>
@@ -57,29 +57,51 @@
       </v-layout>
     </v-layout>
 
-    <Errors :shared-state="sharedState" />
+    <Errors />
     <NamespaceRegistration
       v-if="registerNamespace"
       @closeComponent="registerNamespace = false"
     />
     <div
-      v-if="sharedState.wallets.length > 0
-        && sharedState.activeWallet
-        && !sharedState.error"
+      v-if="wallet.wallets.length > 0
+        && wallet.activeWallet
+        && !application.error"
     >
-      <NamespaceList
-        class="my-2"
-      />
+      <div v-if="namespaces.loading_getNamespacesByAddress">
+        <v-progress-linear :indeterminate="true" />
+      </div>
+      <div
+        v-if="!namespaces.loading_getNamespacesByAddress
+          && namespaces.namespaces.length === 0"
+      >
+        <v-flex xs12>
+          <v-alert
+            :value="true"
+            type="info"
+          >
+            This account does not own any namespace.
+          </v-alert>
+        </v-flex>
+      </div>
+      <div
+        v-if="!namespaces.loading_getNamespacesByAddress
+          && namespaces.namespaces.length > 0"
+      >
+        <NamespaceList class="my-2" />
+      </div>
     </div>
   </v-layout>
 </template>
 <script>
-import StateRepository from '../../infrastructure/StateRepository';
+import { mapState } from 'vuex';
+import store from '../../store/index';
 import Errors from '../Errors.vue';
 import NamespaceRegistration from './NamespaceRegistration.vue';
 import NamespaceList from './NamespaceList.vue';
 
 export default {
+  name: 'Namespace',
+  store,
   components: {
     Errors,
     NamespaceRegistration,
@@ -87,13 +109,22 @@ export default {
   },
   data() {
     return {
-      sharedState: StateRepository.state,
       registerNamespace: false,
     };
   },
+  computed: {
+    ...mapState([
+      'wallet',
+      'application',
+      'namespaces',
+    ]),
+    activeWallet() {
+      return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
+    },
+  },
   methods: {
-    reloadList() {
-      StateRepository.loadNamespaces();
+    reloadList(wallet) {
+      this.$store.dispatch('namespaces/GET_NAMESPACES_BY_ADDRESS', { wallet });
     },
   },
 };
