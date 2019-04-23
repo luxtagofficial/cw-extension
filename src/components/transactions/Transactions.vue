@@ -16,25 +16,19 @@
 // along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
 
 <template>
-  <v-layout
-    column
-    xs12
-  >
+  <div>
     <v-layout
       column
       xs12
     >
       <v-layout
-        row
-        mb-4
-        mt-4
+        column
+        xs12
       >
         <v-layout
           row
-          fill-height
-          justify-start
-          pl-3
-          xs3
+          mb-4
+          mt-4
         >
           <h5 class="headline pt-3 pl-2">
             Transactions
@@ -57,8 +51,20 @@
             color="primary mx-0"
             @click="loadMore(wallet.activeWallet)"
           >
-            Load more
-          </v-btn>
+            <v-btn
+              color="primary mx-0"
+              @click="refresh(activeWallet)"
+            >
+              Refresh
+            </v-btn>
+            <v-btn
+              class="ml-3"
+              color="primary mx-0"
+              @click="loadMore(activeWallet)"
+            >
+              Load more
+            </v-btn>
+          </v-layout>
         </v-layout>
       </v-layout>
       <v-container
@@ -72,69 +78,97 @@
             disable-initial-sort
             :rows-per-page-items="rowsPerPageOptions"
           >
-            <template v-slot:items="props">
-              <tr
-                class="pointer"
-                @click="showModal(props.item.id)"
-              >
-                <td class="text-xs-left">
-                  <span class="clearfix">
-                    <pre>{{ props.item.time }}</pre>
-                  </span>
-                  <span class="clearfix">
-                    <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
-                  </span>
-                </td>
-                <td class="text-xs-left">
-                  <span class="clearfix">
-                    <pre>{{ props.item.type1 }}</pre>
-                  </span>
-                  <span class="clearfix">
-                    <pre>{{ props.item.type2 }}</pre>
-                  </span>
-                </td>
-                <td class="text-xs-left">
-                  <span class="clearfix">
-                    <pre>{{ props.item.mainProp1 }}</pre>
-                  </span>
-                  <span class="clearfix">
-                    <pre>{{ props.item.mainProp2 }}</pre>
-                  </span>
-                </td>
-                <td class="text-xs-left">
-                  <span class="clearfix">
-                    <pre>{{ props.item.signer }}</pre>
-                  </span>
-                  <span class="clearfix">
-                    <pre>{{ props.item.recipient }}</pre>
-                  </span>
-                </td>
-              </tr>
-            </template>
-          </v-data-table>
+            <v-btn
+              class="ml-3"
+              color="primary mx-0"
+              @click="$store.dispatch('application/SWOW_ADDRESS_INPUT', true)"
+            >
+              Lookup another address
+            </v-btn>
+          </v-layout>
         </v-layout>
-      </v-container>
+
+        <v-container
+          fluid
+          fill-height
+        >
+          <v-layout child-flex>
+            <v-data-table
+              :headers="headers"
+              :items="transactions.transactions"
+              disable-initial-sort
+              :rows-per-page-items="rowsPerPageOptions"
+            >
+              <template v-slot:items="props">
+                <tr
+                  class="pointer"
+                  @click="showModal(props.item.id)"
+                >
+                  <td class="text-xs-left">
+                    <span class="clearfix">
+                      <pre>{{ props.item.time }}</pre>
+                    </span>
+                    <span class="clearfix">
+                      <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
+                    </span>
+                  </td>
+                  <td class="text-xs-left">
+                    <span class="clearfix">
+                      <pre>{{ props.item.type1 }}</pre>
+                    </span>
+                    <span class="clearfix">
+                      <pre>{{ props.item.type2 }}</pre>
+                    </span>
+                  </td>
+                  <td class="text-xs-left">
+                    <span class="clearfix">
+                      <pre>{{ props.item.mainProp1 }}</pre>
+                    </span>
+                    <span class="clearfix">
+                      <pre>{{ props.item.mainProp2 }}</pre>
+                    </span>
+                  </td>
+                  <td class="text-xs-left">
+                    <span class="clearfix">
+                      <pre>{{ props.item.signer }}</pre>
+                    </span>
+                    <span class="clearfix">
+                      <pre>{{ props.item.recipient }}</pre>
+                    </span>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+          </v-layout>
+        </v-container>
+      </v-layout>
+      <div v-if="activeTransaction">
+        <TransactionModal
+          :modal="modal"
+          :tx="activeTransaction"
+          @close="modalClosed"
+        />
+      </div>
+      <div v-if="application.showAddressInput">
+        <AddressInput />
+      </div>
     </v-layout>
-    <div v-if="activeTransaction">
-      <TransactionModal
-        :modal="modal"
-        :tx="activeTransaction"
-        @close="modalClosed"
-      />
-    </div>
-  </v-layout>
+  </div>
 </template>
 <script>
 import { mapState } from 'vuex';
 import store from '../../store/index';
 import TransactionModal from './TransactionModal.vue';
-import { GET_TRANSACTIONS_MODES } from '../../infrastructure/transactions/transactions-types';
+import { GET_TRANSACTIONS_MODES } from '../../store/transactions-types';
+import AddressInput from '../AddressInput.vue';
+
 
 export default {
   name: 'Transactions',
   store,
   components: {
     TransactionModal,
+    AddressInput,
   },
   data() {
     return {

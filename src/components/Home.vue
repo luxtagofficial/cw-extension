@@ -53,10 +53,22 @@
                 {{ wallet.activeWallet.name }}
               </h5>
               <div class="clearfix homeLine">
+                <div v-if="wallet.activeWallet.isWatchOnly">
+                  Watch-Only Wallet
+                </div>
                 <div class="clearfix">
                   Address:
                 </div>
-                <div class="clearfix">
+                <div
+                  v-if="wallet.activeWallet.isWatchOnly && wallet.activeWallet.publicAccount"
+                  class="clearfix"
+                >
+                  {{ wallet.activeWallet.publicAccount.address.pretty() }}
+                </div>
+                <div
+                  v-if="!wallet.activeWallet.isWatchOnly"
+                  class="clearfix"
+                >
                   {{ wallet.activeWallet.account.address.pretty() }}
                 </div>
               </div>
@@ -112,6 +124,7 @@ import Errors from './Errors.vue';
 import Transactions from './transactions/Transactions.vue';
 
 export default {
+  name: 'Home',
   components: {
     Errors,
     Transactions,
