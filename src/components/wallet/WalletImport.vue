@@ -17,20 +17,32 @@
 
 <template>
   <v-layout column>
-    <v-layout v-if="isValidAccount" row align-center>
+    <v-layout
+      v-if="isValidAccount"
+      row
+      align-center
+    >
       <v-flex xs3>
         <v-subheader>Address</v-subheader>
       </v-flex>
       <v-flex xs9>
-        <div class="monospaced-bold">{{account.address.pretty()}}</div>
+        <div class="monospaced-bold">
+          {{ account.address.pretty() }}
+        </div>
       </v-flex>
     </v-layout>
-    <v-layout v-if="isValidAccount" row align-center>
+    <v-layout
+      v-if="isValidAccount"
+      row
+      align-center
+    >
       <v-flex xs3>
         <v-subheader>Public Key</v-subheader>
       </v-flex>
       <v-flex xs9>
-        <div class="monospaced">{{account.publicKey}}</div>
+        <div class="monospaced">
+          {{ account.publicKey }}
+        </div>
       </v-flex>
     </v-layout>
     <v-layout row>
@@ -38,7 +50,14 @@
         <v-subheader>NEM2 node URL</v-subheader>
       </v-flex>
       <v-flex xs9>
-        <v-text-field v-model="node" class="ma-0 pa-0" label="NEM2 node URL" solo>{{node}}</v-text-field>
+        <v-text-field
+          v-model="node"
+          class="ma-0 pa-0"
+          label="NEM2 node URL"
+          solo
+        >
+          {{ node }}
+        </v-text-field>
       </v-flex>
     </v-layout>
     <v-layout row>
@@ -46,7 +65,12 @@
         <v-subheader>Wallet name</v-subheader>
       </v-flex>
       <v-flex xs9>
-        <v-text-field v-model="walletName" class="ma-0 pa-0" label="Main wallet" solo></v-text-field>
+        <v-text-field
+          v-model="walletName"
+          class="ma-0 pa-0"
+          label="Main wallet"
+          solo
+        />
       </v-flex>
     </v-layout>
     <v-layout row>
@@ -59,59 +83,71 @@
           class="ma-0 pa-0"
           label="Private Key (64 char)"
           solo
-        ></v-text-field>
+        />
       </v-flex>
     </v-layout>
-    <v-layout row justify-end align-center>
-      <v-btn flat v-on:click="$emit('closeComponent')">Close</v-btn>
+    <v-layout
+      row
+      justify-end
+      align-center
+    >
       <v-btn
-        v-on:click="save"
+        flat
+        @click="$emit('closeComponent')"
+      >
+        Close
+      </v-btn>
+      <v-btn
         :disabled="node == '' || walletName == '' || !isValidAccount"
         color="primary mx-0"
-      >Create Wallet</v-btn>
+        @click="save"
+      >
+        Create Wallet
+      </v-btn>
     </v-layout>
   </v-layout>
 </template>
 <script>
-import { NetworkType, Account } from "nem2-sdk";
-import StateRepository from "../../infrastructure/StateRepository.js";
+import { NetworkType, Account } from 'nem2-sdk';
+import store from '../../store/index';
 
 export default {
-  data: function() {
+  store,
+  data() {
     return {
-      sharedState: StateRepository.state,
-      node: "",
-      walletName: "",
+      node: '',
+      walletName: '',
       account: {},
-      privateKey: "",
-      isValidAccount: false
+      privateKey: '',
+      isValidAccount: false,
     };
   },
+  watch: {
+    privateKey() {
+      this.createFromPrivateKey(this.privateKey);
+    },
+  },
   methods: {
-    regenerateAccount: function() {
-      this.account = Account.generateNewAccount(NetworkType.MIJIN_TEST);
+    save() {
+      const newWallet = {
+        name: this.walletName,
+        account: this.account,
+        node: this.node,
+      };
+      this.$store.dispatch('wallet/ADD_WALLET', newWallet);
+      this.node = '';
+      this.walletName = '';
+      this.privateKey = '';
+      this.account = {};
     },
-    save: function() {
-      if (
-        this.sharedState.wallets.findIndex(
-          ({ name }) => name === this.walletName
-        ) === -1
-      ) {
-        StateRepository.storeWallet(this.walletName, this.account, this.node);
-        this.node = "";
-        this.walletName = "";
-        this.privateKey = "";
-        this.account = {};
-      }
-    },
-    createFromPrivateKey: function(e) {
-      const key =
-        this.privateKey.length === 64 ? this.privateKey.toUpperCase() : false;
+    createFromPrivateKey() {
+      const key = this.privateKey.length === 64
+        ? this.privateKey.toUpperCase() : false;
       if (key) {
         try {
           this.account = Account.createFromPrivateKey(
             key,
-            NetworkType.MIJIN_TEST
+            NetworkType.MIJIN_TEST,
           );
           this.isValidAccount = true;
         } catch (error) {
@@ -121,13 +157,8 @@ export default {
         this.account = {};
         this.isValidAccount = false;
       }
-    }
+    },
   },
-  watch: {
-    privateKey: function(e) {
-      this.createFromPrivateKey(this.privateKey);
-    }
-  }
 };
 </script>
 <style scoped>

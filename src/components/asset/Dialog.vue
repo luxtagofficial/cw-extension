@@ -26,7 +26,7 @@
           Send this transaction?
         </h3>
         <div>
-          Are you sure you want to send the the transaction with the following details?
+          Are you sure that you want to send a transaction with the following details?
         </div>
       </v-card-title>
       <v-card-text>

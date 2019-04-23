@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-shadow */
 /**
  * Copyright (C) 2019 Contributors as noted in the AUTHORS file
  *
@@ -16,28 +18,46 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+const state = {
+  error: false,
+  errorMessage: '',
+};
 
-import Vue from 'vue';
-import Vuex from 'vuex';
-import wallet from './wallet';
-import accountInfo from './accountInfo';
-import application from './application';
-import transactions from './transactions';
-import namespaces from './namespaces';
-import assets from './assets';
-
-Vue.use(Vuex);
-
-const debug = process.env.NODE_ENV !== 'production';
-
-export default new Vuex.Store({
-  modules: {
-    wallet,
-    application,
-    accountInfo,
-    transactions,
-    namespaces,
-    assets,
+const getters = {
+  GET_ERROR_STATE() {
+    return state.error;
   },
-  strict: debug,
-});
+  GET_ERROR_MESSAGE() {
+    return state.errorMessage;
+  },
+};
+
+const mutations = {
+  resetErrors(state) {
+    state.error = false;
+    state.errorMessage = '';
+  },
+  setError(state, errMsg) {
+    state.error = true;
+    state.errorMessage = errMsg;
+  },
+};
+
+const actions = {
+  RESET_ERRORS({ commit }) {
+    commit('resetErrors');
+  },
+  SET_ERROR({ commit }, errorMessage) {
+    const errMsg = typeof errorMessage === 'string'
+      ? errorMessage : errorMessage.toString();
+    commit('setError', errMsg);
+  },
+};
+
+export default {
+  namespaced: true,
+  state,
+  getters,
+  actions,
+  mutations,
+};

@@ -23,7 +23,7 @@ import {
  TransactionType, Address,
 } from 'nem2-sdk';
 
-import { networkCurrencyIdToName } from './nerworkCurrencyToName';
+import { networkCurrencyIdToName } from '../network/utils/nerworkCurrencyToName';
 
  const formatDate = (d) => {
  const date = d.getDate();
