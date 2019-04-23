@@ -109,9 +109,11 @@ const actions = {
 
     dispatch('application/RESET_ERRORS', null, { root: true });
 
-    // @TODO:Refactor erase account info and move to a more suitable place
-    dispatch('accountInfo/ERASE_ACCOUNT_INFO', null, { root: true });
-    dispatch('transactions/ERASE_TRANSACTIONS', null, { root: true });
+    // @TODO:Refactor clear account info and move to a more suitable place
+    dispatch('accountInfo/CLEAR_ACCOUNT_INFO', null, { root: true });
+    dispatch('transactions/CLEAR_TRANSACTIONS', null, { root: true });
+    dispatch('assets/CLEAR_ASSETS', null, { root: true });
+    dispatch('namespaces/CLEAR_NAMESPACES', null, { root: true });
 
     if (getters.GET_ACTIVE_WALLET.name === walletName) {
       if (wallets.length > 0) {
@@ -138,6 +140,10 @@ const actions = {
     );
     await dispatch(
       'namespaces/GET_NAMESPACES_BY_ADDRESS',
+      { wallet }, { root: true },
+    );
+    await dispatch(
+      'assets/GET_ASSETS_BY_ADDRESS',
       { wallet }, { root: true },
     );
   },

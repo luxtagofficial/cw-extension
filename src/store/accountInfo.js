@@ -54,7 +54,7 @@ const actions = {
     }
     commit('setLoading_getAccountInfo', false);
   },
-  async ERASE_ACCOUNT_INFO({ commit }) {
+  async CLEAR_ACCOUNT_INFO({ commit }) {
     commit('setAccountInfo', false);
     commit('setLoading_getAccountInfo', false);
   },

@@ -1,28 +1,28 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <v-layout column>
-    <div v-if="sharedState.loading_getMosaicsByAddress">
+    <div v-if="assets.loading_getMosaicsByAddress">
       <v-progress-linear :indeterminate="true" />
     </div>
     <div
-      v-if="!sharedState.loading_getMosaicsByAddress
-        && sharedState.assets.length === 0"
+      v-if="!assets.loading_getMosaicsByAddress
+        && assets.assets.length === 0"
     >
       <v-flex xs12>
         <v-alert
@@ -34,8 +34,8 @@
       </v-flex>
     </div>
     <div
-      v-if="!sharedState.loading_getMosaicsByAddress
-        && sharedState.assets.length > 0"
+      v-if="!assets.loading_getMosaicsByAddress
+        && assets.assets.length > 0"
     >
       <div>
         <v-tabs
@@ -53,8 +53,8 @@
           <v-tab-item :key="2">
             <AssetTab
               :assets="filterByOwner(
-                sharedState.assets,
-                sharedState.activeWallet.account.address.pretty()
+                assets.assets,
+                wallet.activeWallet.account.address.pretty()
               )"
               owned-assets
             />
@@ -66,7 +66,7 @@
             Assets Balance
           </v-tab>
           <v-tab-item :key="1">
-            <AssetTab :assets="filterZeros(sharedState.assets)" />
+            <AssetTab :assets="filterZeros(assets.assets)" />
           </v-tab-item>
         </v-tabs>
       </div>
@@ -75,20 +75,25 @@
 </template>
 
 <script>
-import StateRepository from '../../infrastructure/StateRepository';
+import { mapState } from 'vuex';
+import store from '../../store/index';
 import AssetTab from './AssetTab.vue';
 
 export default {
   name: 'AssetList',
+  store,
   components: {
     AssetTab,
   },
   data() {
     return {
-      sharedState: StateRepository.state,
       active: null,
     };
   },
+  computed: mapState([
+    'wallet',
+    'assets',
+  ]),
   methods: {
     filterByOwner(array, owner) {
       return array.filter(x => x.owner === owner);

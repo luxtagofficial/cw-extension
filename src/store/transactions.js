@@ -50,9 +50,8 @@ const mutations = {
 };
 
 const actions = {
-  async ERASE_TRANSACTIONS({ commit }) {
+  async CLEAR_TRANSACTIONS({ commit }) {
     commit('setAccountTransactions', false);
-    commit('setLoading_getAccountTransactionsById', false);
   },
   async GET_TRANSACTIONS_BY_ID({ commit, dispatch, getters }, { wallet, mode }) {
     await commit('setLoading_getAccountTransactionsById', true);
@@ -88,6 +87,7 @@ const actions = {
       ]));
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });
+      // eslint-disable-next-line no-console
       console.error(error, 'GET_TRANSACTIONS_BY_ID');
     }
 

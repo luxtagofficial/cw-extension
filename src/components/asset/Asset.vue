@@ -43,7 +43,7 @@
       >
         <v-btn
           color="primary mx-0"
-          @click="reloadList"
+          @click="reloadList(activeWallet)"
         >
           Reload List
         </v-btn>
@@ -56,11 +56,11 @@
         </v-btn>
       </v-layout>
     </v-layout>
-    <Errors :shared-state="sharedState" />
+    <Errors />
     <div
-      v-if="sharedState.wallets.length > 0
-        && sharedState.activeWallet
-        && !sharedState.error"
+      v-if="wallet.wallets.length > 0
+        && wallet.activeWallet
+        && !application.error"
     >
       <AssetCreation
         v-show="createAsset"
@@ -71,12 +71,15 @@
   </v-layout>
 </template>
 <script>
-import StateRepository from '../../infrastructure/StateRepository';
+import { mapState } from 'vuex';
+import store from '../../store/index';
 import Errors from '../Errors.vue';
 import AssetCreation from './AssetCreation.vue';
 import AssetList from './AssetList.vue';
 
 export default {
+  name: 'Assets',
+  store,
   components: {
     Errors,
     AssetCreation,
@@ -84,14 +87,23 @@ export default {
   },
   data() {
     return {
-      sharedState: StateRepository.state,
       createAsset: false,
       reloadAssetNotifier: 0,
     };
   },
+  computed: {
+    ...mapState([
+      'wallet',
+      'application',
+      'assets',
+    ]),
+    activeWallet() {
+      return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
+    },
+  },
   methods: {
-    reloadList() {
-      StateRepository.loadMosaics();
+    reloadList(wallet) {
+      this.$store.dispatch('assets/GET_ASSETS_BY_ADDRESS', { wallet });
     },
   },
 };

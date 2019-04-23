@@ -18,47 +18,47 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { getNamespacesByAddress } from '../components/utils/getNamespacesByAddress';
+import getMosaicsByAddress from '../components/utils/getMosaicsByAddress';
 
 const state = {
-  namespaces: false,
-  loading_getNamespacesByAddress: false,
+  assets: false,
+  loading_getMosaicsByAddress: false,
 };
 
 const getters = {
-  GET_NAMESPACES() {
-    return state.namespaces;
+  GET_ASSETS() {
+    return state.assets;
   },
 };
 
 const mutations = {
-  setAccountNamespaces(state, namespaces) {
-    state.namespaces = namespaces;
+  setAccountAssets(state, assets) {
+    state.assets = assets;
   },
-  setLoading_getNamespacesByAddress(state, bool) {
-    state.loading_getNamespacesByAddress = bool;
+  setLoading_getMosaicsByAddress(state, bool) {
+    state.loading_getMosaicsByAddress = bool;
   },
-  clearNamespaces(state) {
-    state.namespaces = false;
+  clearAssets(state) {
+    state.assets = false;
   },
 };
 
 const actions = {
-  async CLEAR_NAMESPACES({ commit }) {
-    commit('setAccountNamespaces', false);
+  async CLEAR_ASSETS({ commit }) {
+    commit('clearAssets', false);
   },
-  async GET_NAMESPACES_BY_ADDRESS({ commit, dispatch }, { wallet }) {
-    await commit('setLoading_getNamespacesByAddress', true);
+  async GET_ASSETS_BY_ADDRESS({ commit, dispatch }, { wallet }) {
+    await commit('setLoading_getMosaicsByAddress', true);
     try {
-      await dispatch('CLEAR_NAMESPACES');
-      const namespaces = await getNamespacesByAddress(wallet);
-      commit('setAccountNamespaces', namespaces);
+      await dispatch('CLEAR_ASSETS');
+      const namespaces = await getMosaicsByAddress(wallet);
+      commit('setAccountAssets', namespaces);
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });
       // eslint-disable-next-line no-console
-      console.error(error, 'GET_NAMESPACES_BY_ADDRESS');
+      console.error(error, 'GET_ASSETS_BY_ADDRESS');
     }
-    commit('setLoading_getNamespacesByAddress', false);
+    commit('setLoading_getMosaicsByAddress', false);
   },
 };
 

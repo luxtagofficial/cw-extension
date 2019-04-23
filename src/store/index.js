@@ -24,6 +24,7 @@ import accountInfo from './accountInfo';
 import application from './application';
 import transactions from './transactions';
 import namespaces from './namespaces';
+import assets from './assets';
 
 Vue.use(Vuex);
 
@@ -36,6 +37,7 @@ export default new Vuex.Store({
     accountInfo,
     transactions,
     namespaces,
+    assets,
   },
   strict: debug,
 });
