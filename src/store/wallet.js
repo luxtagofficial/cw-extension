@@ -56,7 +56,7 @@ const mutations = {
     state.walletNumber += wallets.length;
   },
   removeWallet(state, indexOfWalletToRemove) {
-    state.wallets.splice(indexOfWalletToRemove);
+    state.wallets.splice(indexOfWalletToRemove, 1);
   },
 };
 
@@ -64,16 +64,18 @@ const actions = {
   // @TODO:Move application initialization to a more suitable place (application store?)
   async INIT_APPLICATION({ dispatch, commit }) {
     const localStorageWallets = localStorage.getItem('wallets');
-    if (!(localStorageWallets.length > 0)) return;
+    if (!localStorageWallets) return;
 
     const wallets = jsonToWallets(localStorageWallets);
+    if (!(wallets > 0)) return;
+
     await commit('addWalletsFromStorage', wallets);
     const activeWallet = wallets[0];
     await commit('setActiveWallet', activeWallet);
 
     await dispatch('FETCH_WALLET_DATA', activeWallet);
   },
-  async ADD_WALLET({ commit, getters }, walletData) {
+  async ADD_WALLET({ commit, getters, dispatch }, walletData) {
     const newWallet = new Wallet(walletData);
 
     // no wallet name duplicate @TODO add snackbar message
@@ -82,18 +84,19 @@ const actions = {
     await commit('addWallet', newWallet);
 
     if (!getters.GET_ACTIVE_WALLET) {
-      commit('setActiveWallet', newWallet);
+      dispatch('SET_ACTIVE_WALLET', newWallet.name);
     }
 
     const walletsToStore = [...getters.GET_WALLETS];
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
-  SET_ACTIVE_WALLET({ commit, dispatch }, newActiveWalletName) {
-    if (state.activeWallet.name === newActiveWalletName) return;
-    if (state.wallets.map(({ name }) => name)
+  SET_ACTIVE_WALLET({ commit, dispatch, getters }, newActiveWalletName) {
+    if (getters.GET_ACTIVE_WALLET.name === newActiveWalletName) return;
+    const wallets = getters.GET_WALLETS;
+    if (wallets.map(({ name }) => name)
       .indexOf(newActiveWalletName) === -1) return;
 
-    const newActiveWallet = state.wallets
+    const newActiveWallet = wallets
       .find(wallet => wallet.name === newActiveWalletName);
 
     commit('setActiveWallet', newActiveWallet);
@@ -115,12 +118,10 @@ const actions = {
     dispatch('assets/CLEAR_ASSETS', null, { root: true });
     dispatch('namespaces/CLEAR_NAMESPACES', null, { root: true });
 
-    if (getters.GET_ACTIVE_WALLET.name === walletName) {
-      if (wallets.length > 0) {
-        commit('setActiveWallet', getters.GET_WALLETS[0]);
-      } else {
-        commit('setActiveWallet', false);
-      }
+    if (wallets.length === 0) {
+      commit('setActiveWallet', false);
+    } else if (getters.GET_ACTIVE_WALLET.name === walletName) {
+      commit('setActiveWallet', getters.GET_WALLETS[0]);
     }
 
     localStorage.setItem('wallets', walletsToJSON(wallets));

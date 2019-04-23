@@ -65,7 +65,7 @@
                 <v-btn
                   icon
                   ripple
-                  @click="removeWallet(wallet)"
+                  @click="removeWallet(wallet.name)"
                 >
                   <v-icon color="grey lighten-1">
                     close
@@ -94,8 +94,8 @@ export default {
     'wallet',
   ]),
   methods: {
-    removeWallet(wallet) {
-      this.$store.dispatch('wallet/REMOVE_WALLET', wallet);
+    removeWallet(walletName) {
+      this.$store.dispatch('wallet/REMOVE_WALLET', walletName);
     },
   },
 };
