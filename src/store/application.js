@@ -21,6 +21,7 @@
 const state = {
   error: false,
   errorMessage: '',
+  showAddressInput: false,
 };
 
 const getters = {
@@ -41,6 +42,9 @@ const mutations = {
     state.error = true;
     state.errorMessage = errMsg;
   },
+  showAddressInput(state, bool) {
+    state.showAddressInput = bool;
+  },
 };
 
 const actions = {
@@ -51,6 +55,9 @@ const actions = {
     const errMsg = typeof errorMessage === 'string'
       ? errorMessage : errorMessage.toString();
     commit('setError', errMsg);
+  },
+  SWOW_ADDRESS_INPUT({ commit }, bool) {
+    commit('showAddressInput', bool);
   },
 };
 
