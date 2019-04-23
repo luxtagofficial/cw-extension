@@ -22,7 +22,7 @@ import {
   Address,
 } from 'nem2-sdk';
 
-import { networkCurrencyIdToName, networkCurrencyNames } from './nerworkCurrencyToName';
+import { networkCurrencyIdToName, networkCurrencyNames } from '../network/utils/nerworkCurrencyToName';
 
 const expirationText = (expiration) => {
  const expired = expiration < 0;
