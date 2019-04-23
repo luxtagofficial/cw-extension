@@ -30,53 +30,45 @@
           mb-4
           mt-4
         >
-          <h5 class="headline pt-3 pl-2">
-            Transactions
-          </h5>
-        </v-layout>
-        <v-layout
-          row
-          fill-height
-          justify-end
-          xs9
-        >
-          <v-btn
-            color="primary mx-0"
-            @click="refresh(wallet.activeWallet)"
+          <v-layout
+            row
+            fill-height
+            justify-start
+            pl-3
+            xs3
           >
-            Refresh
-          </v-btn>
-          <v-btn
-            class="ml-3"
-            color="primary mx-0"
-            @click="loadMore(wallet.activeWallet)"
+            <h5 class="headline pt-3 pl-2">
+              Transactions
+            </h5>
+          </v-layout>
+          <v-layout
+            row
+            fill-height
+            justify-end
+            xs9
           >
             <v-btn
               color="primary mx-0"
-              @click="refresh(activeWallet)"
+              @click="refresh(wallet.activeWallet)"
             >
               Refresh
             </v-btn>
             <v-btn
               class="ml-3"
               color="primary mx-0"
-              @click="loadMore(activeWallet)"
+              @click="loadMore(wallet.activeWallet)"
             >
               Load more
             </v-btn>
           </v-layout>
         </v-layout>
-      </v-layout>
-      <v-container
-        fluid
-        fill-height
-      >
-        <v-layout child-flex>
-          <v-data-table
-            :headers="headers"
-            :items="transactions.transactions[wallet.activeWallet.name]"
-            disable-initial-sort
-            :rows-per-page-items="rowsPerPageOptions"
+
+        <v-layout>
+          <v-layout
+            row
+            fill-height
+            justify-end
+            xs9
           >
             <v-btn
               class="ml-3"
@@ -95,7 +87,7 @@
           <v-layout child-flex>
             <v-data-table
               :headers="headers"
-              :items="transactions.transactions"
+              :items="transactions.transactions[wallet.activeWallet.name]"
               disable-initial-sort
               :rows-per-page-items="rowsPerPageOptions"
             >
@@ -159,9 +151,8 @@
 import { mapState } from 'vuex';
 import store from '../../store/index';
 import TransactionModal from './TransactionModal.vue';
-import { GET_TRANSACTIONS_MODES } from '../../store/transactions-types';
+import { GET_TRANSACTIONS_MODES } from '../../infrastructure/transactions/transactions-types';
 import AddressInput from '../AddressInput.vue';
-
 
 export default {
   name: 'Transactions',
@@ -187,6 +178,7 @@ export default {
   },
   computed: mapState([
     'transactions',
+    'application',
     'wallet',
   ]),
   methods: {
