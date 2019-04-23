@@ -57,7 +57,7 @@
             </v-layout>
         </v-layout>
 
-        <Errors :shared-state="sharedState" />
+        <Errors />
         <AddFilter
                 @closeFilter="addFilter=false"
                 v-if="addFilter"
@@ -75,7 +75,6 @@
 </template>
 
 <script>
-    import StateRepository from '../../infrastructure/StateRepository';
     import AddFilter from './addFilter'
     import Errors from '../Errors'
 
@@ -87,7 +86,6 @@
         },
         data:function () {
             return {
-                sharedState:StateRepository.state,
                 addFilter:true
             }
         },
@@ -100,5 +98,4 @@
 </script>
 
 <style scoped>
-
 </style>
