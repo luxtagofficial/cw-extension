@@ -54,5 +54,8 @@
     "type": "git",
     "url": "git+https://github.com/aleixmorgadas/nem2-wallet-browserextension.git"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "optionalDependencies": {
+    "bufferutil": "^4.0.1"
+  }
 }
