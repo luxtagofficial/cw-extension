@@ -316,7 +316,7 @@ import {
   Mosaic,
 } from 'nem2-sdk';
 import { mapState } from 'vuex';
-import store from '../store/index';
+import store from '../../store/index';
 import SendConfirmation from './SendConfirmation.vue';
 import Errors from '../Errors.vue';
 import AssetList from '../asset/AssetList.vue';

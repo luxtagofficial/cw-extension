@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
-import getMosaicsByAddress from '../components/utils/getMosaicsByAddress';
+import getMosaicsByAddress from '../infrastructure/assets/getMosaicsByAddress';
 
 const state = {
   assets: false,

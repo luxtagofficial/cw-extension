@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { getNamespacesByAddress } from '../components/utils/getNamespacesByAddress';
+import { getNamespacesByAddress } from '../infrastructure/namespaces/getNamespacesByAddress';
 
 const state = {
   namespaces: false,

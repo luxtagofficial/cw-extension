@@ -18,8 +18,8 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
-import getAccountTransactionsById from '../components/utils/getAccountTransactionsById';
-import { removeDuplicatesAndSortByBlockNumber } from '../components/utils/formatTransactions';
+import getAccountTransactionsById from '../infrastructure/transactions/getAccountTransactionsById';
+import { removeDuplicatesAndSortByBlockNumber } from '../infrastructure/transactions/formatTransactions';
 // To move to a more appropriate place
 
 

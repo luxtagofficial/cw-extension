@@ -22,9 +22,9 @@
 import {
   walletsToJSON,
   jsonToWallets,
-} from '../infrastructure/wallet';
+} from '../infrastructure/wallet/wallet';
 
-import { Wallet } from './wallet-types';
+import { Wallet } from '../infrastructure/wallet/wallet-types';
 import { GET_TRANSACTIONS_MODES } from './transactions-types';
 
 const state = {
