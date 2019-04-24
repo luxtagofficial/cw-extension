@@ -1,19 +1,19 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <div>
@@ -101,24 +101,27 @@
                       <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
                     </span>
                     <span class="clearfix">
-                      <pre>something</pre>
-                    </span>
-                  </td>
-                  <td class="text-xs-left">
-                    <span class="clearfix">
                       <pre>{{ props.item.type1 }}</pre>
                     </span>
-                    <span class="clearfix">
+                    <span
+                      v-if="props.item.type2 !== ''"
+                      class="clearfix"
+                    >
                       <pre>{{ props.item.type2 }}</pre>
                     </span>
                   </td>
                   <td class="text-xs-left">
-                    <span class="clearfix">
-                      <pre>{{ props.item.mainProp1 }}</pre>
-                    </span>
-                    <span class="clearfix">
-                      <pre>{{ props.item.mainProp2 }}</pre>
-                    </span>
+                    <div
+                      v-for="(mainProp, index) in props.item.mainProps"
+                      :key="index"
+                    >
+                      <span
+                        class="clearfix"
+                        style="text-align:left"
+                      >
+                        <pre>{{ mainProp.key }}&nbsp;{{ mainProp.value }}</pre>
+                      </span>
+                    </div>
                   </td>
                   <td class="text-xs-left">
                     <span class="clearfix">
@@ -164,9 +167,8 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'Block', value: 'blockNumber' },
-        { text: 'Type', value: 'type1' },
-        { text: 'Main properties', value: 'mainProp1' },
+        { text: 'Block / Type', value: 'blockNumber' },
+        { text: 'Main properties', value: '' },
         { text: 'Signer / Recipient', value: 'recipient' },
       ],
       rowsPerPageOptions: [
