@@ -68,9 +68,6 @@ const actions = {
           : undefined;
         break;
       case 'init':
-        currentId = typeof actualTransactions === 'undefined'
-          ? undefined : actualTransactions[actualTransactions.length - 1].id;
-        break;
       case 'refresh':
       default:
         currentId = undefined;
