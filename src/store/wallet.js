@@ -18,13 +18,9 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import {
-  walletsToJSON,
-  jsonToWallets,
-} from '../infrastructure/wallet/wallet';
-
-import { Wallet } from '../infrastructure/wallet/wallet-types';
+import { PublicAccount, NetworkType } from 'nem2-sdk';
+import { walletsToJSON, jsonToWallets } from '../infrastructure/wallet/wallet';
+import { Wallet, WoWallet } from '../infrastructure/wallet/wallet-types';
 import { GET_TRANSACTIONS_MODES } from '../infrastructure/transactions/transactions-types';
 import { GET_NAMESPACES_MODES } from '../infrastructure/namespaces/namespaces-types';
 import { GET_ASSETS_MODES } from '../infrastructure/assets/assets-types';
@@ -60,11 +56,18 @@ const mutations = {
   removeWallet(state, indexOfWalletToRemove) {
     state.wallets.splice(indexOfWalletToRemove, 1);
   },
+  setActiveWalletPublicAccount(state, publicAccount) {
+    state.activeWallet.publicAccount = publicAccount;
+  },
+  setWalletPublicAccount(state, { walletIndex, publicAccount }) {
+    state.wallets[walletIndex].publicAccount = publicAccount;
+  },
 };
 
 const actions = {
-  // @TODO:Move application initialization to a more suitable place (application store?)
   async INIT_APPLICATION({ dispatch, commit }) {
+    // @TODO:Move application initialization to a more suitable place (application store?)
+
     const localStorageWallets = localStorage.getItem('wallets');
     if (!localStorageWallets) return;
 
@@ -76,6 +79,7 @@ const actions = {
 
     await dispatch('FETCH_WALLET_DATA', activeWallet);
   },
+
   async ADD_WALLET({ commit, getters, dispatch }, walletData) {
     const newWallet = new Wallet(walletData);
 
@@ -88,24 +92,31 @@ const actions = {
       dispatch('SET_ACTIVE_WALLET', newWallet.name);
     }
 
-    const walletsToStore = [...getters.GET_WALLETS];
+    const walletsToStore = [
+      ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
+    ];
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
+
+  async ADD_WATCH_ONLY_WALLET({ commit, dispatch }, walletData) {
+    const newWoWallet = new WoWallet(walletData);
+    await commit('addWallet', newWoWallet);
+    dispatch('SET_ACTIVE_WALLET', newWoWallet.name);
+  },
+
   async SET_ACTIVE_WALLET({ commit, dispatch, getters }, newActiveWalletName) {
     if (getters.GET_ACTIVE_WALLET.name === newActiveWalletName) return;
-    const wallets = getters.GET_WALLETS;
-    if (wallets.map(({ name }) => name)
-      .indexOf(newActiveWalletName) === -1) return;
 
-    const newActiveWallet = wallets
-      .find(wallet => wallet.name === newActiveWalletName);
+    const wallets = await getters.GET_WALLETS;
+    if (wallets.map(({ name }) => name).indexOf(newActiveWalletName) === -1) return;
 
+    const newActiveWallet = wallets.find(wallet => wallet.name === newActiveWalletName);
     await commit('setActiveWallet', newActiveWallet);
     dispatch('FETCH_WALLET_DATA', newActiveWallet);
   },
+
   async REMOVE_WALLET({ commit, getters, dispatch }, walletName) {
-    const indexOfWalletToRemove = getters.GET_WALLETS
-      .findIndex(({ name }) => name === walletName);
+    const indexOfWalletToRemove = getters.GET_WALLETS.findIndex(({ name }) => name === walletName);
 
     await commit('removeWallet', indexOfWalletToRemove);
 
@@ -125,9 +136,15 @@ const actions = {
       commit('setActiveWallet', getters.GET_WALLETS[0]);
     }
 
-    localStorage.setItem('wallets', walletsToJSON(wallets));
+    const walletsToStore = [
+      ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
+    ];
+    localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
-  async FETCH_WALLET_DATA({ dispatch }, wallet) {
+
+  async FETCH_WALLET_DATA({
+    dispatch, getters, commit, rootState,
+  }, wallet) {
     if (wallet === false) return;
     try {
       await dispatch('accountInfo/FETCH_ACCOUNT_INFO', wallet, { root: true });
@@ -136,17 +153,39 @@ const actions = {
       console.error(error, 'FETCH_WALLET_DATA');
       return;
     }
+
+    if (wallet.isWatchOnly && !wallet.publicAccount) {
+      const publicAccount = PublicAccount.createFromPublicKey(
+        rootState.accountInfo.accountInfo[wallet.name].publicKey,
+        NetworkType.MIJIN_TEST,
+      );
+      await commit('setActiveWalletPublicAccount', publicAccount);
+
+      if (wallet.isToBeSaved) {
+        const walletIndex = getters.GET_WALLETS.findIndex(({ name }) => name === wallet.name);
+        await commit('setWalletPublicAccount', { walletIndex, publicAccount });
+
+        const walletsToStore = [
+          ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
+        ];
+        localStorage.setItem('wallets', walletsToJSON(walletsToStore));
+      }
+    }
+
     dispatch(
       'transactions/GET_TRANSACTIONS_BY_ID',
-      { wallet, mode: GET_TRANSACTIONS_MODES.INIT }, { root: true },
+      { wallet, mode: GET_TRANSACTIONS_MODES.INIT },
+      { root: true },
     );
     dispatch(
       'namespaces/GET_NAMESPACES_BY_ADDRESS',
-      { wallet, mode: GET_NAMESPACES_MODES.ON_WALLET_CHANGE }, { root: true },
+      { wallet, mode: GET_NAMESPACES_MODES.ON_WALLET_CHANGE },
+      { root: true },
     );
     dispatch(
       'assets/GET_ASSETS_BY_ADDRESS',
-      { wallet, mode: GET_ASSETS_MODES.ON_WALLET_CHANGE }, { root: true },
+      { wallet, mode: GET_ASSETS_MODES.ON_WALLET_CHANGE },
+      { root: true },
     );
   },
 };

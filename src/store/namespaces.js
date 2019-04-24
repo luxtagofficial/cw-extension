@@ -28,7 +28,7 @@ const state = {
 
 const getters = {
   GET_NAMESPACES(state, getters, rootState) {
-    return state.namespaces[rootState['wallet/activeWallet.name']];
+    return state.namespaces[rootState.wallet.activeWallet.name];
   },
 };
 
@@ -47,8 +47,10 @@ const actions = {
     commit('setAccountNamespaces', { wallet, namespaces: false });
   },
   async GET_NAMESPACES_BY_ADDRESS({ commit, dispatch, getters }, { wallet, mode }) {
-    await commit('setLoading_getNamespacesByAddress', true);
     if (mode === GET_NAMESPACES_MODES.ON_WALLET_CHANGE && getters.GET_NAMESPACES) return;
+
+    await commit('setLoading_getNamespacesByAddress', true);
+
     try {
       const namespaces = await getNamespacesByAddress(wallet);
       commit('setAccountNamespaces', { wallet, namespaces });

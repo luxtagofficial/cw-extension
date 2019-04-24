@@ -28,7 +28,7 @@ const state = {
 
 const getters = {
   GET_ASSETS(state, getters, rootState) {
-    return state.assets[rootState['wallet/activeWallet.name']];
+    return state.assets[rootState.wallet.activeWallet.name];
   },
 };
 

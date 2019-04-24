@@ -22,7 +22,16 @@ import { formatAccountInfo } from './formatAccountInfo';
 
 const getAccountInfo = wallet => new Promise((resolve, reject) => {
   const accountHttp = new AccountHttp(wallet.node);
-  accountHttp.getAccountInfo(wallet.account.address).subscribe(
+  let address;
+  if (wallet.isWatchOnly) {
+    address = wallet.publicAccount
+      ? wallet.publicAccount.address : wallet.address;
+  } else {
+    // eslint-disable-next-line prefer-destructuring
+    address = wallet.account.address;
+  }
+
+  accountHttp.getAccountInfo(address).subscribe(
     (ai) => {
       resolve(formatAccountInfo(ai));
     },

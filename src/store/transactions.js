@@ -30,7 +30,7 @@ const state = {
 
 const getters = {
   GET_TRANSACTIONS(state, getters, rootState) {
-    return state.transactions[rootState['wallet/activeWallet.name']];
+    return state.transactions[rootState.wallet.activeWallet.name];
   },
   GET_FIRST_TRANSACTION() {
     return state.transactions[0];
@@ -68,7 +68,7 @@ const actions = {
         break;
       case 'init':
         currentId = typeof actualTransactions === 'undefined'
-          ? undefined : actualTransactions[actualTransactions.length - 1];
+          ? undefined : actualTransactions[actualTransactions.length - 1].id;
         break;
       case 'refresh':
       default:

@@ -13,3 +13,22 @@ export class Wallet {
     delete this.walletData;
   }
 }
+
+export class WoWallet {
+  constructor(walletData) {
+    const {
+      name,
+      address,
+      node,
+      isToBeSaved,
+    } = walletData;
+
+    this.name = name;
+    this.address = address;
+    this.node = node;
+    this.publicAccount = false;
+    this.isWatchOnly = true;
+    this.isToBeSaved = isToBeSaved;
+    delete this.walletData;
+  }
+}
