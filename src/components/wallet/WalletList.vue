@@ -54,9 +54,17 @@
             >
               <v-list-tile-content class="my-2">
                 <v-list-tile-title>{{ wallet.name }}</v-list-tile-title>
-                <v-list-tile-sub-title class="monospaced-bold">
-                  {{ wallet.account.address.pretty() }}
-                </v-list-tile-sub-title>
+                <div v-if="!wallet.isWatchOnly">
+                  <v-list-tile-sub-title class="monospaced-bold">
+                    {{ wallet.account.address.pretty() }}
+                  </v-list-tile-sub-title>
+                </div>
+                <div v-if="wallet.isWatchOnly">
+                  <v-list-tile-sub-title class="monospaced-bold">
+                    {{ wallet.publicAccount.address.pretty() }}
+                  </v-list-tile-sub-title>
+                </div>
+
                 <v-list-tile-sub-title class="monospaced">
                   {{ wallet.node }}
                 </v-list-tile-sub-title>

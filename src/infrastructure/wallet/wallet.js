@@ -1,14 +1,22 @@
-import { Account, NetworkType } from 'nem2-sdk';
+import { Account, NetworkType, PublicAccount } from 'nem2-sdk';
 
 
 export const walletsToJSON = wallets => JSON.stringify(wallets.map(wallet => ({
   name: wallet.name,
-  privateKey: wallet.account.privateKey,
+  isWatchOnly: wallet.isWatchOnly || false,
+  privateKey: wallet.isWatchOnly ? '' : wallet.account.privateKey,
+  publicKey: wallet.isWatchOnly ? wallet.publicAccount.publicKey : '',
   node: wallet.node,
 })));
 
 export const jsonToWallets = json => JSON.parse(json).map(wallet => ({
   name: wallet.name,
-  account: Account.createFromPrivateKey(wallet.privateKey, NetworkType.MIJIN_TEST),
+  isWatchOnly: wallet.isWatchOnly || false,
+  account: wallet.isWatchOnly
+    ? ''
+    : Account.createFromPrivateKey(wallet.privateKey, NetworkType.MIJIN_TEST),
+  publicAccount: wallet.isWatchOnly
+    ? PublicAccount.createFromPublicKey(wallet.publicKey, NetworkType.MIJIN_TEST)
+    : '',
   node: wallet.node,
 }));

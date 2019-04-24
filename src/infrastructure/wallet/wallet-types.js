@@ -3,12 +3,12 @@ export class Wallet {
   constructor(walletData) {
     const {
       name,
-      address,
+      account,
       node,
     } = walletData;
 
     this.name = name;
-    this.address = address;
+    this.account = account;
     this.node = node;
     delete this.walletData;
   }

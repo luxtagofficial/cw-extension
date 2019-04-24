@@ -56,7 +56,9 @@
             <AssetTab
               :assets="filterByOwner(
                 assets.assets[wallet.activeWallet.name],
-                wallet.activeWallet.account.address.pretty()
+                wallet.activeWallet.isWatchOnly
+                  ? wallet.activeWallet.publicAccount.address.pretty()
+                  : wallet.activeWallet.account.address.pretty()
               )"
               owned-assets
             />

@@ -22,8 +22,14 @@ import { formatAccountInfo } from './formatAccountInfo';
 
 const getAccountInfo = wallet => new Promise((resolve, reject) => {
   const accountHttp = new AccountHttp(wallet.node);
-  const address = wallet.isWatchOnly
-    ? wallet.address : wallet.account.address;
+  let address;
+  if (wallet.isWatchOnly) {
+    address = wallet.publicAccount
+      ? wallet.publicAccount.address : wallet.address;
+  } else {
+    // eslint-disable-next-line prefer-destructuring
+    address = wallet.account.address;
+  }
 
   accountHttp.getAccountInfo(address).subscribe(
     (ai) => {

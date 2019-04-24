@@ -29,7 +29,8 @@ import { formatMosaics, sortMosaics } from './formatMosaics';
 
 const getMosaicsByAddress = async wallet => new Promise(async (resolve, reject) => {
     try {
-      const { address } = wallet.account;
+      const { address } = wallet.isWatchOnly
+        ? wallet.publicAccount : wallet.account;
       const endpoint = wallet.node;
       const mosaicService = new MosaicService(
         new AccountHttp(endpoint),

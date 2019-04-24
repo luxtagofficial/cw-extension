@@ -92,7 +92,6 @@ export default {
       validAddress: false,
       name: '',
       node: this.$store.getters['wallet/GET_ACTIVE_WALLET'].node,
-      dialog: false,
       disabledValidation: true,
       isToBeSaved: false,
     };
@@ -116,12 +115,12 @@ export default {
     },
     name: {
       handler(e) {
-        this.disabledValidation = !(typeof e !== 'string');
+        this.disabledValidation = !(typeof e === 'string');
       },
     },
     node: {
       handler(e) {
-        this.disabledValidation = !(typeof e !== 'string');
+        this.disabledValidation = !(typeof e === 'string');
       },
     },
     isToBeSaved: {
@@ -140,7 +139,7 @@ export default {
           node: this.node,
           isToBeSaved: this.isToBeSaved,
         });
-      this.dialog = false;
+      this.$store.dispatch('application/SWOW_ADDRESS_INPUT', false);
     },
   },
 };

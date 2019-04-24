@@ -93,32 +93,24 @@ const actions = {
     }
 
     const walletsToStore = [
-      ...getters.GET_WALLETS.filter(({ isToBeSaved }) => isToBeSaved === true),
+      ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
     ];
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
+
   async ADD_WATCH_ONLY_WALLET({ getters, commit, dispatch }, walletData) {
     const newWoWallet = new WoWallet(walletData);
     await commit('addWallet', newWoWallet);
-
-    if (newWoWallet.isToBeSaved) {
-      const walletsToStore = [
-        ...getters.GET_WALLETS.filter(({ isToBeSaved }) => isToBeSaved === true),
-      ];
-      localStorage.setItem('wallets', walletsToJSON(walletsToStore));
-    }
-
     dispatch('SET_ACTIVE_WALLET', newWoWallet.name);
   },
+
   async SET_ACTIVE_WALLET({ commit, dispatch, getters }, newActiveWalletName) {
     if (getters.GET_ACTIVE_WALLET.name === newActiveWalletName) return;
+
     const wallets = await getters.GET_WALLETS;
-    console.log(wallets, 'WALLETS')
     if (wallets.map(({ name }) => name).indexOf(newActiveWalletName) === -1) return;
 
     const newActiveWallet = wallets.find(wallet => wallet.name === newActiveWalletName);
-    console.log(newActiveWallet, 'newActiveWallet')
-
     await commit('setActiveWallet', newActiveWallet);
     dispatch('FETCH_WALLET_DATA', newActiveWallet);
   },
@@ -145,12 +137,14 @@ const actions = {
     }
 
     const walletsToStore = [
-      ...getters.GET_WALLETS.filter(({ isToBeSaved }) => isToBeSaved === true),
+      ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
     ];
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
 
-  async FETCH_WALLET_DATA({ dispatch, getters, commit, rootGetters }, wallet) {
+  async FETCH_WALLET_DATA({
+    dispatch, getters, commit, rootState,
+  }, wallet) {
     if (wallet === false) return;
     try {
       await dispatch('accountInfo/FETCH_ACCOUNT_INFO', wallet, { root: true });
@@ -159,32 +153,40 @@ const actions = {
       console.error(error, 'FETCH_WALLET_DATA');
       return;
     }
-    
+
     if (wallet.isWatchOnly && !wallet.publicAccount) {
-      const accountInfo = await getters['accountInfo/GET_ACCOUNT_INFO'].publicKey;
       const publicAccount = PublicAccount.createFromPublicKey(
-        accountInfo.publicKey,
+        rootState.accountInfo.accountInfo[wallet.name].publicKey,
         NetworkType.MIJIN_TEST,
       );
       await commit('setActiveWalletPublicAccount', publicAccount);
 
       if (wallet.isToBeSaved) {
+        console.log(publicAccount.publicKey, wallet.name, 'publicAccount');
         const walletIndex = getters.GET_WALLETS.findIndex(({ name }) => name === wallet.name);
-        commit('setWalletPublicAccount', { walletIndex, publicAccount });
+        await commit('setWalletPublicAccount', { walletIndex, publicAccount });
+
+        const walletsToStore = [
+          ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
+        ];
+        localStorage.setItem('wallets', walletsToJSON(walletsToStore));
       }
     }
-    
+
     dispatch(
       'transactions/GET_TRANSACTIONS_BY_ID',
-      { wallet, mode: GET_TRANSACTIONS_MODES.INIT }, { root: true },
+      { wallet, mode: GET_TRANSACTIONS_MODES.INIT },
+      { root: true },
     );
     dispatch(
       'namespaces/GET_NAMESPACES_BY_ADDRESS',
-      { wallet, mode: GET_NAMESPACES_MODES.ON_WALLET_CHANGE }, { root: true },
+      { wallet, mode: GET_NAMESPACES_MODES.ON_WALLET_CHANGE },
+      { root: true },
     );
     dispatch(
       'assets/GET_ASSETS_BY_ADDRESS',
-      { wallet, mode: GET_ASSETS_MODES.ON_WALLET_CHANGE }, { root: true },
+      { wallet, mode: GET_ASSETS_MODES.ON_WALLET_CHANGE },
+      { root: true },
     );
   },
 };
