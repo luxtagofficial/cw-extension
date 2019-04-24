@@ -98,10 +98,10 @@
                 >
                   <td class="text-xs-left">
                     <span class="clearfix">
-                      <pre>{{ props.item.time }}</pre>
+                      <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
                     </span>
                     <span class="clearfix">
-                      <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
+                      <pre>something</pre>
                     </span>
                   </td>
                   <td class="text-xs-left">
@@ -122,10 +122,10 @@
                   </td>
                   <td class="text-xs-left">
                     <span class="clearfix">
-                      <pre>{{ props.item.signer }}</pre>
+                      <pre>{{ props.item.signerTiny }}</pre>
                     </span>
                     <span class="clearfix">
-                      <pre>{{ props.item.recipient }}</pre>
+                      <pre>{{ props.item.recipientTiny }}</pre>
                     </span>
                   </td>
                 </tr>
@@ -164,7 +164,7 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'Time / Block', value: 'blockNumber' },
+        { text: 'Block', value: 'blockNumber' },
         { text: 'Type', value: 'type1' },
         { text: 'Main properties', value: 'mainProp1' },
         { text: 'Signer / Recipient', value: 'recipient' },

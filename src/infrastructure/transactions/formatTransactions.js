@@ -25,15 +25,18 @@ import {
 
 import { networkCurrencyIdToName } from '../network/utils/nerworkCurrencyToName';
 
- const formatDate = (d) => {
- const date = d.getDate();
- const month = d.getMonth() + 1;
- const year = d.getFullYear();
- const hours = d.getHours();
- const minutes = d.getMinutes();
 
- return `${year.toString().substring(2)}/${month}/${date} ${hours}:${minutes}`;
+const formatDate = (d) => {
+  const date = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+  let hours = d.getHours();
+  let minutes = d.getMinutes();
+  if (hours.length === 1) hours = `0${hours}`;
+  if (minutes.length === 1) minutes = `0${minutes}`;
+  return `${year.toString().substring(2)}/${month}/${date} ${hours}:${minutes}`;
 };
+
 
 const txTypeNameFromTypeId = (typeId) => {
  switch (typeId) {
@@ -300,15 +303,23 @@ const getBody = (tx) => {
     return { body, headerExtension };
 };
 
+const tinyAddress = address =>
+  // eslint-disable-next-line implicit-arrow-linebreak
+  `${address.substring(0, 13).toLowerCase()}...${address.substring(42).toLowerCase()}`;
+
 const formatTransaction = (tx) => {
+    const signer = new Address(tx.signer.address.address).pretty();
+    const signerTiny = tinyAddress(signer);
     const recipient = tx.recipient ? new Address(tx.recipient.address).pretty() : '';
+    const recipientTiny = recipient === '' ? '' : tinyAddress(recipient);
     const type2 = tx.aggregate ? tx.aggregate : '';
     const specificTransactionItems = getBody(tx);
 
     return {
-        time: formatDate(new Date(tx.deadline.value)),
-        signer: new Address(tx.signer.address.address).pretty(),
+        signer,
+        signerTiny,
         recipient,
+        recipientTiny,
         fee: tx.maxFee.compact(),
         blockNumber: tx.transactionInfo.height.compact(),
         type2,
@@ -318,6 +329,7 @@ const formatTransaction = (tx) => {
         type1: specificTransactionItems.headerExtension.type1,
         mainProp1: specificTransactionItems.headerExtension.mainProp1,
         mainProp2: specificTransactionItems.headerExtension.mainProp2,
+        deadline: formatDate(tx.deadline.value),
     };
 };
 
