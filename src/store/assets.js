@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+import Vue from 'vue';
 import getMosaicsByAddress from '../infrastructure/assets/getMosaicsByAddress';
 import { GET_ASSETS_MODES } from '../infrastructure/assets/assets-types';
 
@@ -35,7 +36,7 @@ const getters = {
 const mutations = {
   setAccountAssets(state, { wallet, assets }) {
     if (!state.assets) state.assets = {};
-    state.assets[wallet.name] = assets;
+    Vue.set(state.assets, wallet.name, assets);
   },
   setLoading_getMosaicsByAddress(state, bool) {
     state.loading_getMosaicsByAddress = bool;

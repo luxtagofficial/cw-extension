@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+import Vue from 'vue';
 import getAccountInfo from '../infrastructure/accountInfo/getAccountInfo';
 
 const state = {
@@ -34,7 +35,7 @@ const getters = {
 const mutations = {
   setAccountInfo(state, { wallet, accountInfo }) {
     if (!state.accountInfo) state.accountInfo = {};
-    state.accountInfo[wallet.name] = accountInfo;
+    Vue.set(state.accountInfo, wallet.name, accountInfo);
   },
   setLoading_getAccountInfo(state, bool) {
     state.loading_getAccountInfo = bool;
