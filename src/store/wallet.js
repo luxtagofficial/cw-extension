@@ -98,7 +98,7 @@ const actions = {
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
 
-  async ADD_WATCH_ONLY_WALLET({ getters, commit, dispatch }, walletData) {
+  async ADD_WATCH_ONLY_WALLET({ commit, dispatch }, walletData) {
     const newWoWallet = new WoWallet(walletData);
     await commit('addWallet', newWoWallet);
     dispatch('SET_ACTIVE_WALLET', newWoWallet.name);
@@ -162,7 +162,6 @@ const actions = {
       await commit('setActiveWalletPublicAccount', publicAccount);
 
       if (wallet.isToBeSaved) {
-        console.log(publicAccount.publicKey, wallet.name, 'publicAccount');
         const walletIndex = getters.GET_WALLETS.findIndex(({ name }) => name === wallet.name);
         await commit('setWalletPublicAccount', { walletIndex, publicAccount });
 
