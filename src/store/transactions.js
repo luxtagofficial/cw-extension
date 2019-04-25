@@ -21,13 +21,13 @@
 import Vue from 'vue';
 import getAccountTransactionsById from '../infrastructure/transactions/getAccountTransactionsById';
 import { removeDuplicatesAndSortByBlockNumber } from '../infrastructure/transactions/formatTransactions';
-import { transactionTypeFilters } from '../infrastructure/transactions/transactions-types';
+import { transactionTypesFilters } from '../infrastructure/transactions/transactions-types';
 
 
 const state = {
   transactions: false,
   loading_getAccountTransactionsById: false,
-  transactionTypesFilters: transactionTypeFilters(),
+  transactionTypesFilters: transactionTypesFilters(),
 };
 
 const getters = {

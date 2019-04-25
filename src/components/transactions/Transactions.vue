@@ -121,6 +121,10 @@
               </template>
               <template v-slot:items="props">
                 <tr
+                  v-show="
+                    transactions.transactionTypesFilters[
+                      props.item.type1.replace(/ /g, '_').replace(/\./g, '8')
+                    ]"
                   class="pointer"
                   @click="showModal(props.item.id)"
                 >

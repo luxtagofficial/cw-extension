@@ -32,7 +32,7 @@ export const txTypeNameFromTypeId = (typeId) => {
   }
 };
 
-export const transactionTypeFilters = () => {
+export const transactionTypesFilters = () => {
   const filters = {};
   const typeNamesToExclude = [
     'Aggregate complete',
