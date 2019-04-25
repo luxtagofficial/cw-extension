@@ -18,14 +18,16 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+import Vue from 'vue';
 import getAccountTransactionsById from '../infrastructure/transactions/getAccountTransactionsById';
 import { removeDuplicatesAndSortByBlockNumber } from '../infrastructure/transactions/formatTransactions';
-// To move to a more appropriate place
+import { transactionTypesFilters } from '../infrastructure/transactions/transactions-types';
 
 
 const state = {
   transactions: false,
   loading_getAccountTransactionsById: false,
+  transactionTypesFilters: transactionTypesFilters(),
 };
 
 const getters = {
@@ -40,13 +42,16 @@ const getters = {
 const mutations = {
   setAccountTransactions(state, { wallet, transactions }) {
     if (!state.transactions) state.transactions = {};
-    state.transactions[wallet.name] = transactions;
+    Vue.set(state.transactions, wallet.name, transactions);
   },
   setLoading_getAccountTransactionsById(state, bool) {
     state.loading_getAccountTransactionsById = bool;
   },
   clearTransactons(state, wallet) {
     state.transactons[wallet.name] = false;
+  },
+  updateTransactionTypesFilter(state, prop) {
+    state.transactionTypesFilters[prop] = state.transactionTypesFilters[prop] !== true;
   },
 };
 
@@ -67,9 +72,6 @@ const actions = {
           : undefined;
         break;
       case 'init':
-        currentId = typeof actualTransactions === 'undefined'
-          ? undefined : actualTransactions[actualTransactions.length - 1].id;
-        break;
       case 'refresh':
       default:
         currentId = undefined;
@@ -97,6 +99,9 @@ const actions = {
     }
 
     commit('setLoading_getAccountTransactionsById', false);
+  },
+  UPDATE_TRANSACTION_TYPES_FILTERS({ commit }, prop) {
+    commit('updateTransactionTypesFilter', prop);
   },
 };
 

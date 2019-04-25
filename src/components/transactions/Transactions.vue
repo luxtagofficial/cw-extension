@@ -1,19 +1,19 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <div>
@@ -60,6 +60,16 @@
             >
               Load more
             </v-btn>
+            <v-btn
+              class="ml-3"
+              color="primary mx-0"
+              @click="$store.dispatch(
+                'application/SWOW_ELEMENT',
+                { element: 'SHOW_TRANSACTION_LIST_FILTERS', bool: true }
+              )"
+            >
+              Filters
+            </v-btn>
           </v-layout>
         </v-layout>
 
@@ -73,7 +83,10 @@
             <v-btn
               class="ml-3"
               color="primary mx-0"
-              @click="$store.dispatch('application/SWOW_ADDRESS_INPUT', true)"
+              @click="$store.dispatch(
+                'application/SWOW_ELEMENT',
+                { element: 'SHOW_ADDRESS_INPUT', bool: true }
+              )"
             >
               Lookup another address
             </v-btn>
@@ -91,41 +104,66 @@
               disable-initial-sort
               :rows-per-page-items="rowsPerPageOptions"
             >
+              <template
+                slot="headerCell"
+                slot-scope="props"
+              >
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on">
+                      {{ props.header.text }}
+                    </span>
+                  </template>
+                  <span>
+                    {{ props.header.hoverText }}
+                  </span>
+                </v-tooltip>
+              </template>
               <template v-slot:items="props">
                 <tr
+                  v-show="
+                    transactions.transactionTypesFilters[
+                      props.item.type1.replace(/ /g, '_').replace(/\./g, '8')
+                    ]"
                   class="pointer"
                   @click="showModal(props.item.id)"
                 >
                   <td class="text-xs-left">
                     <span class="clearfix">
-                      <pre>{{ props.item.time }}</pre>
-                    </span>
-                    <span class="clearfix">
                       <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
                     </span>
-                  </td>
-                  <td class="text-xs-left">
+                    <span class="clearfix">
+                      <pre>{{ props.item.date }}</pre>
+                    </span>
                     <span class="clearfix">
                       <pre>{{ props.item.type1 }}</pre>
                     </span>
-                    <span class="clearfix">
+                    <span
+                      v-if="props.item.type2 !== ''"
+                      class="clearfix"
+                    >
                       <pre>{{ props.item.type2 }}</pre>
                     </span>
                   </td>
                   <td class="text-xs-left">
-                    <span class="clearfix">
-                      <pre>{{ props.item.mainProp1 }}</pre>
-                    </span>
-                    <span class="clearfix">
-                      <pre>{{ props.item.mainProp2 }}</pre>
-                    </span>
+                    <div
+                      v-for="(mainProp, index) in props.item.mainProps"
+                      :key="index"
+                    >
+                      <span
+                        class="clearfix"
+                        style="text-align:left"
+                      >
+                        <pre>{{ mainProp.key }}&nbsp;{{ mainProp.value }}</pre>
+                      </span>
+                    </div>
                   </td>
                   <td class="text-xs-left">
                     <span class="clearfix">
-                      <pre>{{ props.item.signer }}</pre>
+                      <pre>{{ props.item.signerTiny }}</pre>
                     </span>
                     <span class="clearfix">
-                      <pre>{{ props.item.recipient }}</pre>
+                      <pre>{{ props.item.recipientTiny }}</pre>
                     </span>
                   </td>
                 </tr>
@@ -141,8 +179,11 @@
           @close="modalClosed"
         />
       </div>
-      <div v-if="application.showAddressInput">
+      <div v-if="application.SHOW_ADDRESS_INPUT">
         <AddressInput />
+      </div>
+      <div v-if="application.SHOW_TRANSACTION_LIST_FILTERS">
+        <TransactionListFilters />
       </div>
     </v-layout>
   </div>
@@ -153,6 +194,7 @@ import store from '../../store/index';
 import TransactionModal from './TransactionModal.vue';
 import { GET_TRANSACTIONS_MODES } from '../../infrastructure/transactions/transactions-types';
 import AddressInput from '../AddressInput.vue';
+import TransactionListFilters from './transactionListFilters.vue';
 
 export default {
   name: 'Transactions',
@@ -160,14 +202,14 @@ export default {
   components: {
     TransactionModal,
     AddressInput,
+    TransactionListFilters,
   },
   data() {
     return {
       headers: [
-        { text: 'Time / Block', value: 'blockNumber' },
-        { text: 'Type', value: 'type1' },
-        { text: 'Main properties', value: 'mainProp1' },
-        { text: 'Signer / Recipient', value: 'recipient' },
+        { text: 'Block / Type', value: 'blockNumber', hoverText: 'sort by block number' },
+        { text: 'Main properties', value: '', hoverText: 'no sorting action' },
+        { text: 'Signer / Recipient', value: 'recipient', hoverText: 'sort by recipient' },
       ],
       rowsPerPageOptions: [
         25, 50, { text: 'All', value: -1 },

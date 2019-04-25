@@ -17,46 +17,26 @@
 
 <template>
   <v-dialog
-    v-model="application.SHOW_ADDRESS_INPUT"
+    v-model="application.SHOW_TRANSACTION_LIST_FILTERS"
     max-width="515"
   >
     <v-card>
       <v-card-title primary-title>
         <h3 class="headline mb-3">
-          Lookup another address
+          Transactions filters
         </h3>
-        <p class="mb-0">
-          Need to check this address again in the future? Store this address as a watch-only wallet!
-        </p>
       </v-card-title>
       <v-card-text>
-        <v-text-field
-          v-model="address"
-          class="ma-0 pa-0"
-          label="address"
-          type="text"
-          solo
-          required
-        />
-        <v-text-field
-          v-model="node"
-          class="ma-0 pa-0"
-          label="node"
-          type="text"
-          solo
-          required
-        />
-        <v-text-field
-          v-model="name"
-          class="ma-0 pa-0"
-          label="name (leave blank to use the address as a name)"
-          type="text"
-          solo
-        />
-        <v-switch
-          v-model="isToBeSaved"
-          label="store as watch-only wallet"
-        />
+        <div
+          v-for="(val, prop) in transactions.transactionTypesFilters"
+          :key="prop"
+        >
+          <v-switch
+            v-model="transactions.transactionTypesFilters[prop]"
+            :label="prop.replace(/_/g, ' ').replace(/8/g, '.')"
+            @click.stop="updateTxFilterProp(prop)"
+          />
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -81,10 +61,11 @@
 <script>
 import { mapState } from 'vuex';
 import { Address } from 'nem2-sdk';
-import store from '../store/index';
+import store from '../../store/index';
+
 
 export default {
-  name: 'AddressInput',
+  name: 'TransactionListFilters',
   store,
   data() {
     return {
@@ -96,10 +77,12 @@ export default {
       isToBeSaved: false,
     };
   },
-  computed: mapState([
-    'transactions',
-    'application',
-  ]),
+  computed: {
+    ...mapState([
+      'transactions',
+      'application',
+    ]),
+  },
   watch: {
     address: {
       handler(e) {
@@ -113,33 +96,12 @@ export default {
         }
       },
     },
-    name: {
-      handler(e) {
-        this.disabledValidation = !(typeof e === 'string');
-      },
-    },
-    node: {
-      handler(e) {
-        this.disabledValidation = !(typeof e === 'string');
-      },
-    },
-    isToBeSaved: {
-      handler(e) {
-        this.disabledValidation = !(typeof e === 'boolean');
-      },
-    },
   },
   methods: {
-    validateAddress() {
-      if (this.disabledValidation || !this.validAddress) return;
-      this.$store.dispatch('wallet/ADD_WATCH_ONLY_WALLET',
-        {
-          address: this.validAddress,
-          name: this.name === '' ? this.validAddress.pretty() : this.name,
-          node: this.node,
-          isToBeSaved: this.isToBeSaved,
-        });
-      this.$store.dispatch('application/SWOW_ADDRESS_INPUT', false);
+    updateTxFilterProp(prop) {
+      this.$store.dispatch(
+        'transactions/UPDATE_TRANSACTION_TYPES_FILTERS', prop,
+      );
     },
   },
 };

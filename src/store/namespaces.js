@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+import Vue from 'vue';
 import { getNamespacesByAddress } from '../infrastructure/namespaces/getNamespacesByAddress';
 import { GET_NAMESPACES_MODES } from '../infrastructure/namespaces/namespaces-types';
 
@@ -35,7 +36,7 @@ const getters = {
 const mutations = {
   setAccountNamespaces(state, { wallet, namespaces }) {
     if (!state.namespaces) state.namespaces = {};
-    state.namespaces[wallet.name] = namespaces;
+    Vue.set(state.namespaces, wallet.name, namespaces);
   },
   setLoading_getNamespacesByAddress(state, bool) {
     state.loading_getNamespacesByAddress = bool;
