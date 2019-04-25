@@ -21,12 +21,13 @@
 import Vue from 'vue';
 import getAccountTransactionsById from '../infrastructure/transactions/getAccountTransactionsById';
 import { removeDuplicatesAndSortByBlockNumber } from '../infrastructure/transactions/formatTransactions';
-// To move to a more appropriate place
+import { transactionTypeFilters } from '../infrastructure/transactions/transactions-types';
 
 
 const state = {
   transactions: false,
   loading_getAccountTransactionsById: false,
+  transactionTypesFilters: transactionTypeFilters(),
 };
 
 const getters = {
@@ -48,6 +49,9 @@ const mutations = {
   },
   clearTransactons(state, wallet) {
     state.transactons[wallet.name] = false;
+  },
+  updateTransactionTypesFilter(state, prop) {
+    state.transactionTypesFilters[prop] = state.transactionTypesFilters[prop] !== true;
   },
 };
 
@@ -95,6 +99,9 @@ const actions = {
     }
 
     commit('setLoading_getAccountTransactionsById', false);
+  },
+  UPDATE_TRANSACTION_TYPES_FILTERS({ commit }, prop) {
+    commit('updateTransactionTypesFilter', prop);
   },
 };
 

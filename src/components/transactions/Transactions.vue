@@ -60,6 +60,16 @@
             >
               Load more
             </v-btn>
+            <v-btn
+              class="ml-3"
+              color="primary mx-0"
+              @click="$store.dispatch(
+                'application/SWOW_ELEMENT',
+                { element: 'SHOW_TRANSACTION_LIST_FILTERS', bool: true }
+              )"
+            >
+              Filters
+            </v-btn>
           </v-layout>
         </v-layout>
 
@@ -73,7 +83,10 @@
             <v-btn
               class="ml-3"
               color="primary mx-0"
-              @click="$store.dispatch('application/SWOW_ADDRESS_INPUT', true)"
+              @click="$store.dispatch(
+                'application/SWOW_ELEMENT',
+                { element: 'SHOW_ADDRESS_INPUT', bool: true }
+              )"
             >
               Lookup another address
             </v-btn>
@@ -91,7 +104,10 @@
               disable-initial-sort
               :rows-per-page-items="rowsPerPageOptions"
             >
-              <template slot="headerCell" slot-scope="props">
+              <template
+                slot="headerCell"
+                slot-scope="props"
+              >
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <span v-on="on">
@@ -159,8 +175,11 @@
           @close="modalClosed"
         />
       </div>
-      <div v-if="application.showAddressInput">
+      <div v-if="application.SHOW_ADDRESS_INPUT">
         <AddressInput />
+      </div>
+      <div v-if="application.SHOW_TRANSACTION_LIST_FILTERS">
+        <TransactionListFilters />
       </div>
     </v-layout>
   </div>
@@ -171,6 +190,7 @@ import store from '../../store/index';
 import TransactionModal from './TransactionModal.vue';
 import { GET_TRANSACTIONS_MODES } from '../../infrastructure/transactions/transactions-types';
 import AddressInput from '../AddressInput.vue';
+import TransactionListFilters from './transactionListFilters.vue';
 
 export default {
   name: 'Transactions',
@@ -178,6 +198,7 @@ export default {
   components: {
     TransactionModal,
     AddressInput,
+    TransactionListFilters,
   },
   data() {
     return {

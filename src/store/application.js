@@ -21,7 +21,8 @@
 const state = {
   error: false,
   errorMessage: '',
-  showAddressInput: false,
+  SHOW_ADDRESS_INPUT: false,
+  SHOW_TRANSACTION_LIST_FILTERS: false,
 };
 
 const getters = {
@@ -42,8 +43,8 @@ const mutations = {
     state.error = true;
     state.errorMessage = errMsg;
   },
-  showAddressInput(state, bool) {
-    state.showAddressInput = bool;
+  showElement(state, { element, bool }) {
+    state[element] = bool;
   },
 };
 
@@ -56,8 +57,8 @@ const actions = {
       ? errorMessage : errorMessage.toString();
     commit('setError', errMsg);
   },
-  SWOW_ADDRESS_INPUT({ commit }, bool) {
-    commit('showAddressInput', bool);
+  SWOW_ELEMENT({ commit }, { element, bool }) {
+    commit('showElement', { element, bool });
   },
 };
 
