@@ -91,6 +91,18 @@
               disable-initial-sort
               :rows-per-page-items="rowsPerPageOptions"
             >
+              <template slot="headerCell" slot-scope="props">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <span v-on="on">
+                      {{ props.header.text }}
+                    </span>
+                  </template>
+                  <span>
+                    {{ props.header.hoverText }}
+                  </span>
+                </v-tooltip>
+              </template>
               <template v-slot:items="props">
                 <tr
                   class="pointer"
@@ -170,9 +182,9 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'Block / Type', value: 'blockNumber' },
-        { text: 'Main properties', value: '' },
-        { text: 'Signer / Recipient', value: 'recipient' },
+        { text: 'Block / Type', value: 'blockNumber', hoverText: 'sort by block number' },
+        { text: 'Main properties', value: '', hoverText: 'no sorting action' },
+        { text: 'Signer / Recipient', value: 'recipient', hoverText: 'sort by recipient' },
       ],
       rowsPerPageOptions: [
         25, 50, { text: 'All', value: -1 },
