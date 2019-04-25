@@ -51,9 +51,7 @@ const getAccountTransactionsById = (
                 {
                   ...x,
                   timestamp: res.timestamp.compact() / 1000 + timestampNemesisBlock,
-                  ts: res.timestamp,
                 })),
-              // tap(x => console.log(x)),
               map(formatTransactions),
               flatMap(x => x),
               toArray(),
