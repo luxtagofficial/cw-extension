@@ -51,7 +51,6 @@ const getAccountTransactionsById = (
                 {
                   ...x,
                   timestamp: res.timestamp.compact() / 1000 + timestampNemesisBlock,
-                  ts: res.timestamp,
                 })),
               map(formatTransactions),
               flatMap(x => x),
