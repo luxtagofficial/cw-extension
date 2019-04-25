@@ -17,7 +17,7 @@
 
 <template>
   <v-dialog
-    v-model="application.SHOW_ADDRESS_INPUT"
+    v-model="show"
     max-width="515"
   >
     <v-card>
@@ -62,14 +62,14 @@
         <v-spacer />
         <v-btn
           color="info"
-          @click="$store.dispatch('application/SWOW_ADDRESS_INPUT', false)"
+          @click.stop="show=false"
         >
           Cancel
         </v-btn>
         <v-btn
           color="info"
           :disabled="disabledValidation"
-          @click="validateAddress"
+          @click.stop="validateAddress"
         >
           OK
         </v-btn>
@@ -86,6 +86,9 @@ import store from '../store/index';
 export default {
   name: 'AddressInput',
   store,
+  props: {
+    visible: Boolean,
+  },
   data() {
     return {
       address: '',
@@ -96,10 +99,21 @@ export default {
       isToBeSaved: false,
     };
   },
-  computed: mapState([
-    'transactions',
-    'application',
-  ]),
+  computed: {
+    ...mapState([
+      'application',
+    ]),
+    show: {
+      get() {
+        return this.visible;
+      },
+      set(value) {
+        if (!value) {
+          this.$emit('close');
+        }
+      },
+    },
+  },
   watch: {
     address: {
       handler(e) {
@@ -144,7 +158,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-
-</style>

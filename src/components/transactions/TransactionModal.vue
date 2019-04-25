@@ -1,23 +1,23 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <v-dialog
-    v-model="modal"
+    v-model="show"
     max-width="600px"
   >
     <v-layout>
@@ -97,6 +97,15 @@
               </div>
             </div>
           </v-card-title>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              color="info"
+              @click.stop="show=false"
+            >
+              Close
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-flex>
     </v-layout>
@@ -104,30 +113,30 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+import store from '../../store/index';
 
 export default {
   name: 'TransactionModal',
+  store,
   props: {
-    // eslint-disable-next-line vue/require-default-prop
-    tx: {
-      type: Object,
-    },
-    modal: {
-      type: Boolean,
-      default() {
-        return false;
-      },
-    },
+    visible: Boolean,
   },
-  watch: {
-    isShow: {
-      handler(newVal) {
-        this.modal = newVal;
-      },
+  computed: {
+    ...mapState([
+      'transactions',
+    ], {
+      transactions: state => state.transactions,
+    }),
+    tx() {
+      return this.transactions.activeTransaction;
     },
-    modal: {
-      handler(newVal) {
-        if (newVal === false) {
+    show: {
+      get() {
+        return this.visible;
+      },
+      set(value) {
+        if (!value) {
           this.$emit('close');
         }
       },
@@ -135,6 +144,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-</style>
