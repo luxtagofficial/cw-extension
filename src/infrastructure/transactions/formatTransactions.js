@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /**
  * Copyright (C) 2019 Contributors as noted in the AUTHORS file
  *
@@ -27,13 +28,15 @@ import { networkCurrencyIdToName } from '../network/utils/nerworkCurrencyToName'
 
 
 const formatDate = (d) => {
-  const date = d.getDate();
-  const month = d.getMonth() + 1;
+  let date = d.getDate();
+  let month = d.getMonth() + 1;
   const year = d.getFullYear();
   let hours = d.getHours();
   let minutes = d.getMinutes();
-  if (hours.length === 1) hours = `0${hours}`;
-  if (minutes.length === 1) minutes = `0${minutes}`;
+  if (date < 10) date = `0${date}`;
+  if (month < 10) month = `0${month}`;
+  if (hours < 10) hours = `0${hours}`;
+  if (minutes < 10) minutes = `0${minutes}`;
   return `${year.toString().substring(2)}/${month}/${date} ${hours}:${minutes}`;
 };
 
@@ -395,16 +398,21 @@ const formatTransaction = (tx, numberOfTransactionsInAggregate) => {
         numberOfAssetsInTransfer,
         numberOfTransactionsInAggregate,
         deadline: formatDate(new Date(tx.deadline.value)),
+        timestamp: tx.timestamp,
+        date: formatDate(new Date(tx.timestamp * 1000)),
     };
 };
 
 export const formatTransactions = (tx) => {
     if (tx.innerTransactions) {
         return tx.innerTransactions.map((t) => {
-            // eslint-disable-next-line no-param-reassign
             t.transactionInfo.hash = tx.transactionInfo.hash;
-            // eslint-disable-next-line no-param-reassign
-            t.aggregate = txTypeNameFromTypeId(tx.type, tx.innerTransactions.length);
+            t.timestamp = tx.timestamp;
+
+            t.aggregate = txTypeNameFromTypeId(
+              tx.type,
+              tx.innerTransactions.length,
+            );
             return formatTransaction(t);
         });
     }

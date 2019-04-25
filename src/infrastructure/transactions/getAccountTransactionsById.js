@@ -20,28 +20,40 @@
 /* eslint-disable indent */
 
 import {
-    AccountHttp, NetworkType, PublicAccount, QueryParams,
+    AccountHttp, NetworkType, PublicAccount, QueryParams, BlockchainHttp,
 } from 'nem2-sdk';
 import {
-    toArray, flatMap, map,
+    toArray, flatMap, map, concatMap,
 } from 'rxjs/operators';
+
 import { formatTransactions } from './formatTransactions';
+import { timestampNemesisBlock } from '../network/types';
 
 const getAccountTransactionsById = (
   wallet,
   currentId,
 ) => new Promise(async (resolve, reject) => {
   try {
-      const accountHttp = new AccountHttp(wallet.node);
-      const pageSize = 50;
+      const { node } = wallet;
+      const accountHttp = new AccountHttp(node);
+      const blockchainHttp = new BlockchainHttp(node);
+      const pageSize = 10;
       const publicAccount = wallet.isWatchOnly
         ? wallet.publicAccount
         : PublicAccount.createFromPublicKey(wallet.account.publicKey, NetworkType.MIJIN_TEST);
-
       accountHttp
           .transactions(publicAccount, new QueryParams(pageSize, currentId))
           .pipe(
               flatMap(x => x),
+              concatMap(x => blockchainHttp
+                .getBlockByHeight(x.transactionInfo.height.compact()).toPromise(),
+              (x, res) => (
+                {
+                  ...x,
+                  timestamp: res.timestamp.compact() / 1000 + timestampNemesisBlock,
+                  ts: res.timestamp,
+                })),
+              // tap(x => console.log(x)),
               map(formatTransactions),
               flatMap(x => x),
               toArray(),
@@ -53,5 +65,4 @@ const getAccountTransactionsById = (
       reject(error);
   }
 });
-
 export default getAccountTransactionsById;

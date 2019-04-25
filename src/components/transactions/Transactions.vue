@@ -101,6 +101,9 @@
                       <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
                     </span>
                     <span class="clearfix">
+                      <pre>{{ props.item.date }}</pre>
+                    </span>
+                    <span class="clearfix">
                       <pre>{{ props.item.type1 }}</pre>
                     </span>
                     <span
