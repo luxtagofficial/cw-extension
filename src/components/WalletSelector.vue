@@ -24,11 +24,11 @@
       prepend-icon="payment"
       label="No Wallet Selected"
       solo
+      @click:prepend.stop="goToWallet"
     />
     <div v-else><v-btn
       small
       color="error"
-      to="/wallet"
     >No wallets</v-btn></div>
   </span>
 </template>
@@ -48,6 +48,11 @@ export default {
       if (newActiveWalletName) {
         this.$store.dispatch('wallet/SET_ACTIVE_WALLET', newActiveWalletName);
       }
+    },
+  },
+  methods: {
+    goToWallet() {
+      this.$router.push('/wallet');
     },
   },
 };
