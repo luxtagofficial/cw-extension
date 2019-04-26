@@ -35,7 +35,6 @@
           class="ma-0 pa-0"
           label="address"
           type="text"
-          solo
           required
         />
         <v-text-field
@@ -43,7 +42,6 @@
           class="ma-0 pa-0"
           label="node"
           type="text"
-          solo
           required
         />
         <v-text-field
@@ -51,7 +49,6 @@
           class="ma-0 pa-0"
           label="name (leave blank to use the address as a name)"
           type="text"
-          solo
         />
         <v-switch
           v-model="isToBeSaved"
@@ -96,7 +93,7 @@ export default {
       name: '',
       node: this.$store.getters['wallet/GET_ACTIVE_WALLET'].node,
       disabledValidation: true,
-      isToBeSaved: false,
+      isToBeSaved: true,
     };
   },
   computed: {
@@ -153,7 +150,7 @@ export default {
           node: this.node,
           isToBeSaved: this.isToBeSaved,
         });
-      this.$store.dispatch('application/SWOW_ADDRESS_INPUT', false);
+      this.$emit('close');
     },
   },
 };
