@@ -49,24 +49,21 @@
           >
             <v-btn
               color="primary mx-0"
-              @click="refresh(wallet.activeWallet)"
+              @click.stop="refresh(wallet.activeWallet)"
             >
               Refresh
             </v-btn>
             <v-btn
               class="ml-3"
               color="primary mx-0"
-              @click="loadMore(wallet.activeWallet)"
+              @click.stop="loadMore(wallet.activeWallet)"
             >
               Load more
             </v-btn>
             <v-btn
               class="ml-3"
               color="primary mx-0"
-              @click="$store.dispatch(
-                'application/SWOW_ELEMENT',
-                { element: 'SHOW_TRANSACTION_LIST_FILTERS', bool: true }
-              )"
+              @click.stop="showFilters=true"
             >
               Filters
             </v-btn>
@@ -83,10 +80,7 @@
             <v-btn
               class="ml-3"
               color="primary mx-0"
-              @click="$store.dispatch(
-                'application/SWOW_ELEMENT',
-                { element: 'SHOW_ADDRESS_INPUT', bool: true }
-              )"
+              @click.stop="showAddressInput=true"
             >
               Lookup another address
             </v-btn>
@@ -126,7 +120,13 @@
                       props.item.type1.replace(/ /g, '_').replace(/\./g, '8')
                     ]"
                   class="pointer"
-                  @click="showModal(props.item.id)"
+                  @click.stop="
+                    showTransactionModal=true
+                    $store.dispatch(
+                      'transactions/UPDATE_ACTIVE_TRANSACTION',
+                      props.item,
+                    );
+                  "
                 >
                   <td class="text-xs-left">
                     <span class="clearfix">
@@ -172,18 +172,22 @@
           </v-layout>
         </v-container>
       </v-layout>
-      <div v-if="activeTransaction">
-        <TransactionModal
-          :modal="modal"
-          :tx="activeTransaction"
-          @close="modalClosed"
+
+      <TransactionModal
+        :visible="showTransactionModal"
+        @close="showTransactionModal=false"
+      />
+
+      <AddressInput
+        :visible="showAddressInput"
+        @close="showAddressInput=false"
+      />
+
+      <div v-if="transactions.activeTransaction">
+        <TransactionListFilters
+          :visible="showFilters"
+          @close="showFilters=false"
         />
-      </div>
-      <div v-if="application.SHOW_ADDRESS_INPUT">
-        <AddressInput />
-      </div>
-      <div v-if="application.SHOW_TRANSACTION_LIST_FILTERS">
-        <TransactionListFilters />
       </div>
     </v-layout>
   </div>
@@ -215,7 +219,9 @@ export default {
         25, 50, { text: 'All', value: -1 },
       ],
       modal: false,
-      activeTransaction: false,
+      showFilters: false,
+      showAddressInput: false,
+      showTransactionModal: false,
     };
   },
   computed: mapState([
@@ -235,14 +241,6 @@ export default {
         'transactions/GET_TRANSACTIONS_BY_ID',
         { wallet, mode: GET_TRANSACTIONS_MODES.MORE },
       );
-    },
-    showModal(clickedTx) {
-      this.activeTransaction = this.transactions.transactions[this.wallet.activeWallet.name]
-        .find(t => t.id === clickedTx);
-      this.modal = true;
-    },
-    modalClosed() {
-      this.modal = false;
     },
   },
 };

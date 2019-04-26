@@ -28,6 +28,7 @@ const state = {
   transactions: false,
   loading_getAccountTransactionsById: false,
   transactionTypesFilters: transactionTypesFilters(),
+  activeTransaction: false,
 };
 
 const getters = {
@@ -52,6 +53,10 @@ const mutations = {
   },
   updateTransactionTypesFilter(state, prop) {
     state.transactionTypesFilters[prop] = state.transactionTypesFilters[prop] !== true;
+  },
+  updateActiveTransaction(state, transaction) {
+    // eslint-disable-next-line prefer-destructuring
+    state.activeTransaction = transaction;
   },
 };
 
@@ -82,15 +87,17 @@ const actions = {
         wallet,
         currentId,
       );
-
       const oldTransactions = getters.GET_TRANSACTIONS || [];
+      const transactionsToStore = removeDuplicatesAndSortByBlockNumber([
+        ...oldTransactions,
+        ...newTransactions,
+      ]);
+
+      if (mode === 'init') await commit('updateActiveTransaction', transactionsToStore[0]);
 
       await commit('setAccountTransactions', {
         wallet,
-        transactions: removeDuplicatesAndSortByBlockNumber([
-          ...oldTransactions,
-          ...newTransactions,
-        ]),
+        transactions: transactionsToStore,
       });
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });
@@ -102,6 +109,9 @@ const actions = {
   },
   UPDATE_TRANSACTION_TYPES_FILTERS({ commit }, prop) {
     commit('updateTransactionTypesFilter', prop);
+  },
+  UPDATE_ACTIVE_TRANSACTION({ commit }, transaction) {
+    commit('updateActiveTransaction', transaction);
   },
 };
 

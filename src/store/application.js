@@ -18,11 +18,10 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 const state = {
   error: false,
   errorMessage: '',
-  SHOW_ADDRESS_INPUT: false,
-  SHOW_TRANSACTION_LIST_FILTERS: false,
 };
 
 const getters = {
@@ -43,9 +42,6 @@ const mutations = {
     state.error = true;
     state.errorMessage = errMsg;
   },
-  showElement(state, { element, bool }) {
-    state[element] = bool;
-  },
 };
 
 const actions = {
@@ -56,9 +52,6 @@ const actions = {
     const errMsg = typeof errorMessage === 'string'
       ? errorMessage : errorMessage.toString();
     commit('setError', errMsg);
-  },
-  SWOW_ELEMENT({ commit }, { element, bool }) {
-    commit('showElement', { element, bool });
   },
 };
 

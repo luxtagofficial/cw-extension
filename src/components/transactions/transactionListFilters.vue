@@ -17,7 +17,7 @@
 
 <template>
   <v-dialog
-    v-model="application.SHOW_TRANSACTION_LIST_FILTERS"
+    v-model="show"
     max-width="515"
   >
     <v-card>
@@ -42,16 +42,9 @@
         <v-spacer />
         <v-btn
           color="info"
-          @click="$store.dispatch('application/SWOW_ADDRESS_INPUT', false)"
+          @click.stop="show=false"
         >
-          Cancel
-        </v-btn>
-        <v-btn
-          color="info"
-          :disabled="disabledValidation"
-          @click="validateAddress"
-        >
-          OK
+          Close
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -60,39 +53,26 @@
 
 <script>
 import { mapState } from 'vuex';
-import { Address } from 'nem2-sdk';
 import store from '../../store/index';
-
 
 export default {
   name: 'TransactionListFilters',
   store,
-  data() {
-    return {
-      address: '',
-      validAddress: false,
-      name: '',
-      node: this.$store.getters['wallet/GET_ACTIVE_WALLET'].node,
-      disabledValidation: true,
-      isToBeSaved: false,
-    };
+  props: {
+    visible: Boolean,
   },
   computed: {
     ...mapState([
       'transactions',
       'application',
     ]),
-  },
-  watch: {
-    address: {
-      handler(e) {
-        try {
-          const address = Address.createFromRawAddress(e);
-          this.validAddress = address;
-          this.disabledValidation = false;
-        } catch (error) {
-          this.validAddress = false;
-          this.disabledValidation = true;
+    show: {
+      get() {
+        return this.visible;
+      },
+      set(value) {
+        if (!value) {
+          this.$emit('close');
         }
       },
     },
@@ -106,7 +86,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-
-</style>
