@@ -29,24 +29,36 @@
         fill-height
         justify-start
         pl-3
-        xs3
+        xs12
       >
         <h5 class="headline pt-3">
           Wallet
         </h5>
       </v-layout>
+    </v-layout>
 
+    <v-layout
+      row
+      mb-4
+    >
       <v-layout
         row
         fill-height
         justify-end
-        xs9
+        xs12
       >
         <v-btn
           color="primary mx-0"
           @click.stop="createWallet = true; importWallet = false"
         >
-          Create Wallet
+          New Wallet
+        </v-btn>
+        <v-btn
+          class="ml-3"
+          color="primary mx-0"
+          @click.stop="showAddressInput = true; importWallet = false"
+        >
+          New Watch-Only Wallet
         </v-btn>
         <v-btn
           class="ml-3"
@@ -64,6 +76,12 @@
       v-if="createWallet"
       @closeComponent="createWallet = false"
     />
+
+    <AddressInput
+      :visible="showAddressInput"
+      @close="showAddressInput=false"
+    />
+
     <WalletImport
       v-if="importWallet"
       @closeComponent="importWallet = false"
@@ -76,18 +94,21 @@ import WalletCreation from './WalletCreation.vue';
 import WalletImport from './WalletImport.vue';
 import WalletList from './WalletList.vue';
 import Errors from '../Errors.vue';
+import AddressInput from '../AddressInput.vue';
 
 export default {
   components: {
     WalletCreation,
     WalletImport,
     WalletList,
+    AddressInput,
     Errors,
   },
   data() {
     return {
       createWallet: false,
       importWallet: false,
+      showAddressInput: false,
     };
   },
 };
