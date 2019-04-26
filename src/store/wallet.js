@@ -18,7 +18,6 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { PublicAccount, NetworkType } from 'nem2-sdk';
 import { walletsToJSON, jsonToWallets } from '../infrastructure/wallet/wallet';
 import { Wallet, WoWallet } from '../infrastructure/wallet/wallet-types';
 import { GET_TRANSACTIONS_MODES } from '../infrastructure/transactions/transactions-types';
@@ -56,12 +55,6 @@ const mutations = {
   removeWallet(state, indexOfWalletToRemove) {
     state.wallets.splice(indexOfWalletToRemove, 1);
   },
-  setActiveWalletPublicAccount(state, publicAccount) {
-    state.activeWallet.publicAccount = publicAccount;
-  },
-  setWalletPublicAccount(state, { walletIndex, publicAccount }) {
-    state.wallets[walletIndex].publicAccount = publicAccount;
-  },
 };
 
 const actions = {
@@ -71,7 +64,7 @@ const actions = {
     const localStorageWallets = localStorage.getItem('wallets');
     if (!localStorageWallets) return;
 
-    const wallets = jsonToWallets(localStorageWallets);
+    const wallets = await jsonToWallets(localStorageWallets);
     if (!(wallets.length > 0)) return;
     await commit('addWalletsFromStorage', wallets);
     const activeWallet = wallets[0];
@@ -79,6 +72,7 @@ const actions = {
 
     await dispatch('FETCH_WALLET_DATA', activeWallet);
   },
+
 
   async ADD_WALLET({ commit, getters, dispatch }, walletData) {
     const newWallet = new Wallet(walletData);
@@ -98,11 +92,20 @@ const actions = {
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
 
-  async ADD_WATCH_ONLY_WALLET({ commit, dispatch }, walletData) {
-    const newWoWallet = new WoWallet(walletData);
+
+  async ADD_WATCH_ONLY_WALLET({ commit, dispatch, getters }, walletData) {
+    const newWoWallet = await new WoWallet(walletData).create();
+
     await commit('addWallet', newWoWallet);
+
+    const walletsToStore = [
+      ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
+    ];
+    localStorage.setItem('wallets', walletsToJSON(walletsToStore));
+
     dispatch('SET_ACTIVE_WALLET', newWoWallet.name);
   },
+
 
   async SET_ACTIVE_WALLET({ commit, dispatch, getters }, newActiveWalletName) {
     if (getters.GET_ACTIVE_WALLET.name === newActiveWalletName) return;
@@ -111,9 +114,11 @@ const actions = {
     if (wallets.map(({ name }) => name).indexOf(newActiveWalletName) === -1) return;
 
     const newActiveWallet = wallets.find(wallet => wallet.name === newActiveWalletName);
+
     await commit('setActiveWallet', newActiveWallet);
     dispatch('FETCH_WALLET_DATA', newActiveWallet);
   },
+
 
   async REMOVE_WALLET({ commit, getters, dispatch }, walletName) {
     const indexOfWalletToRemove = getters.GET_WALLETS.findIndex(({ name }) => name === walletName);
@@ -142,34 +147,39 @@ const actions = {
     localStorage.setItem('wallets', walletsToJSON(walletsToStore));
   },
 
-  async FETCH_WALLET_DATA({
-    dispatch, getters, commit, rootState,
-  }, wallet) {
-    if (wallet === false) return;
+
+  async FETCH_WALLET_DATA({ dispatch, getters, commit }, argWallet) {
+    if (argWallet === false) return;
+
     try {
-      await dispatch('accountInfo/FETCH_ACCOUNT_INFO', wallet, { root: true });
+      await dispatch('accountInfo/FETCH_ACCOUNT_INFO', argWallet, { root: true });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error, 'FETCH_WALLET_DATA');
       return;
     }
 
-    if (wallet.isWatchOnly && !wallet.publicAccount) {
-      const publicAccount = PublicAccount.createFromPublicKey(
-        rootState.accountInfo.accountInfo[wallet.name].publicKey,
-        NetworkType.MIJIN_TEST,
+    const wallet = typeof argWallet.publicAccount === 'undefined'
+      ? argWallet : await new WoWallet(argWallet).create();
+
+    if (wallet.publicAccount && !wallet.publicAccount.publicKey) {
+      dispatch(
+        'application/SET_ERROR',
+        'This address is not known by the network. If it should, please try with another node, or verify your internet connection.',
+        { root: true },
       );
-      await commit('setActiveWalletPublicAccount', publicAccount);
+      return;
+    }
+    if (argWallet.publicAccount && !argWallet.publicAccount.publicKey) {
+      // This was a watch-only wallet that had been created when
+      // It was not yet known by the networ
+      await commit('setActiveWallet', wallet);
+      const walletsToStore = [
+        ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
+      ];
+      localStorage.setItem('wallets', walletsToJSON(walletsToStore));
 
-      if (wallet.isToBeSaved) {
-        const walletIndex = getters.GET_WALLETS.findIndex(({ name }) => name === wallet.name);
-        await commit('setWalletPublicAccount', { walletIndex, publicAccount });
-
-        const walletsToStore = [
-          ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
-        ];
-        localStorage.setItem('wallets', walletsToJSON(walletsToStore));
-      }
+      await commit('addWallet', wallet);
     }
 
     dispatch(

@@ -17,14 +17,6 @@
 
 <template>
   <v-layout column>
-    <div v-if="wallet.wallets.length === 0">
-      <v-alert
-        :value="true"
-        type="error"
-      >
-        You have no wallets configured, please create a wallet
-      </v-alert>
-    </div>
     <div
       v-if="wallet.wallets.length > 0"
       class="py-0"

@@ -28,9 +28,15 @@
     <div v-if="wallet.wallets.length === 0">
       <v-alert
         :value="true"
-        type="error"
+        type="info"
       >
-        You have no wallets configured, please create a wallet
+        You have no wallets configured,
+        <v-btn
+          to="/wallet"
+          color="success"
+        >
+          Create a wallet now!
+        </v-btn>
       </v-alert>
     </div>
 
