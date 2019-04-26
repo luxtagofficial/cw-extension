@@ -32,7 +32,7 @@
         xs3
       >
         <h5 class="headline pt-3">
-          Filter
+          Filters
         </h5>
       </v-layout>
       <v-layout
@@ -79,7 +79,7 @@ import AddFilter from './AddFilter.vue';
 import Errors from '../Errors.vue';
 
 export default {
-  name: 'Filter',
+  name: 'Filters',
   components: {
     AddFilter,
     Errors,
