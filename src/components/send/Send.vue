@@ -36,7 +36,10 @@
         </h5>
       </v-layout>
     </v-layout>
-    <p class="mb-4">
+
+    <Errors />
+
+    <p class="mb-4 mt-4">
       Current Node:
       <a
         :href="activeWallet.node"
@@ -290,7 +293,6 @@
         </h5>
       </v-layout>
     </v-layout>
-    <Errors />
     <div
       v-if="wallet.wallets.length > 0
         && wallet.activeWallet
