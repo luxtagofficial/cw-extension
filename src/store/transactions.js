@@ -99,8 +99,6 @@ const actions = {
         wallet,
         transactions: transactionsToStore,
       });
-
-
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });
       // eslint-disable-next-line no-console
