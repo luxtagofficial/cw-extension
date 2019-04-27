@@ -18,9 +18,14 @@
 <template>
   <v-layout
     row
-    mt-2
+    pb-2
+    mt-4
   >
-    <v-container fluid>
+    <v-container
+      fluid
+      pa-0
+      ma-0
+    >
       <v-layout
         row
         wrap
