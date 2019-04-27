@@ -25,6 +25,7 @@
         <v-flex
           xs12
         >
+          <Errors />
           <v-card
             v-if="
               wallet.wallets.length > 0 &&
@@ -83,7 +84,6 @@
                   >
                     {{ wallet.activeWallet.node }}</a>
                 </div>
-                <Errors />
               </div>
             </v-card-text>
           </v-card>
