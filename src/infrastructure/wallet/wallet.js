@@ -1,6 +1,4 @@
-import { Account, NetworkType } from 'nem2-sdk';
-import { WoWallet } from './wallet-types';
-
+import { Wallet, WoWallet } from './wallet-types';
 
 export const walletsToJSON = wallets => JSON.stringify(wallets.map(wallet => ({
   name: wallet.name,
@@ -18,13 +16,7 @@ export const jsonToWallets = async (json) => {
       case true:
         return new WoWallet(wallet).create();
 
-      default:
-        return {
-          name: wallet.name,
-          isWatchOnly: wallet.isWatchOnly || false,
-          account: Account.createFromPrivateKey(wallet.privateKey, NetworkType.MIJIN_TEST),
-          node: wallet.node,
-        };
+      default: return new Wallet(wallet).create();
       }
     });
 

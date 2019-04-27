@@ -1,7 +1,7 @@
 /* eslint-disable prefer-destructuring */
 // eslint-disable-next-line import/prefer-default-export
 import {
-  PublicAccount, NetworkType,
+  PublicAccount, NetworkType, Account,
 } from 'nem2-sdk';
 
 import getAccountInfo from '../accountInfo/getAccountInfo';
@@ -12,6 +12,7 @@ export class Wallet {
       name,
       account,
       node,
+      privateKey,
     } = walletData;
 
     this.name = name;
@@ -21,7 +22,13 @@ export class Wallet {
     this.publicAccount = false;
     this.isToBeSaved = true;
     this.publicKey = false;
+    this.privateKey = privateKey;
     delete this.walletData;
+  }
+
+  create() {
+    this.account = Account.createFromPrivateKey(this.privateKey, NetworkType.MIJIN_TEST);
+    return this;
   }
 }
 
