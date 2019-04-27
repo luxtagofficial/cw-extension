@@ -151,9 +151,9 @@
         @close="showTransactionModal=false"
       />
 
-      <AddressInput
-        :visible="showAddressInput"
-        @close="showAddressInput=false"
+      <WoWalletCreationDialog
+        :visible="showWoWalletCreationDialog"
+        @close="showWoWalletCreationDialog=false"
       />
 
       <div v-if="transactions.activeTransaction">
@@ -170,7 +170,7 @@ import { mapState } from 'vuex';
 import store from '../../store/index';
 import TransactionModal from './TransactionModal.vue';
 import { GET_TRANSACTIONS_MODES } from '../../infrastructure/transactions/transactions-types';
-import AddressInput from '../AddressInput.vue';
+import WoWalletCreationDialog from '../wallet/WoWalletCreationDialog.vue';
 import TransactionListFilters from './transactionListFilters.vue';
 
 export default {
@@ -178,7 +178,7 @@ export default {
   store,
   components: {
     TransactionModal,
-    AddressInput,
+    WoWalletCreationDialog,
     TransactionListFilters,
   },
   data() {
@@ -193,7 +193,7 @@ export default {
       ],
       modal: false,
       showFilters: false,
-      showAddressInput: false,
+      showWoWalletCreationDialog: false,
       showTransactionModal: false,
     };
   },

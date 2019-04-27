@@ -57,9 +57,9 @@
           class="ml-3"
           color="primary mx-0"
           @click.stop="
-            showAddressInput = false;
+            createWallet = false;
             importWallet = false;
-            showAddressInput = true"
+            showWoWalletCreationDialog = true"
         >
           New Watch-Only Wallet
         </v-btn>
@@ -80,9 +80,9 @@
       @closeComponent="createWallet = false"
     />
 
-    <AddressInput
-      :visible="showAddressInput"
-      @close="showAddressInput=false"
+    <WoWalletCreationDialog
+      :visible="showWoWalletCreationDialog"
+      @close="showWoWalletCreationDialog=false"
     />
 
     <WalletImport
@@ -97,21 +97,21 @@ import WalletCreation from './WalletCreation.vue';
 import WalletImport from './WalletImport.vue';
 import WalletList from './WalletList.vue';
 import Errors from '../Errors.vue';
-import AddressInput from '../AddressInput.vue';
+import WoWalletCreationDialog from './WoWalletCreationDialog.vue';
 
 export default {
   components: {
     WalletCreation,
     WalletImport,
     WalletList,
-    AddressInput,
+    WoWalletCreationDialog,
     Errors,
   },
   data() {
     return {
       createWallet: false,
       importWallet: false,
-      showAddressInput: false,
+      showWoWalletCreationDialog: false,
     };
   },
 };

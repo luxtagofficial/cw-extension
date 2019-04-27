@@ -20,69 +20,22 @@
     v-model="show"
     max-width="515"
   >
-    <v-card>
-      <v-card-title primary-title>
-        <h3 class="headline mb-3">
-          Lookup another address
-        </h3>
-        <p class="mb-0">
-          Need to check this address again in the future? Store this address as a watch-only wallet!
-        </p>
-      </v-card-title>
-      <v-card-text>
-        <v-text-field
-          v-model="address"
-          class="ma-0 pa-0"
-          label="address"
-          type="text"
-          required
-        />
-        <v-text-field
-          v-model="node"
-          class="ma-0 pa-0"
-          label="node"
-          type="text"
-          required
-        />
-        <v-text-field
-          v-model="name"
-          class="ma-0 pa-0"
-          label="name (leave blank to use the address as a name)"
-          type="text"
-        />
-        <v-switch
-          v-model="isToBeSaved"
-          label="store as watch-only wallet"
-        />
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          color="info"
-          @click.stop="show=false"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          color="info"
-          :disabled="disabledValidation"
-          @click.stop="validateAddress"
-        >
-          OK
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+    <WoWalletCreation />
   </v-dialog>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import { Address } from 'nem2-sdk';
-import store from '../store/index';
+import store from '../../store/index';
+import WoWalletCreation from './WoWalletCreation.vue';
 
 export default {
-  name: 'AddressInput',
+  name: 'WoWalletCreationDialog',
   store,
+  components: {
+    WoWalletCreation,
+  },
   props: {
     visible: Boolean,
   },
