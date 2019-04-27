@@ -147,6 +147,7 @@
       </v-card>
 
       <TransactionModal
+        v-if="tx"
         :visible="showTransactionModal"
         @close="showTransactionModal=false"
       />
@@ -197,11 +198,18 @@ export default {
       showTransactionModal: false,
     };
   },
-  computed: mapState([
-    'transactions',
-    'application',
-    'wallet',
-  ]),
+  computed: {
+    ...mapState([
+      'transactions',
+      'application',
+      'wallet',
+    ], {
+      transactions: state => state.transactions,
+    }),
+    tx() {
+      return this.transactions.activeTransaction;
+    },
+  },
   methods: {
     refresh(wallet) {
       this.$store.dispatch(
