@@ -19,7 +19,7 @@
   <v-scale-transition>
     <v-layout
       column
-      class="mb-3"
+      class="pt-2 pr-4 pb-2 pl-4"
     >
       <v-layout row>
         <v-flex xs12>
@@ -29,7 +29,6 @@
             <h3>Asset creation</h3>
           </v-subheader>
         </v-flex>
-        <v-flex xs9 /></v-flex>
       </v-layout>
 
       <v-layout row>
@@ -127,6 +126,7 @@
         row
         justify-end
         align-center
+        mb-3
       >
         <v-btn
           flat
@@ -163,6 +163,7 @@
           </v-list-tile>
         </v-list>
       </Dialog>
+      <v-divider />
     </v-layout>
   </v-scale-transition>
 </template>

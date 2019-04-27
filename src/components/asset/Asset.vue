@@ -19,6 +19,7 @@
   <v-layout
     row
     pb-2
+    mt-4
   >
     <v-flex
       xs12
@@ -28,7 +29,7 @@
         v-if="wallet.wallets.length > 0
           && wallet.activeWallet
           && !application.error"
-        style="height: auto"
+        style="height: auto;padding:0 !important"
         class="card--flex-toolbar"
       >
         <v-toolbar
@@ -39,14 +40,14 @@
 
           <v-btn
             icon
-            @click="reloadList(wallet.activeWallet)"
+            @click.stop="reloadList(wallet.activeWallet)"
           >
             <v-icon>refresh</v-icon>
           </v-btn>
 
           <v-btn
             icon
-            @click="createAsset = !createAsset"
+            @click.stop="createAsset = !createAsset"
           >
             <v-icon>add_box</v-icon>
           </v-btn>
@@ -58,7 +59,7 @@
             v-show="createAsset"
             @closeComponent="createAsset = false"
           />
-          <AssetList class="my-2" />
+          <AssetList />
         </v-card-text>
       </v-card>
     </v-flex>
