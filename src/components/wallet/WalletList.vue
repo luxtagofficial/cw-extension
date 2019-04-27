@@ -17,70 +17,58 @@
 
 <template>
   <v-layout column>
-    <div
+    <v-list
       v-if="wallet.wallets.length > 0"
+      two-line
       class="py-0"
     >
-      <v-flex xs12>
-        <v-alert
-          :value="true"
-          type="info"
-        >
-          Please back-up your private keys if you need to re-use your wallets.
-        </v-alert>
-      </v-flex>
-      <v-list
-        two-line
+      <v-slide-y-transition
+        group
+        tag="v-list"
         class="py-0"
       >
-        <v-slide-y-transition
-          group
-          tag="v-list"
-          class="py-0"
-        >
-          <template v-for="(wallet, index) in wallet.wallets">
-            <v-list-tile
-              :key="wallet.name"
-              avatar
-              ripple
-            >
-              <v-list-tile-content class="my-2">
-                <v-list-tile-title>{{ wallet.name }}</v-list-tile-title>
-                <div v-if="!wallet.isWatchOnly">
-                  <v-list-tile-sub-title class="monospaced-bold">
-                    {{ wallet.account.address.pretty() }}
-                  </v-list-tile-sub-title>
-                </div>
-                <div v-if="wallet.isWatchOnly">
-                  <v-list-tile-sub-title class="monospaced-bold">
-                    {{ wallet.publicAccount.address.pretty() }}
-                  </v-list-tile-sub-title>
-                </div>
-
-                <v-list-tile-sub-title class="monospaced">
-                  {{ wallet.node }}
+        <template v-for="(wallet, index) in wallet.wallets">
+          <v-list-tile
+            :key="wallet.name"
+            avatar
+            ripple
+          >
+            <v-list-tile-content class="my-2">
+              <v-list-tile-title>{{ wallet.name }}</v-list-tile-title>
+              <div v-if="!wallet.isWatchOnly">
+                <v-list-tile-sub-title class="monospaced-bold">
+                  {{ wallet.account.address.pretty() }}
                 </v-list-tile-sub-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <v-btn
-                  icon
-                  ripple
-                  @click="removeWallet(wallet.name)"
-                >
-                  <v-icon color="grey lighten-1">
-                    close
-                  </v-icon>
-                </v-btn>
-              </v-list-tile-action>
-            </v-list-tile>
-            <v-divider
-              v-if="index + 1 < wallet.walletsNumber"
-              :key="index"
-            />
-          </template>
-        </v-slide-y-transition>
-      </v-list>
-    </div>
+              </div>
+              <div v-if="wallet.isWatchOnly">
+                <v-list-tile-sub-title class="monospaced-bold">
+                  {{ wallet.publicAccount.address.pretty() }}
+                </v-list-tile-sub-title>
+              </div>
+
+              <v-list-tile-sub-title class="monospaced">
+                {{ wallet.node }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn
+                icon
+                ripple
+                @click="removeWallet(wallet.name)"
+              >
+                <v-icon color="grey lighten-1">
+                  close
+                </v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+          <v-divider
+            v-if="index + 1 < wallet.walletsNumber"
+            :key="index"
+          />
+        </template>
+      </v-slide-y-transition>
+    </v-list>
   </v-layout>
 </template>
 <script>

@@ -17,76 +17,69 @@
 
 <template>
   <v-layout
-    column
-    xs12
+    row
+    pb-2
+    mt-4
   >
-    <v-layout
-      row
-      mb-4
+    <v-flex
+      xs12
     >
-      <v-layout
-        row
-        fill-height
-        justify-start
-        pl-3
-        xs12
+      <Errors />
+      <v-card
+        style="height: auto;padding:0 !important"
+        class="card--flex-toolbar"
       >
-        <h5 class="headline pt-3">
-          Wallet
-        </h5>
-      </v-layout>
-    </v-layout>
-
-    <v-layout
-      row
-      mb-4
-    >
-      <v-layout
-        row
-        fill-height
-        justify-end
-        xs12
-      >
-        <v-btn
-          color="primary mx-0"
-          @click.stop="showWalletCreationDialog = true"
+        <v-toolbar
+          card
+          prominent
         >
-          New Wallet
-        </v-btn>
-        <v-btn
-          class="ml-3"
-          color="primary mx-0"
-          @click.stop="showWoWalletCreationDialog = true"
-        >
-          New Watch-Only Wallet
-        </v-btn>
-        <v-btn
-          class="ml-3"
-          color="primary mx-0"
-          @click.stop="showWalletImportDialog = true"
-        >
-          Import Wallet
-        </v-btn>
-      </v-layout>
-    </v-layout>
+          <v-spacer />
 
-    <Errors />
+          <v-btn
+            flat
+            @click.stop="showWalletCreationDialog = true"
+          >
+            New Wallet
+          </v-btn>
+          <v-spacer />
 
+          <v-btn
+            class="ml-3"
+            flat
+            @click.stop="showWoWalletCreationDialog = true"
+          >
+            New Watch-Only Wallet
+          </v-btn>
+          <v-spacer />
+
+          <v-btn
+            class="ml-3"
+            flat
+            @click.stop="showWalletImportDialog = true"
+          >
+            Import Wallet
+          </v-btn>
+          <v-spacer />
+        </v-toolbar>
+
+        <v-spacer />
+        <v-card-text>
+          <WalletList class="my-2" />
+        </v-card-text>
+      </v-card>
+    </v-flex>
     <WalletCreationDialog
       :visible="showWalletCreationDialog"
       @close="showWalletCreationDialog=false"
     />
-
-    <WoWalletCreationDialog
-      :visible="showWoWalletCreationDialog"
-      @close="showWoWalletCreationDialog=false"
-    />
-
     <WalletImportDialog
       :visible="showWalletImportDialog"
       @close="showWalletImportDialog=false"
     />
-    <WalletList class="my-2" />
+    <WoWalletCreationDialog
+      :visible="showWoWalletCreationDialog"
+      @close="showWoWalletCreationDialog=false"
+    />
   </v-layout>
 </template>
 <script>
