@@ -17,289 +17,298 @@
 
 <template>
   <v-layout
-    column
-    xs12
+    row
+    mt-2
   >
-    <v-layout
-      row
-      mb-4
-    >
+    <v-container fluid>
       <v-layout
         row
-        fill-height
-        justify-start
-        pl-3
-        xs3
+        wrap
       >
-        <h5 class="headline pt-3">
-          Send A Transfer Transaction
-        </h5>
-      </v-layout>
-    </v-layout>
+        <v-flex xs12>
+          <Errors />
+          <v-card
+            v-if="wallet.wallets.length > 0
+              && wallet.activeWallet
+              && !application.error"
+            style="height: auto;padding:0 !important"
+            class="card--flex-toolbar"
+          >
+            <v-toolbar
+              card
+              prominent
+            />
+            <v-card-text>
+              <p class="mb-4 mt-4">
+                Current Node:
+                <a
+                  :href="activeWallet.node"
+                  target="_new"
+                >{{ activeWallet.node }}</a>
+                (Cow)
+              </p>
+              <v-flex xs12>
+                <v-form lazy-validation>
+                  <v-text-field
+                    v-model="txRecipient"
+                    placeholder="ex. SB2JNF-UZ4MQP-BBDEQ2-C4QW2U-56PPVK-KMAMDU-77IE"
+                    required
+                    solo
+                    reverse
+                  >
+                    <template slot="append">
+                      <v-subheader>Recipient</v-subheader>
+                    </template>
+                  </v-text-field>
 
-    <Errors />
+                  <v-text-field
+                    v-model="txAmount"
+                    placeholder="ex. 10"
+                    type="number"
+                    reverse
+                    solo
+                  >
+                    <template slot="append">
+                      <v-subheader>Amount (Network Currency / XEM)</v-subheader>
+                    </template>
+                  </v-text-field>
 
-    <p class="mb-4 mt-4">
-      Current Node:
-      <a
-        :href="activeWallet.node"
-        target="_new"
-      >{{ activeWallet.node }}</a>
-      (Cow)
-    </p>
-    <v-flex xs12>
-      <v-form lazy-validation>
-        <v-text-field
-          v-model="txRecipient"
-          placeholder="ex. SB2JNF-UZ4MQP-BBDEQ2-C4QW2U-56PPVK-KMAMDU-77IE"
-          required
-          solo
-          reverse
-        >
-          <template slot="append">
-            <v-subheader>Recipient</v-subheader>
-          </template>
-        </v-text-field>
+                  <v-checkbox
+                    v-model="checkbox"
+                    label="Sending other assets?"
+                  />
+                  <v-flex
+                    v-if="checkbox"
+                    sm
+                    class="ma-4"
+                  >
+                    <v-select
+                      v-model="currentMosaicName"
+                      :items="assets.assets.map(({id})=>id)"
+                      label="Chose an asset"
+                      solo
+                    />
 
-        <v-text-field
-          v-model="txAmount"
-          placeholder="ex. 10"
-          type="number"
-          reverse
-          solo
-        >
-          <template slot="append">
-            <v-subheader>Amount (Network Currency / XEM)</v-subheader>
-          </template>
-        </v-text-field>
+                    <v-layout row>
+                      <v-flex xs-11>
+                        <v-text-field
+                          v-model="currentMosaicAmount"
+                          label="Asset Amount"
+                          placeholder="ex. 10"
+                          solo
+                        />
+                      </v-flex>
 
-        <v-checkbox
-          v-model="checkbox"
-          label="Sending other assets?"
-        />
-        <v-flex
-          v-if="checkbox"
-          sm
-          class="ma-4"
-        >
-          <v-select
-            v-model="currentMosaicName"
-            :items="assets.assets.map(({id})=>id)"
-            label="Chose an asset"
-            solo
-          />
+                      <v-flex xs-1>
+                        <v-btn
+                          :disabled="currentMosaicName === ''"
+                          color="primary"
+                          @click="addMosaic"
+                        >
+                          <v-icon>add</v-icon>
+                        </v-btn>
+                      </v-flex>
+                    </v-layout>
+                    <template v-for="(mosaic, index) in mosaics">
+                      <v-list
+                        :key="index"
+                        two-line
+                      >
+                        <v-list-tile v-if="!(mosaic.id.toHex() == '85bbea6cc462b244')">
+                          <v-list-tile-action>
+                            <v-icon>group_work</v-icon>
+                          </v-list-tile-action>
+                          <v-list-tile-content>
+                            {{ mosaic.id.toHex() }}
+                            <v-subheader>
+                              Amount: {{ mosaic.amount.compact() }}
+                            </v-subheader>
+                          </v-list-tile-content>
+                          <v-btn
+                            fab
+                            small
+                            color="error"
+                            @click="removeMosaic(index)"
+                          >
+                            <v-icon>remove</v-icon>
+                          </v-btn>
+                        </v-list-tile>
+                      </v-list>
+                    </template>
+                  </v-flex>
+                  <v-spacer />
 
-          <v-layout row>
-            <v-flex xs-11>
-              <v-text-field
-                v-model="currentMosaicAmount"
-                label="Asset Amount"
-                placeholder="ex. 10"
-                solo
-              />
-            </v-flex>
+                  <v-text-field
+                    v-model="txMessage"
+                    placeholder="Here is your XEM, Bob! - Alice"
+                    solo
+                    reverse
+                  >
+                    <template slot="append">
+                      <v-subheader>Message</v-subheader>
+                    </template>
+                  </v-text-field>
 
-            <v-flex xs-1>
-              <v-btn
-                :disabled="currentMosaicName === ''"
-                color="primary"
-                @click="addMosaic"
-              >
-                <v-icon>add</v-icon>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-          <template v-for="(mosaic, index) in mosaics">
-            <v-list
-              :key="index"
-              two-line
-            >
-              <v-list-tile v-if="!(mosaic.id.toHex() == '85bbea6cc462b244')">
-                <v-list-tile-action>
-                  <v-icon>group_work</v-icon>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  {{ mosaic.id.toHex() }}
-                  <v-subheader>
-                    Amount: {{ mosaic.amount.compact() }}
-                  </v-subheader>
-                </v-list-tile-content>
+                  <v-text-field
+                    v-model="userPrivateKey"
+                    label=""
+                    class="mt-3 mb-3"
+                    :counter="64"
+                    required
+                    solo
+                    reverse
+                  >
+                    <template slot="append">
+                      <v-subheader>Private Key</v-subheader>
+                    </template>
+
+                    <template slot="prepend-inner">
+                      <v-btn
+                        v-if="userPrivateKey == ''"
+                        small
+                        color="primary"
+                        @click="fillPrivateKeyField"
+                      >
+                        Use my wallet's private key
+                      </v-btn>
+                    </template>
+                  </v-text-field>
+
+                  <v-flex
+                    v-if="txRecipient == '' || userPrivateKey == ''"
+                    xs12
+                  >
+                    <v-alert
+                      :value="true"
+                      type="info"
+                    >
+                      A private key, recipient address, and amount&nbsp;
+                      are required in order to send a transaction.
+                    </v-alert>
+                  </v-flex>
+                </v-form>
+              </v-flex>
+              <v-card-actions>
                 <v-btn
-                  fab
-                  small
-                  color="error"
-                  @click="removeMosaic(index)"
+                  :disabled="txRecipient == '' || userPrivateKey == ''"
+                  color="primary mx-0"
+                  @click="dialog = true"
                 >
-                  <v-icon>remove</v-icon>
+                  Send
                 </v-btn>
-              </v-list-tile>
-            </v-list>
-          </template>
+              </v-card-actions>
+              <div class="mt-4">
+                <SendConfirmation
+                  :tx-hash="txHash"
+                  :tx-recipient="txRecipient"
+                  :node-u-r-l="activeWallet.node"
+                />
+              </div>
+
+              <v-dialog
+                v-model="dialog"
+                max-width="500"
+              >
+                <v-card>
+                  <v-card-title class="headline">
+                    Send this transaction?
+                  </v-card-title>
+                  <v-card-text>
+                    Are you sure you that you want to send a transaction with the following details?
+                    <v-list>
+                      <v-list-tile>
+                        <v-list-tile-action>
+                          <v-icon>person_outline</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                          <v-list-tile-title>Recipient: {{ txRecipient }}</v-list-tile-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+
+                      <v-list-tile>
+                        <v-list-tile-action>
+                          <v-icon>monetization_on</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                          <v-list-tile-title>Amount: {{ txAmount }} XEM</v-list-tile-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+
+                      <v-list-tile>
+                        <v-list-tile-action>
+                          <v-icon>message</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                          <v-list-tile-title>Message: {{ txMessage }}</v-list-tile-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+                    </v-list>
+                    <template v-for="(mosaic) in mosaics">
+                      <v-list :key="mosaic.id.toHex()">
+                        <v-list-tile v-if="!(mosaic.id.toHex() == '85bbea6cc462b244')">
+                          <v-list-tile-action>
+                            <v-icon>group_work</v-icon>
+                          </v-list-tile-action>
+                          <v-list-tile-content>
+                            <v-list-tile-title>
+                              Asset Attached: {{ mosaic.id.toHex() }}
+                            </v-list-tile-title>
+                          </v-list-tile-content>
+                        </v-list-tile>
+                      </v-list>
+                    </template>
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer />
+
+                    <v-btn
+                      color="info"
+                      @click="dialog = false"
+                    >
+                      Cancel
+                    </v-btn>
+
+                    <v-btn
+                      color="info"
+                      @click="transmitTransaction"
+                    >
+                      Yes, send it!
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-card-text>
+          </v-card>
         </v-flex>
-        <v-spacer />
-
-        <v-text-field
-          v-model="txMessage"
-          placeholder="Here is your XEM, Bob! - Alice"
-          solo
-          reverse
-        >
-          <template slot="append">
-            <v-subheader>Message</v-subheader>
-          </template>
-        </v-text-field>
-
-        <v-text-field
-          v-model="userPrivateKey"
-          label=""
-          class="mt-3 mb-3"
-          :counter="64"
-          required
-          solo
-          reverse
-        >
-          <template slot="append">
-            <v-subheader>Private Key</v-subheader>
-          </template>
-
-          <template slot="prepend-inner">
-            <v-btn
-              v-if="userPrivateKey == ''"
-              small
-              color="primary"
-              @click="fillPrivateKeyField"
-            >
-              Use my wallet's private key
-            </v-btn>
-          </template>
-        </v-text-field>
-
+      </v-layout>
+      <v-layout
+        row
+        wrap
+        style="margin-top: 30px !important;"
+      >
         <v-flex
-          v-if="txRecipient == '' || userPrivateKey == ''"
           xs12
         >
-          <v-alert
-            :value="true"
-            type="info"
+          <v-card
+            v-if="wallet.wallets.length > 0
+              && wallet.activeWallet
+              && !application.error"
           >
-            A private key, recipient address, and amount is required in order to send a transaction.
-          </v-alert>
+            <v-toolbar
+              card
+              prominent
+            >
+              <v-toolbar-title>My assets</v-toolbar-title>
+            </v-toolbar>
+            <v-spacer />
+            <v-card-text>
+              <AssetList class="my-2" />
+            </v-card-text>
+          </v-card>
         </v-flex>
-      </v-form>
-    </v-flex>
-    <v-card-actions>
-      <v-btn
-        :disabled="txRecipient == '' || userPrivateKey == ''"
-        color="primary mx-0"
-        @click="dialog = true"
-      >
-        Send
-      </v-btn>
-    </v-card-actions>
-    <div class="mt-4">
-      <SendConfirmation
-        :tx-hash="txHash"
-        :tx-recipient="txRecipient"
-        :node-u-r-l="activeWallet.node"
-      />
-    </div>
-
-    <v-dialog
-      v-model="dialog"
-      max-width="500"
-    >
-      <v-card>
-        <v-card-title class="headline">
-          Send this transaction?
-        </v-card-title>
-        <v-card-text>
-          Are you sure you that you want to send a transaction with the following details?
-          <v-list>
-            <v-list-tile>
-              <v-list-tile-action>
-                <v-icon>person_outline</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>Recipient: {{ txRecipient }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-
-            <v-list-tile>
-              <v-list-tile-action>
-                <v-icon>monetization_on</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>Amount: {{ txAmount }} XEM</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-
-            <v-list-tile>
-              <v-list-tile-action>
-                <v-icon>message</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>Message: {{ txMessage }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list>
-          <template v-for="(mosaic) in mosaics">
-            <v-list :key="mosaic.id.toHex()">
-              <v-list-tile v-if="!(mosaic.id.toHex() == '85bbea6cc462b244')">
-                <v-list-tile-action>
-                  <v-icon>group_work</v-icon>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title>
-                    Asset Attached: {{ mosaic.id.toHex() }}
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-list>
-          </template>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer />
-
-          <v-btn
-            color="info"
-            @click="dialog = false"
-          >
-            Cancel
-          </v-btn>
-
-          <v-btn
-            color="info"
-            @click="transmitTransaction"
-          >
-            Yes, send it!
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-layout
-      row
-      mb-4
-    >
-      <v-layout
-        row
-        fill-height
-        justify-start
-        pl-3
-        xs3
-      >
-        <h5 class="headline pt-3">
-          My assets
-        </h5>
       </v-layout>
-    </v-layout>
-    <div
-      v-if="wallet.wallets.length > 0
-        && wallet.activeWallet
-        && !application.error"
-    >
-      <AssetList class="my-2" />
-    </div>
+    </v-container>
   </v-layout>
 </template>
 
@@ -427,5 +436,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-</style>
