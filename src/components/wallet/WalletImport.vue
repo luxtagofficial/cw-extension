@@ -1,96 +1,67 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
 
 <template>
-  <v-layout column>
-    <v-layout
-      v-if="isValidAccount"
-      row
-      align-center
-    >
-      <v-flex xs3>
-        <v-subheader>Address</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <div class="monospaced-bold">
-          {{ account.address.pretty() }}
-        </div>
-      </v-flex>
-    </v-layout>
-    <v-layout
-      v-if="isValidAccount"
-      row
-      align-center
-    >
-      <v-flex xs3>
-        <v-subheader>Public Key</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <div class="monospaced">
-          {{ account.publicKey }}
-        </div>
-      </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex xs3>
-        <v-subheader>NEM2 node URL</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <v-text-field
-          v-model="node"
-          class="ma-0 pa-0"
-          label="NEM2 node URL"
-          solo
-        >
-          {{ node }}
-        </v-text-field>
-      </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex xs3>
-        <v-subheader>Wallet name</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <v-text-field
-          v-model="walletName"
-          class="ma-0 pa-0"
-          label="Main wallet"
-          solo
-        />
-      </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex xs3>
-        <v-subheader>Private Key</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <v-text-field
-          v-model.lazy="privateKey"
-          class="ma-0 pa-0"
-          label="Private Key (64 char)"
-          solo
-        />
-      </v-flex>
-    </v-layout>
-    <v-layout
-      row
-      justify-end
-      align-center
-    >
+  <v-card>
+    <v-card-title primary-title>
+      <h3 class="headline mb-3">
+        Import a wallet from private key
+      </h3>
+      <p class="mb-0 clearfix">
+        This wallet will be saved in your browser storage.&nbsp;
+      </p>
+    </v-card-title>
+    <v-card-text>
+      <v-text-field
+        :value="isValidAccount ? account.address.pretty() : ''"
+        class="ma-0 pa-0 monospaced"
+        label="Address"
+        readonly
+      />
+
+      <v-text-field
+        :value="isValidAccount ? account.publicKey : ''"
+        class="ma-0 pa-0 monospaced"
+        label="Public Key"
+        readonly
+      />
+
+      <v-text-field
+        v-model="node"
+        class="ma-0 pa-0"
+        label="NEM2 node URL"
+      >
+        {{ node }}
+      </v-text-field>
+
+      <v-text-field
+        v-model="walletName"
+        class="ma-0 pa-0"
+        label="Main wallet"
+      />
+
+      <v-text-field
+        v-model.lazy="privateKey"
+        class="ma-0 pa-0"
+        label="Private Key (64 char)"
+      />
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
       <v-btn
         flat
         @click="$emit('closeComponent')"
@@ -104,8 +75,8 @@
       >
         Create Wallet
       </v-btn>
-    </v-layout>
-  </v-layout>
+    </v-card-actions>
+  </v-card>
 </template>
 <script>
 import { NetworkType, Account } from 'nem2-sdk';

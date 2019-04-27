@@ -71,16 +71,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import { Address } from 'nem2-sdk';
 import store from '../../store/index';
 
 export default {
   name: 'WoWalletCreation',
   store,
-  props: {
-    visible: Boolean,
-  },
   data() {
     return {
       address: '',
@@ -90,21 +86,6 @@ export default {
       disabledValidation: true,
       isToBeSaved: true,
     };
-  },
-  computed: {
-    ...mapState([
-      'application',
-    ]),
-    show: {
-      get() {
-        return this.visible;
-      },
-      set(value) {
-        if (!value) {
-          this.$emit('close');
-        }
-      },
-    },
   },
   watch: {
     address: {

@@ -49,24 +49,21 @@
       >
         <v-btn
           color="primary mx-0"
-          @click.stop="createWallet = true; importWallet = false"
+          @click.stop="showWalletCreationDialog = true"
         >
           New Wallet
         </v-btn>
         <v-btn
           class="ml-3"
           color="primary mx-0"
-          @click.stop="
-            createWallet = false;
-            importWallet = false;
-            showWoWalletCreationDialog = true"
+          @click.stop="showWoWalletCreationDialog = true"
         >
           New Watch-Only Wallet
         </v-btn>
         <v-btn
           class="ml-3"
           color="primary mx-0"
-          @click.stop="importWallet = true;createWallet = false"
+          @click.stop="showWalletImportDialog = true"
         >
           Import Wallet
         </v-btn>
@@ -75,9 +72,9 @@
 
     <Errors />
 
-    <WalletCreation
-      v-if="createWallet"
-      @closeComponent="createWallet = false"
+    <WalletCreationDialog
+      :visible="showWalletCreationDialog"
+      @close="showWalletCreationDialog=false"
     />
 
     <WoWalletCreationDialog
@@ -85,26 +82,26 @@
       @close="showWoWalletCreationDialog=false"
     />
 
-    <WalletImport
-      v-if="importWallet"
-      @closeComponent="importWallet = false"
+    <WalletImportDialog
+      :visible="showWalletImportDialog"
+      @close="showWalletImportDialog=false"
     />
     <WalletList class="my-2" />
   </v-layout>
 </template>
 <script>
-import WalletCreation from './WalletCreation.vue';
-import WalletImport from './WalletImport.vue';
+import WalletCreationDialog from './WalletCreationDialog.vue';
+import WalletImportDialog from './WalletImportDialog.vue';
 import WalletList from './WalletList.vue';
 import Errors from '../Errors.vue';
 import WoWalletCreationDialog from './WoWalletCreationDialog.vue';
 
 export default {
   components: {
-    WalletCreation,
-    WalletImport,
-    WalletList,
+    WalletCreationDialog,
+    WalletImportDialog,
     WoWalletCreationDialog,
+    WalletList,
     Errors,
   },
   data() {
@@ -112,6 +109,8 @@ export default {
       createWallet: false,
       importWallet: false,
       showWoWalletCreationDialog: false,
+      showWalletCreationDialog: false,
+      showWalletImportDialog: false,
     };
   },
 };

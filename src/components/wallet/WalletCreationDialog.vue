@@ -20,17 +20,17 @@
     v-model="show"
     max-width="680px"
   >
-    <WoWalletCreation />
+    <WalletCreation />
   </v-dialog>
 </template>
 
 <script>
-import WoWalletCreation from './WoWalletCreation.vue';
+import WalletCreation from './WalletCreation.vue';
 
 export default {
-  name: 'WoWalletCreationDialog',
+  name: 'WalletCreationDialog',
   components: {
-    WoWalletCreation,
+    WalletCreation,
   },
   props: {
     visible: Boolean,
