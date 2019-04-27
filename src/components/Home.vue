@@ -16,7 +16,10 @@
 // along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
-  <v-layout>
+  <v-layout
+    pb-2
+    mt-3
+  >
     <v-container fluid>
       <v-layout
         row
@@ -25,7 +28,7 @@
         <v-flex
           xs12
         >
-          <Errors />
+          <Errors style="margin-bottom:35px !important" />
           <v-card
             v-if="
               wallet.wallets.length > 0 &&
