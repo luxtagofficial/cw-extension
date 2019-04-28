@@ -84,10 +84,10 @@
 </template>
 <script>
 import WalletCreationDialog from './WalletCreationDialog.vue';
+import WoWalletCreationDialog from './WoWalletCreationDialog.vue';
 import WalletImportDialog from './WalletImportDialog.vue';
 import WalletList from './WalletList.vue';
 import Errors from '../Errors.vue';
-import WoWalletCreationDialog from './WoWalletCreationDialog.vue';
 
 export default {
   components: {
@@ -99,8 +99,6 @@ export default {
   },
   data() {
     return {
-      createWallet: false,
-      importWallet: false,
       showWoWalletCreationDialog: false,
       showWalletCreationDialog: false,
       showWalletImportDialog: false,

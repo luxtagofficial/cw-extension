@@ -33,13 +33,54 @@
     >
       brightness_2
     </v-icon>
-    <v-icon
-      class="icons pointer wallet"
-      large
-      @click.stop="goToWallet"
+    <v-menu
+      transition="slide-y-transition"
+      bottom
     >
-      payment
-    </v-icon>
+      <template v-slot:activator="{ on }">
+        <v-icon
+          class="icons pointer wallet"
+          large
+          v-on="on"
+        >
+          payment
+        </v-icon>
+      </template>
+      <v-list>
+        <v-list-tile>
+          <v-list-tile-title
+            class="pointer"
+            @click.stop="showWalletCreationDialog = true"
+          >
+            New Wallet
+          </v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile>
+          <v-list-tile-title
+            class="pointer"
+            @click.stop="showWoWalletCreationDialog = true"
+          >
+            New Watch-Only Wallet
+          </v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile>
+          <v-list-tile-title
+            class="pointer"
+            @click.stop="showWalletImportDialog = true"
+          >
+            Import From Private Key
+          </v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile>
+          <v-list-tile-title
+            class="pointer"
+            @click.stop="goToWallet"
+          >
+            Go to wallet page
+          </v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+    </v-menu>
     <v-select
       v-if="walletName"
       v-model="walletName"
@@ -48,20 +89,47 @@
       class="select"
       solo
     />
+
+    <WalletCreationDialog
+      :visible="showWalletCreationDialog"
+      @close="showWalletCreationDialog=false"
+    />
+    <WalletImportDialog
+      :visible="showWalletImportDialog"
+      @close="showWalletImportDialog=false"
+    />
+    <WoWalletCreationDialog
+      :visible="showWoWalletCreationDialog"
+      @close="showWoWalletCreationDialog=false"
+    />
   </div>
 </template>
 <script>
 import { mapState } from 'vuex';
-
 import store from '../store/index';
+import WalletCreationDialog from './wallet/WalletCreationDialog.vue';
+import WoWalletCreationDialog from './wallet/WoWalletCreationDialog.vue';
+import WalletImportDialog from './wallet/WalletImportDialog.vue';
 
 export default {
   store,
+  components: {
+    WalletCreationDialog,
+    WalletImportDialog,
+    WoWalletCreationDialog,
+  },
   props: {
     // eslint-disable-next-line vue/require-default-prop
     walletName: String,
     // eslint-disable-next-line vue/require-default-prop
     wallets: Array,
+  },
+  data() {
+    return {
+      showWoWalletCreationDialog: false,
+      showWalletCreationDialog: false,
+      showWalletImportDialog: false,
+    };
   },
   computed: mapState([
     'application',
