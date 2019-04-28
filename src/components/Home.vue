@@ -87,11 +87,11 @@
                               readonly
                             />
 
-
                             <v-text-field
+                              v-if="showPrivateKey"
                               :value="wallet.activeWallet.isWatchOnly
                                 ?'watch only'
-                                :wallet.activeWallet.privateKey"
+                                :wallet.activeWallet.account.privateKey"
                               class="ma-0 pa-0 monospaced"
                               label="Private Key"
                               readonly
@@ -103,6 +103,15 @@
                               label="Node"
                               readonly
                             />
+                            <div style="text-align: right">
+                              <v-btn
+                                flat
+                                class="float:right !important"
+                                @click.stop="showPrivateKey = !showPrivateKey"
+                              >
+                                {{ !showPrivateKey ? 'show private key' : 'hide private key' }}
+                              </v-btn>
+                            </div>
                           </v-card-text>
                         </v-card>
                       </v-flex>
@@ -113,7 +122,9 @@
                           tile
                           flat
                         >
-                          <v-card-text>{{ 'lorem 2' }}</v-card-text>
+                          <v-card-text>
+                            <span>{{ 'lorem 2' }}</span>
+                          </v-card-text>
                         </v-card>
                       </v-flex>
                     </v-layout>
@@ -173,15 +184,20 @@
                   <v-flex
                     d-flex
                     xs12
-                    sm3
+                    sm4
                   >
                     <v-card
                       color="red lighten-2"
                       dark
                       tile
                       flat
+                      pa-0
+                      style="text-align: center;"
                     >
-                      <v-card-text>{{ 'lorem 6' }}</v-card-text>
+                      <img
+                        :src="QR"
+                        style="margin: 10px 11px 4px 11px !important;"
+                      >
                     </v-card>
                   </v-flex>
                 </v-layout>
@@ -212,6 +228,7 @@
 </template>
 <script>
 import { mapState } from 'vuex';
+import { QRCodeGenerator } from 'nem2-qr-library';
 import Errors from './Errors.vue';
 import Transactions from './transactions/Transactions.vue';
 
@@ -223,15 +240,39 @@ export default {
   },
   data() {
     return {
-      lorem: 'couille',
+      showPrivateKey: false,
     };
   },
-  computed: mapState([
-    'wallet',
-    'accountInfo',
-    'application',
-    'transactions',
-  ]),
+  computed: {
+    ...mapState([
+      'wallet',
+      'accountInfo',
+      'application',
+      'transactions',
+    ], {
+      wallet: state => state.wallet,
+    }),
+    QR() {
+      const dataset = `
+      {
+        "schema": 1,
+        "network": "MAIN_NET",
+        "nem_version": "Catapult",
+        "data": {
+          "address": "
+          ${this.wallet.activeWallet.isWatchOnly
+    ? this.wallet.activeWallet.publicAccount.address.pretty()
+    : this.wallet.activeWallet.account.address.pretty()}"
+        }
+      }`;
+
+      const qr = new QRCodeGenerator(dataset).toBase64();
+
+      console.log(qr, 'QR');
+
+      return qr;
+    },
+  },
 };
 </script>
 
