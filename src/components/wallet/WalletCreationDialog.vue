@@ -20,21 +20,89 @@
     v-model="show"
     max-width="680px"
   >
-    <WalletCreation />
+    <v-card>
+      <v-card-title primary-title>
+        <h3 class="headline mb-3">
+          Generate a new wallet
+        </h3>
+        <p class="mb-0">
+          This wallet will be saved in your browser storage,&nbsp;
+          but make sure to back-up your private if you need to use it later!
+        </p>
+      </v-card-title>
+      <v-card-text>
+        <v-text-field
+          :value="account ? account.address.pretty() : ''"
+          class="ma-0 pa-0 monospaced"
+          label="Main wallet"
+          readonly
+        />
+
+        <v-text-field
+          :value="account ? account.publicKey : ''"
+          class="ma-0 pa-0 monospaced"
+          label="Main wallet"
+          readonly
+        />
+
+        <v-text-field
+          :value="account ? account.privateKey : ''"
+          class="ma-0 pa-0 monospaced"
+          label="Main wallet"
+          readonly
+        />
+
+        <v-text-field
+          v-model="node"
+          class="ma-0 pa-0"
+          label="NEM2 node URL"
+        />
+
+        <v-text-field
+          v-model="walletName"
+          class="ma-0 pa-0"
+          label="Wallet name"
+        />
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          flat
+          @click.stop="$emit('close')"
+        >
+          close
+        </v-btn>
+        <v-btn
+          :disabled="node == '' || walletName == ''"
+          color="primary mx-0"
+          @click="save"
+        >
+          Create Wallet
+        </v-btn>
+      </v-card-actions>
+    </v-card>
   </v-dialog>
 </template>
 
 <script>
-import WalletCreation from './WalletCreation.vue';
+import { NetworkType, Account } from 'nem2-sdk';
+
+import store from '../../store/index';
+
 
 export default {
   name: 'WalletCreationDialog',
-  components: {
-    WalletCreation,
-  },
+  store,
+
   props: {
     visible: Boolean,
   },
+  data: () => ({
+    account: Account.generateNewAccount(NetworkType.MIJIN_TEST),
+    node: '',
+    walletName: '',
+  }),
+
   computed: {
     show: {
       get() {
@@ -45,6 +113,19 @@ export default {
           this.$emit('close');
         }
       },
+    },
+  },
+  methods: {
+    regenerateAccount() {
+      this.account = Account.generateNewAccount(NetworkType.MIJIN_TEST);
+    },
+    save() {
+      const newWallet = {
+        name: this.walletName,
+        account: this.account,
+        node: this.node,
+      };
+      this.$store.dispatch('wallet/ADD_WALLET', newWallet);
     },
   },
 };
