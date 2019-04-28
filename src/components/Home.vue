@@ -58,7 +58,6 @@
                   <v-flex
                     d-flex
                     xs12
-                    order-xs1
                   >
                     <v-layout column>
                       <v-flex d-flex>
@@ -115,70 +114,88 @@
                           </v-card-text>
                         </v-card>
                       </v-flex>
-                      <v-flex d-flex>
-                        <v-card
-                          color="brown"
-                          dark
-                          tile
-                          flat
-                        >
-                          <v-card-text>
-                            <span>{{ 'lorem 2' }}</span>
-                          </v-card-text>
-                        </v-card>
-                      </v-flex>
                     </v-layout>
                   </v-flex>
                   <v-flex
                     d-flex
                     xs12
-                    sm7
-                  >
-                    <v-layout
-                      row
-                      wrap
-                    >
-                      <v-flex d-flex>
-                        <v-card
-                          color="indigo lighten-2"
-                          dark
-                          tile
-                          flat
-                        >
-                          <v-card-text>{{ 'lorem 3' }}</v-card-text>
-                        </v-card>
-                      </v-flex>
-                      <v-flex d-flex>
-                        <v-layout row>
-                          <v-flex
-                            v-for="n in 2"
-                            :key="n"
-                            d-flex
-                          >
-                            <v-card
-                              color="amber lighten-2"
-                              tile
-                              flat
-                            >
-                              <v-card-text>{{ 'lorem 4' }}</v-card-text>
-                            </v-card>
-                          </v-flex>
-                        </v-layout>
-                      </v-flex>
-                    </v-layout>
-                  </v-flex>
-                  <v-flex
-                    d-flex
-                    xs12
-                    sm2
-                    child-flex
+                    sm4
                   >
                     <v-card
-                      color="orange lighten-2"
+                      color="red lighten-2"
+                      dark
                       tile
                       flat
+                      pa-0
                     >
-                      <v-card-text>{{ 'lorem 5' }}</v-card-text>
+                      <h3 style="margin:6px 0px 0px 12px;">
+                        Asset balances
+                      </h3>
+                      <div
+                        v-if="!ownedAssets"
+                        style="text-align:center;margin-top:20%"
+                      >
+                        <v-progress-circular
+                          :size="50"
+                          color="amber"
+                          indeterminate
+                        />
+                      </div>
+                      <v-card-text v-if="ownedAssets==='none'">
+                        This account does not own any asset
+                      </v-card-text>
+                      <div v-if="ownedAssets && ownedAssets!=='none'">
+                        <div
+                          v-for="(a, i) in ownedAssets"
+                          :key="i"
+                        >
+                          <v-card-text pa-0>
+                            {{ a.title }}:&nbsp;
+                            {{ parseInt(a.balance).toLocaleString() }}&nbsp;
+                            [{{ (a.amount/Math.pow(10, a.divisibility)).toLocaleString() }}]
+                          </v-card-text>
+                        </div>
+                      </div>
+                    </v-card>
+                  </v-flex>
+                  <v-flex
+                    d-flex
+                    xs12
+                    sm4
+                  >
+                    <v-card
+                      color="red lighten-2"
+                      dark
+                      tile
+                      flat
+                      pa-0
+                    >
+                      <h3 style="margin:6px 0px 0px 12px;">
+                        Owned namespaces
+                      </h3>
+                      <div
+                        v-if="!ownedNamespaces"
+                        style="text-align:center;margin-top:20%"
+                      >
+                        <v-progress-circular
+                          :size="50"
+                          color="amber"
+                          indeterminate
+                        />
+                      </div>
+                      <v-card-text v-if="ownedNamespaces==='none'">
+                        This account does not own any namespace
+                      </v-card-text>
+                      <div v-if="ownedNamespaces && ownedNamespaces!=='none'">
+                        <div
+                          v-for="(a, i) in ownedNamespaces"
+                          :key="i"
+                        >
+                          <v-card-text pa-0>
+                            {{ a.name }}
+                          </v-card-text>
+                        </div>
+                      </div>
                     </v-card>
                   </v-flex>
                   <v-flex
@@ -249,8 +266,12 @@ export default {
       'accountInfo',
       'application',
       'transactions',
+      'assets',
+      'namespaces',
     ], {
       wallet: state => state.wallet,
+      assets: state => state.assets,
+      namespaces: state => state.namespaces,
     }),
     QR() {
       const dataset = `
@@ -265,20 +286,20 @@ export default {
     : this.wallet.activeWallet.account.address.pretty()}"
         }
       }`;
-
-      const qr = new QRCodeGenerator(dataset).toBase64();
-
-      console.log(qr, 'QR');
-
-      return qr;
+      return new QRCodeGenerator(dataset).toBase64();
+    },
+    ownedAssets() {
+      if (!this.assets.assets[this.wallet.activeWallet.name]) return false;
+      if (this.assets.assets[this.wallet.activeWallet.name].length === 0) return 'none';
+      return this.assets.assets[this.wallet.activeWallet.name]
+        .filter(x => (x.balance > 0 && x.active));
+    },
+    ownedNamespaces() {
+      if (!this.namespaces.namespaces[this.wallet.activeWallet.name]) return false;
+      if (this.namespaces.namespaces[this.wallet.activeWallet.name].length === 0) return 'none';
+      return this.namespaces.namespaces[this.wallet.activeWallet.name]
+        .filter(x => x.active);
     },
   },
 };
 </script>
-
-<style scoped>
-.account-info-container {
-  height: auto;
-  overflow: hidden;
-}
-</style>
