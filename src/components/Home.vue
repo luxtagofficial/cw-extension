@@ -44,55 +44,148 @@
               card
               prominent
             >
-              <v-toolbar-title>Account information</v-toolbar-title>
+              <v-toolbar-title>{{ wallet.activeWallet.name }}</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
-              <div class="monospaced account-info-container">
-                <h5 class="headline mb-0 mb-1">
-                  {{ wallet.activeWallet.name }}
-                </h5>
-                <div class="clearfix homeLine">
-                  <div v-if="wallet.activeWallet.isWatchOnly">
-                    Watch-Only Wallet
-                  </div>
-                  <div class="clearfix">
-                    Address:
-                  </div>
-                  <div
-                    v-if="wallet.activeWallet.isWatchOnly && wallet.activeWallet.publicAccount"
-                    class="clearfix"
+              <v-container
+                fluid
+                grid-list-sm
+              >
+                <v-layout
+                  row
+                  wrap
+                >
+                  <v-flex
+                    d-flex
+                    xs12
+                    order-xs1
                   >
-                    {{ wallet.activeWallet.publicAccount.address.pretty() }}
-                  </div>
-                  <div
-                    v-if="!wallet.activeWallet.isWatchOnly"
-                    class="clearfix"
+                    <v-layout column>
+                      <v-flex d-flex>
+                        <v-card
+                          color="blue-grey"
+                          dark
+                          tile
+                          flat
+                        >
+                          <v-card-text>
+                            <v-text-field
+                              :value="wallet.activeWallet.isWatchOnly
+                                ?wallet.activeWallet.publicAccount.address.pretty()
+                                :wallet.activeWallet.account.address.pretty()"
+                              class="mt-4 mr-0 mb-0 ml-0 pa-0 monospaced"
+                              label="Address"
+                              readonly
+                            />
+
+                            <v-text-field
+                              :value="accountInfo.accountInfo
+                                ?accountInfo.accountInfo[wallet.activeWallet.name].publicKey
+                                : 'unknown'"
+                              class="ma-0 pa-0 monospaced"
+                              label="Public Key"
+                              readonly
+                            />
+
+
+                            <v-text-field
+                              :value="wallet.activeWallet.isWatchOnly
+                                ?'watch only'
+                                :wallet.activeWallet.privateKey"
+                              class="ma-0 pa-0 monospaced"
+                              label="Private Key"
+                              readonly
+                            />
+
+                            <v-text-field
+                              :value="wallet.activeWallet.node"
+                              class="ma-0 pa-0 monospaced"
+                              label="Node"
+                              readonly
+                            />
+                          </v-card-text>
+                        </v-card>
+                      </v-flex>
+                      <v-flex d-flex>
+                        <v-card
+                          color="brown"
+                          dark
+                          tile
+                          flat
+                        >
+                          <v-card-text>{{ 'lorem 2' }}</v-card-text>
+                        </v-card>
+                      </v-flex>
+                    </v-layout>
+                  </v-flex>
+                  <v-flex
+                    d-flex
+                    xs12
+                    sm7
                   >
-                    {{ wallet.activeWallet.account.address.pretty() }}
-                  </div>
-                </div>
-                <div class="clearfix homeLine">
-                  <span
-                    v-show="accountInfo.accountInfo"
-                    class="clearfix"
-                  >Public key:</span>
-                  <span
-                    v-show="accountInfo.accountInfo"
-                    class="clearfix"
+                    <v-layout
+                      row
+                      wrap
+                    >
+                      <v-flex d-flex>
+                        <v-card
+                          color="indigo lighten-2"
+                          dark
+                          tile
+                          flat
+                        >
+                          <v-card-text>{{ 'lorem 3' }}</v-card-text>
+                        </v-card>
+                      </v-flex>
+                      <v-flex d-flex>
+                        <v-layout row>
+                          <v-flex
+                            v-for="n in 2"
+                            :key="n"
+                            d-flex
+                          >
+                            <v-card
+                              color="amber lighten-2"
+                              tile
+                              flat
+                            >
+                              <v-card-text>{{ 'lorem 4' }}</v-card-text>
+                            </v-card>
+                          </v-flex>
+                        </v-layout>
+                      </v-flex>
+                    </v-layout>
+                  </v-flex>
+                  <v-flex
+                    d-flex
+                    xs12
+                    sm2
+                    child-flex
                   >
-                    {{ accountInfo.accountInfo.publicKey }}
-                  </span>
-                </div>
-                <div class="clearfix homeLine">
-                  <span class="clearfix">Current node:</span>
-                  <a
-                    class="clearfix"
-                    :href="wallet.activeWallet.node"
-                    target="_new"
+                    <v-card
+                      color="orange lighten-2"
+                      tile
+                      flat
+                    >
+                      <v-card-text>{{ 'lorem 5' }}</v-card-text>
+                    </v-card>
+                  </v-flex>
+                  <v-flex
+                    d-flex
+                    xs12
+                    sm3
                   >
-                    {{ wallet.activeWallet.node }}</a>
-                </div>
-              </div>
+                    <v-card
+                      color="red lighten-2"
+                      dark
+                      tile
+                      flat
+                    >
+                      <v-card-text>{{ 'lorem 6' }}</v-card-text>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </v-container>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -127,6 +220,11 @@ export default {
   components: {
     Errors,
     Transactions,
+  },
+  data() {
+    return {
+      lorem: 'couille',
+    };
   },
   computed: mapState([
     'wallet',
