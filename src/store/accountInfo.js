@@ -59,8 +59,8 @@ const actions = {
       commit('setAccountInfo', { wallet, accountInfo });
     } catch (error) {
       dispatch('application/SET_ERROR', error, { root: true });
-      // eslint-disable-next-line no-console
-      console.error(error, 'FETCH_ACCOUNT_INFO');
+      commit('setLoading_getAccountInfo', false);
+      throw new Error(`${error}, FETCH_ACCOUNT_INFO`);
     }
     commit('setLoading_getAccountInfo', false);
   },
