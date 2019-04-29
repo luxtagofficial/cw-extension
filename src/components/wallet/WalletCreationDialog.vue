@@ -21,15 +21,21 @@
     max-width="680px"
   >
     <v-card>
-      <v-card-title primary-title>
-        <h3 class="headline mb-3">
-          Generate a new wallet
-        </h3>
-        <p class="mb-0">
-          This wallet will be saved in your browser storage,&nbsp;
-          but make sure to back-up your private if you need to use it later!
-        </p>
-      </v-card-title>
+      <v-toolbar card>
+        <v-card-title primary-title>
+          <h3 class="headline mb-3">
+            Generate a new wallet
+          </h3>
+        </v-card-title>
+        <v-spacer />
+        <v-btn
+          icon
+          @click.stop="regenerateAccount()"
+        >
+          <v-icon>refresh</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-card-text />
       <v-card-text>
         <v-text-field
           :value="account ? account.address.pretty() : ''"
