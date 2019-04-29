@@ -16,82 +16,52 @@
 // along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
-  <v-layout column>
-    <v-layout
-      row
-      align-center
-    >
-      <v-flex xs3>
-        <v-subheader>Address</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <div class="monospaced-bold">
-          {{ account ? account.address.pretty() : '' }}
-        </div>
-      </v-flex>
-    </v-layout>
-    <v-layout
-      row
-      align-center
-    >
-      <v-flex xs3>
-        <v-subheader>Public Key</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <div class="monospaced">
-          {{ account ? account.publicKey : '' }}
-        </div>
-      </v-flex>
-    </v-layout>
-    <v-layout
-      row
-      align-center
-    >
-      <v-flex xs3>
-        <v-subheader>Private Key</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <div class="monospaced">
-          {{ account ? account.privateKey : '' }}
-          <v-icon
-            @click="regenerateAccount"
-          >
-            refresh
-          </v-icon>
-        </div>
-      </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex xs3>
-        <v-subheader>NEM2 node URL</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <v-text-field
-          v-model="node"
-          class="ma-0 pa-0"
-          label="NEM2 node URL"
-          solo
-        />
-      </v-flex>
-    </v-layout>
-    <v-layout row>
-      <v-flex xs3>
-        <v-subheader>Wallet name</v-subheader>
-      </v-flex>
-      <v-flex xs9>
-        <v-text-field
-          v-model="walletName"
-          class="ma-0 pa-0"
-          label="Main wallet"
-          solo
-        />
-      </v-flex>
-    </v-layout>
-    <v-layout
-      row
-      justify-end
-      align-center
-    >
+  <v-card>
+    <v-card-title primary-title>
+      <h3 class="headline mb-3">
+        Generate a new wallet
+      </h3>
+      <p class="mb-0">
+        This wallet will be saved in your browser storage,&nbsp;
+        but make sure to back-up your private if you need to use it later!
+      </p>
+    </v-card-title>
+    <v-card-text>
+      <v-text-field
+        :value="account ? account.address.pretty() : ''"
+        class="ma-0 pa-0 monospaced"
+        label="Main wallet"
+        readonly
+      />
+
+      <v-text-field
+        :value="account ? account.publicKey : ''"
+        class="ma-0 pa-0 monospaced"
+        label="Main wallet"
+        readonly
+      />
+
+      <v-text-field
+        :value="account ? account.privateKey : ''"
+        class="ma-0 pa-0 monospaced"
+        label="Main wallet"
+        readonly
+      />
+
+      <v-text-field
+        v-model="node"
+        class="ma-0 pa-0"
+        label="NEM2 node URL"
+      />
+
+      <v-text-field
+        v-model="walletName"
+        class="ma-0 pa-0"
+        label="Main wallet"
+      />
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
       <v-btn
         flat
         @click="$emit('closeComponent')"
@@ -105,8 +75,8 @@
       >
         Create Wallet
       </v-btn>
-    </v-layout>
-  </v-layout>
+    </v-card-actions>
+  </v-card>
 </template>
 <script>
 import { NetworkType, Account } from 'nem2-sdk';

@@ -17,101 +17,93 @@
 
 <template>
   <v-layout
-    column
-    xs12
+    row
+    pb-2
+    mt-4
   >
-    <v-layout
-      row
-      mb-4
+    <v-flex
+      xs12
     >
-      <v-layout
-        row
-        fill-height
-        justify-start
-        pl-3
-        xs12
+      <Errors />
+      <v-card
+        style="height: auto;padding:0 !important"
+        class="card--flex-toolbar"
       >
-        <h5 class="headline pt-3">
-          Wallet
-        </h5>
-      </v-layout>
-    </v-layout>
-
-    <v-layout
-      row
-      mb-4
-    >
-      <v-layout
-        row
-        fill-height
-        justify-end
-        xs12
-      >
-        <v-btn
-          color="primary mx-0"
-          @click.stop="createWallet = true; importWallet = false"
+        <v-toolbar
+          card
+          prominent
         >
-          New Wallet
-        </v-btn>
-        <v-btn
-          class="ml-3"
-          color="primary mx-0"
-          @click.stop="
-            showAddressInput = false;
-            importWallet = false;
-            showAddressInput = true"
-        >
-          New Watch-Only Wallet
-        </v-btn>
-        <v-btn
-          class="ml-3"
-          color="primary mx-0"
-          @click.stop="importWallet = true;createWallet = false"
-        >
-          Import Wallet
-        </v-btn>
-      </v-layout>
-    </v-layout>
+          <v-spacer />
 
-    <Errors />
+          <v-btn
+            flat
+            @click.stop="showWalletCreationDialog = true"
+          >
+            New Wallet
+          </v-btn>
+          <v-spacer />
 
-    <WalletCreation
-      v-if="createWallet"
-      @closeComponent="createWallet = false"
+          <v-btn
+            class="ml-3"
+            flat
+            @click.stop="showWoWalletCreationDialog = true"
+          >
+            New Watch-Only Wallet
+          </v-btn>
+          <v-spacer />
+
+          <v-btn
+            class="ml-3"
+            flat
+            @click.stop="showWalletImportDialog = true"
+          >
+            Import Wallet
+          </v-btn>
+          <v-spacer />
+        </v-toolbar>
+
+        <v-spacer />
+        <v-card-text>
+          <WalletList class="my-2" />
+        </v-card-text>
+      </v-card>
+    </v-flex>
+    <WalletCreationDialog
+      :visible="showWalletCreationDialog"
+      @close="showWalletCreationDialog=false"
     />
-
-    <AddressInput
-      :visible="showAddressInput"
-      @close="showAddressInput=false"
+    <WalletImportDialog
+      :visible="showWalletImportDialog"
+      @close="showWalletImportDialog=false"
     />
-
-    <WalletImport
-      v-if="importWallet"
-      @closeComponent="importWallet = false"
+    <WoWalletCreationDialog
+      :visible="showWoWalletCreationDialog"
+      @close="showWoWalletCreationDialog=false"
     />
-    <WalletList class="my-2" />
   </v-layout>
 </template>
 <script>
-import WalletCreation from './WalletCreation.vue';
-import WalletImport from './WalletImport.vue';
+import WalletCreationDialog from './WalletCreationDialog.vue';
+import WalletImportDialog from './WalletImportDialog.vue';
 import WalletList from './WalletList.vue';
 import Errors from '../Errors.vue';
-import AddressInput from '../AddressInput.vue';
+import WoWalletCreationDialog from './WoWalletCreationDialog.vue';
 
 export default {
   components: {
-    WalletCreation,
-    WalletImport,
+    WalletCreationDialog,
+    WalletImportDialog,
+    WoWalletCreationDialog,
     WalletList,
-    AddressInput,
     Errors,
   },
   data() {
     return {
       createWallet: false,
       importWallet: false,
-      showAddressInput: false,
+      showWoWalletCreationDialog: false,
+      showWalletCreationDialog: false,
+      showWalletImportDialog: false,
     };
   },
 };
