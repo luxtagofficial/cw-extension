@@ -82,9 +82,7 @@ const actions = {
 
     await commit('addWallet', newWallet);
 
-    if (!getters.GET_ACTIVE_WALLET) {
-      dispatch('SET_ACTIVE_WALLET', newWallet.name);
-    }
+    dispatch('SET_ACTIVE_WALLET', newWallet.name);
 
     const walletsToStore = [
       ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
@@ -159,7 +157,7 @@ const actions = {
       return;
     }
 
-    const wallet = typeof argWallet.publicAccount === 'undefined'
+    const wallet = !argWallet.publicAccount
       ? argWallet : await new WoWallet(argWallet).create();
 
     if (wallet.publicAccount && !wallet.publicAccount.publicKey) {
