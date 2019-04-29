@@ -16,33 +16,14 @@
 // along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
-  <v-app>
+  <v-app :dark="application.darkMode">
     <v-content>
-      <v-alert
-        :value="true"
-        type="warning"
-        class="ma-0"
-      >
-        Please be aware this is a Wallet for development proposes,&nbsp;
-        it has no security and the private keys are stored in plain text.
-        <strong>DO NOT USE IN MAIN NET or PRODUCTION PRIVATE NETWORKS</strong>
-      </v-alert>
-      <v-container grid-list-md>
-        <v-layout
-          row
-          justify-space-between
-          align-center
-        >
-          <h4>NEM2 Wallet 0.0.4</h4>
-          <WalletSelector
-            v-if="wallet.activeWallet"
-            :wallet-name="wallet.activeWallet.name"
-            :wallets="wallet.wallets.map(({name})=>name)"
-          />
-        </v-layout>
+      <v-container grid-list-lg>
         <v-layout
           justify-start
           row
+          xs12
+          lg12
         >
           <v-flex
             shrink
@@ -50,36 +31,9 @@
           >
             <v-navigation-drawer
               v-model="drawer"
-              permanent
-              floating
-              :mini-variant.sync="mini"
-              hide-overlay
-              stateless
+              fixed
+              app
             >
-              <v-toolbar
-                class="pointer"
-                flat
-                @click.stop="mini = !mini"
-              >
-                <v-list>
-                  <v-list-tile>
-                    <v-list-tile-title class="title">
-                      Menu
-                    </v-list-tile-title>
-                  </v-list-tile>
-                </v-list>
-                <v-list-tile-action>
-                  <v-btn
-                    icon
-                    @click.stop="mini = !mini"
-                  >
-                    <v-icon>chevron_left</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-              </v-toolbar>
-
-              <v-divider />
-
               <v-list>
                 <v-list-tile to="/">
                   <v-list-tile-action>
@@ -101,18 +55,6 @@
                   </v-list-tile-content>
                 </v-list-tile>
 
-                <!--
-                <v-list-tile @click>
-                  <v-list-tile-action>
-                    <v-icon>account_circle</v-icon>
-                  </v-list-tile-action>
-
-                  <v-list-tile-content>
-                    <v-list-tile-title>Account</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-                -->
-
                 <v-list-tile to="/namespace">
                   <v-list-tile-action>
                     <v-icon>dns</v-icon>
@@ -130,15 +72,6 @@
 
                   <v-list-tile-content>
                     <v-list-tile-title>Assets</v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-
-                <v-list-tile to="/wallet">
-                  <v-list-tile-action>
-                    <v-icon>payment</v-icon>
-                  </v-list-tile-action>
-                  <v-list-tile-content>
-                    <v-list-tile-title>Wallet</v-list-tile-title>
                   </v-list-tile-content>
                 </v-list-tile>
 
@@ -176,6 +109,18 @@
                 </v-list-tile>
               </v-list>
             </v-navigation-drawer>
+            <v-toolbar
+              fixed
+              app
+            >
+              <v-toolbar-side-icon @click.stop="drawer = !drawer" />
+              <v-toolbar-title>{{ application.routeName }}</v-toolbar-title>
+              <v-spacer />
+              <WalletSelector
+                :wallet-name="wallet.activeWallet.name || ''"
+                :wallets="wallet.wallets.map(({name})=>name) || []"
+              />
+            </v-toolbar>
           </v-flex>
           <v-flex
             grow
@@ -187,6 +132,50 @@
         </v-layout>
       </v-container>
     </v-content>
+    <v-footer
+      height="auto"
+      app
+    >
+      <v-card
+        flat
+        tile
+        class="text-xs-center width-100"
+        app
+      >
+        <v-card-text
+          class="red--text"
+          pa-1
+        >
+          Please be aware this is a Wallet for development proposes,&nbsp;
+          it has no security and the private keys are stored in plain text.
+          <strong>DO NOT USE IN MAIN NET or PRODUCTION PRIVATE NETWORKS</strong>
+        </v-card-text>
+
+        <v-divider />
+
+        <v-card-text class="padding-0">
+          <v-btn
+            pt-1
+            pr-4
+            pb-1
+            pl-4
+            icon
+          >
+            Github
+          </v-btn>
+          <v-btn
+            pt-1
+            pr-4
+            pb-1
+            pl-4
+            icon
+          >
+            Slack
+          </v-btn>
+          <strong>NEM2 (Cow) Wallet V0.05</strong>
+        </v-card-text>
+      </v-card>
+    </v-footer>
   </v-app>
 </template>
 <script>
@@ -202,12 +191,12 @@ export default {
   data() {
     return {
       drawer: true,
-      mini: false,
       right: null,
     };
   },
   computed: mapState([
     'wallet',
+    'application',
   ]),
   created() {
     this.$store.dispatch('wallet/INIT_APPLICATION');

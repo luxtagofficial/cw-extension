@@ -16,162 +16,135 @@
 // along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
-  <div>
-    <v-layout
-      column
+  <v-layout
+    row
+    wrap
+  >
+    <v-flex
       xs12
     >
-      <v-layout
-        column
-        xs12
-      >
-        <v-layout
-          row
-          mb-4
-          mt-4
+      <v-card>
+        <v-toolbar
+          card
+          prominent
         >
-          <v-layout
-            row
-            fill-height
-            justify-start
-            pl-3
-            xs3
+          <v-toolbar-title>Recent transactions</v-toolbar-title>
+          <v-spacer />
+          <v-btn
+            icon
+            @click.stop="refresh(wallet.activeWallet)"
           >
-            <h5 class="headline pt-3 pl-2">
-              Transactions
-            </h5>
-          </v-layout>
-          <v-layout
-            row
-            fill-height
-            justify-end
-            xs9
-          >
-            <v-btn
-              color="primary mx-0"
-              @click.stop="refresh(wallet.activeWallet)"
-            >
-              Refresh
-            </v-btn>
-            <v-btn
-              class="ml-3"
-              color="primary mx-0"
-              @click.stop="loadMore(wallet.activeWallet)"
-            >
-              Load more
-            </v-btn>
-            <v-btn
-              class="ml-3"
-              color="primary mx-0"
-              @click.stop="showFilters=true"
-            >
-              Filters
-            </v-btn>
-          </v-layout>
-        </v-layout>
+            <v-icon>refresh</v-icon>
+          </v-btn>
 
-        <v-layout>
-          <v-layout
-            row
-            fill-height
-            justify-end
-            xs9
+          <v-btn
+            icon
+            @click.stop="loadMore(wallet.activeWallet)"
           >
-            <v-btn
-              class="ml-3"
-              color="primary mx-0"
-              @click.stop="showAddressInput=true"
+            <v-icon>playlist_add</v-icon>
+          </v-btn>
+          <v-btn
+            icon
+            @click.stop="showFilters=true"
+          >
+            <v-icon>filter_list</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-card-text>
+          <v-container
+            fluid
+            fill-height
+          >
+            <v-progress-linear
+              v-if="transactions.loading_getAccountTransactionsById"
+              :indeterminate="true"
+            />
+            <v-layout
+              v-if="transactions.transactions[wallet.activeWallet.name] &&
+                transactions.transactions[wallet.activeWallet.name].length > 0"
+              child-flex
             >
-              Lookup another address
-            </v-btn>
-          </v-layout>
-        </v-layout>
-
-        <v-container
-          fluid
-          fill-height
-        >
-          <v-layout child-flex>
-            <v-data-table
-              :headers="headers"
-              :items="transactions.transactions[wallet.activeWallet.name]"
-              disable-initial-sort
-              :rows-per-page-items="rowsPerPageOptions"
-            >
-              <template
-                slot="headerCell"
-                slot-scope="props"
+              <v-data-table
+                :headers="headers"
+                :items="transactions.transactions[wallet.activeWallet.name]"
+                disable-initial-sort
+                :rows-per-page-items="rowsPerPageOptions"
               >
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <span v-on="on">
-                      {{ props.header.text }}
-                    </span>
-                  </template>
-                  <span>
-                    {{ props.header.hoverText }}
-                  </span>
-                </v-tooltip>
-              </template>
-              <template v-slot:items="props">
-                <tr
-                  v-show="
-                    transactions.transactionTypesFilters[
-                      props.item.type1.replace(/ /g, '_').replace(/\./g, '8')
-                    ]"
-                  class="pointer"
-                  @click.stop="
-                    showTransactionModal=true
-                    $store.dispatch(
-                      'transactions/UPDATE_ACTIVE_TRANSACTION',
-                      props.item,
-                    );
-                  "
+                <template
+                  slot="headerCell"
+                  slot-scope="props"
                 >
-                  <td class="text-xs-left">
-                    <span class="clearfix">
-                      <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
-                    </span>
-                    <span class="clearfix">
-                      <pre>{{ props.item.date }}</pre>
-                    </span>
-                    <span class="clearfix">
-                      <pre>{{ props.item.type1 }}</pre>
-                    </span>
-                    <span
-                      v-if="props.item.type2 !== ''"
-                      class="clearfix"
-                    >
-                      <pre>{{ props.item.type2 }}</pre>
-                    </span>
-                  </td>
-                  <td class="text-xs-left">
-                    <div
-                      v-for="(mainProp, index) in props.item.mainProps"
-                      :key="index"
-                    >
-                      <span
-                        class="clearfix"
-                        style="text-align:left"
-                      >
-                        <pre>{{ mainProp.key }}&nbsp;{{ mainProp.value }}</pre>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <span v-on="on">
+                        {{ props.header.text }}
                       </span>
-                    </div>
-                  </td>
-                  <td class="text-xs-left">
-                    <span class="clearfix">
-                      <pre>{{ props.item.signerTiny }}</pre>
+                    </template>
+                    <span>
+                      {{ props.header.hoverText }}
                     </span>
-                    <span class="clearfix">
-                      <pre>{{ props.item.recipientTiny }}</pre>
-                    </span>
-                  </td>
-                </tr>
-              </template>
-            </v-data-table>
-          </v-layout>
-        </v-container>
-      </v-layout>
+                  </v-tooltip>
+                </template>
+                <template v-slot:items="props">
+                  <tr
+                    v-show="
+                      transactions.transactionTypesFilters[
+                        props.item.type1.replace(/ /g, '_').replace(/\./g, '8')
+                      ]"
+                    class="pointer"
+                    @click.stop="
+                      showTransactionModal=true
+                      $store.dispatch(
+                        'transactions/UPDATE_ACTIVE_TRANSACTION',
+                        props.item,
+                      );
+                    "
+                  >
+                    <td class="text-xs-left">
+                      <span class="clearfix">
+                        <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
+                      </span>
+                      <span class="clearfix">
+                        <pre>{{ props.item.date }}</pre>
+                      </span>
+                      <span class="clearfix">
+                        <pre>{{ props.item.type1 }}</pre>
+                      </span>
+                      <span
+                        v-if="props.item.type2 !== ''"
+                        class="clearfix"
+                      >
+                        <pre>{{ props.item.type2 }}</pre>
+                      </span>
+                    </td>
+                    <td class="text-xs-left">
+                      <div
+                        v-for="(mainProp, index) in props.item.mainProps"
+                        :key="index"
+                      >
+                        <span
+                          class="clearfix"
+                          style="text-align:left"
+                        >
+                          <pre>{{ mainProp.key }}&nbsp;{{ mainProp.value }}</pre>
+                        </span>
+                      </div>
+                    </td>
+                    <td class="text-xs-left">
+                      <span class="clearfix">
+                        <pre>{{ props.item.signerTiny }}</pre>
+                      </span>
+                      <span class="clearfix">
+                        <pre>{{ props.item.recipientTiny }}</pre>
+                      </span>
+                    </td>
+                  </tr>
+                </template>
+              </v-data-table>
+            </v-layout>
+          </v-container>
+        </v-card-text>
+      </v-card>
 
       <TransactionModal
         :visible="showTransactionModal"
@@ -189,8 +162,8 @@
           @close="showFilters=false"
         />
       </div>
-    </v-layout>
-  </div>
+    </v-flex>
+  </v-layout>
 </template>
 <script>
 import { mapState } from 'vuex';

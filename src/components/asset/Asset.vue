@@ -17,57 +17,52 @@
 
 <template>
   <v-layout
-    column
-    xs12
+    row
+    pb-2
+    mt-4
   >
-    <v-layout
-      row
-      mb-4
+    <v-flex
+      xs12
     >
-      <v-layout
-        row
-        fill-height
-        justify-start
-        pl-3
-        xs3
+      <Errors />
+      <v-card
+        v-if="wallet.wallets.length > 0
+          && wallet.activeWallet
+          && !application.error"
+        style="height: auto;padding:0 !important"
+        class="card--flex-toolbar"
       >
-        <h5 class="headline pt-3">
-          Assets
-        </h5>
-      </v-layout>
-      <v-layout
-        row
-        fill-height
-        justify-end=""
-        xs9
-      >
-        <v-btn
-          color="primary mx-0"
-          @click="reloadList(wallet.activeWallet)"
+        <v-toolbar
+          card
+          prominent
         >
-          Reload List
-        </v-btn>
-        <v-btn
-          class="ml-3"
-          color="primary mx-0"
-          @click="createAsset = !createAsset"
-        >
-          Create Asset
-        </v-btn>
-      </v-layout>
-    </v-layout>
-    <Errors />
-    <div
-      v-if="wallet.wallets.length > 0
-        && wallet.activeWallet
-        && !application.error"
-    >
-      <AssetCreation
-        v-show="createAsset"
-        @closeComponent="createAsset = false"
-      />
-      <AssetList class="my-2" />
-    </div>
+          <v-spacer />
+
+          <v-btn
+            icon
+            @click.stop="reloadList(wallet.activeWallet)"
+          >
+            <v-icon>refresh</v-icon>
+          </v-btn>
+
+          <v-btn
+            icon
+            @click.stop="createAsset = !createAsset"
+          >
+            <v-icon>add_box</v-icon>
+          </v-btn>
+        </v-toolbar>
+
+        <v-spacer />
+        <v-card-text>
+          <AssetCreation
+            v-show="createAsset"
+            @closeComponent="createAsset = false"
+          />
+          <AssetList />
+        </v-card-text>
+      </v-card>
+    </v-flex>
   </v-layout>
 </template>
 <script>

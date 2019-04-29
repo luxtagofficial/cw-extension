@@ -22,6 +22,8 @@
 const state = {
   error: false,
   errorMessage: '',
+  routeName: '',
+  darkMode: false,
 };
 
 const getters = {
@@ -42,6 +44,12 @@ const mutations = {
     state.error = true;
     state.errorMessage = errMsg;
   },
+  updateRouteName(state, routeName) {
+    state.routeName = routeName;
+  },
+  toggleDarkMode(state) {
+    state.darkMode = !state.darkMode;
+  },
 };
 
 const actions = {
@@ -52,6 +60,12 @@ const actions = {
     const errMsg = typeof errorMessage === 'string'
       ? errorMessage : errorMessage.toString();
     commit('setError', errMsg);
+  },
+  NAVIGATE({ commit }, { to }) {
+    commit('updateRouteName', to.name);
+  },
+  TOGGLE_DARK_MODE({ commit }) {
+    commit('toggleDarkMode');
   },
 };
 

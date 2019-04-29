@@ -35,21 +35,25 @@ import Filter from './components/filter/Filter.vue';
 import 'vuetify/dist/vuetify.min.css';
 
 const routes = [
-  { path: '/send', component: Send },
-  { path: '/namespace', component: Namespace },
-  { path: '/asset', component: Asset },
-  { path: '/wallet', component: Wallet },
-  { path: '/developer-mode', component: DeveloperMode },
-  { path: '/handler', component: Handler },
-  { path: '/about', component: About },
-  { path: '/', component: Home },
-  { path: '/filter', component: Filter },
+  { path: '/send', component: Send, name: 'Send a transaction' },
+  { path: '/namespace', component: Namespace, name: 'Namespaces' },
+  { path: '/asset', component: Asset, name: 'Assets' },
+  { path: '/wallet', component: Wallet, name: 'Wallets' },
+  { path: '/developer-mode', component: DeveloperMode, name: 'Developer mode' },
+  { path: '/handler', component: Handler, name: 'Handler' },
+  { path: '/about', component: About, name: 'About' },
+  { path: '/', component: Home, name: 'Home' },
+  { path: '/filter', component: Filter, name: 'Filters' },
 ];
 
 const router = new VueRouter({
   routes, // short for `routes: routes`
 });
 
+router.beforeEach((to, from, next) => {
+  store.dispatch('application/NAVIGATE', { to });
+  next();
+});
 
 Vue.use(Vuetify, {
   iconfont: 'md',

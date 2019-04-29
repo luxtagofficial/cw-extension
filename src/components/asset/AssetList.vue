@@ -41,14 +41,10 @@
     >
       <div>
         <v-tabs
-          v-model="active"
-          color="cyan"
-          dark
-          slider-color="yellow"
+          fixed-tabs
         >
           <v-tab
             :key="2"
-            ripple
           >
             My Assets
           </v-tab>
@@ -65,10 +61,10 @@
           </v-tab-item>
           <v-tab
             :key="1"
-            ripple
           >
             Assets Balance
           </v-tab>
+
           <v-tab-item :key="1">
             <AssetTab :assets="filterZeros(assets.assets[wallet.activeWallet.name])" />
           </v-tab-item>

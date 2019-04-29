@@ -17,15 +17,6 @@
 
 <template>
   <v-layout column>
-    <v-layout
-      row
-      justify-start
-      pl-3
-    >
-      <h6 class="headline pt-3">
-        List of owned namespaces
-      </h6>
-    </v-layout>
     <v-list
       three-line
       class="py-0"

@@ -17,7 +17,10 @@
 
 <template>
   <v-scale-transition>
-    <v-layout column>
+    <v-layout
+      column
+      class="pt-2 pr-4 pb-2 pl-4"
+    >
       <v-layout row>
         <v-flex xs3>
           <v-subheader>Namespace Type</v-subheader>
@@ -93,6 +96,7 @@
         row
         justify-end
         align-center
+        mb-3
       >
         <v-btn
           flat
@@ -130,6 +134,7 @@
           </v-list-tile>
         </v-list>
       </Confirmation>
+      <v-divider />
     </v-layout>
   </v-scale-transition>
 </template>

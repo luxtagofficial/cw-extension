@@ -16,106 +16,97 @@
 // along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
-  <v-layout
-    column
-    xs12
-  >
-    <v-layout
-      row
-      mb-4
-    >
+  <v-layout>
+    <v-container fluid>
       <v-layout
         row
-        fill-height
-        justify-start
-        pl-3
-        xs12
+        wrap
       >
-        <h5 class="headline pt-3">
-          Information
-        </h5>
+        <v-flex
+          xs12
+        >
+          <Errors />
+          <v-card
+            v-if="
+              wallet.wallets.length > 0 &&
+                wallet.activeWallet
+            "
+          >
+            <v-toolbar
+              card
+              prominent
+            >
+              <v-toolbar-title>Account information</v-toolbar-title>
+            </v-toolbar>
+            <v-card-text>
+              <div class="monospaced account-info-container">
+                <h5 class="headline mb-0 mb-1">
+                  {{ wallet.activeWallet.name }}
+                </h5>
+                <div class="clearfix homeLine">
+                  <div v-if="wallet.activeWallet.isWatchOnly">
+                    Watch-Only Wallet
+                  </div>
+                  <div class="clearfix">
+                    Address:
+                  </div>
+                  <div
+                    v-if="wallet.activeWallet.isWatchOnly && wallet.activeWallet.publicAccount"
+                    class="clearfix"
+                  >
+                    {{ wallet.activeWallet.publicAccount.address.pretty() }}
+                  </div>
+                  <div
+                    v-if="!wallet.activeWallet.isWatchOnly"
+                    class="clearfix"
+                  >
+                    {{ wallet.activeWallet.account.address.pretty() }}
+                  </div>
+                </div>
+                <div class="clearfix homeLine">
+                  <span
+                    v-show="accountInfo.accountInfo"
+                    class="clearfix"
+                  >Public key:</span>
+                  <span
+                    v-show="accountInfo.accountInfo"
+                    class="clearfix"
+                  >
+                    {{ accountInfo.accountInfo.publicKey }}
+                  </span>
+                </div>
+                <div class="clearfix homeLine">
+                  <span class="clearfix">Current node:</span>
+                  <a
+                    class="clearfix"
+                    :href="wallet.activeWallet.node"
+                    target="_new"
+                  >
+                    {{ wallet.activeWallet.node }}</a>
+                </div>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-flex>
       </v-layout>
-    </v-layout>
 
-    <Errors />
-
-    <div
-      v-if="
-        wallet.wallets.length > 0 &&
-          wallet.activeWallet
-      "
-    >
-      <v-flex xs12>
-        <v-card>
-          <v-card-title primary-title>
-            <div class="monospaced">
-              <h5 class="headline mb-0 mb-1">
-                {{ wallet.activeWallet.name }}
-              </h5>
-              <div class="clearfix homeLine">
-                <div v-if="wallet.activeWallet.isWatchOnly">
-                  Watch-Only Wallet
-                </div>
-                <div class="clearfix">
-                  Address:
-                </div>
-                <div
-                  v-if="wallet.activeWallet.isWatchOnly && wallet.activeWallet.publicAccount"
-                  class="clearfix"
-                >
-                  {{ wallet.activeWallet.publicAccount.address.pretty() }}
-                </div>
-                <div
-                  v-if="!wallet.activeWallet.isWatchOnly"
-                  class="clearfix"
-                >
-                  {{ wallet.activeWallet.account.address.pretty() }}
-                </div>
-              </div>
-              <div class="clearfix homeLine">
-                <span
-                  v-show="accountInfo.accountInfo"
-                  class="clearfix"
-                >Public key:</span>
-                <span
-                  v-show="accountInfo.accountInfo"
-                  class="clearfix"
-                >
-                  {{ accountInfo.accountInfo.publicKey }}
-                </span>
-              </div>
-              <div class="clearfix homeLine">
-                <span class="clearfix">Current node:</span>
-                <a
-                  class="clearfix"
-                  :href="wallet.activeWallet.node"
-                  target="_new"
-                >
-                  {{ wallet.activeWallet.node }}</a>
-              </div>
-            </div>
-          </v-card-title>
-        </v-card>
-      </v-flex>
-    </div>
-    <div
-      v-if="
-        wallet.wallets.length > 0 &&
-          wallet.activeWallet &&
-          !application.error &&
-          accountInfo.accountInfo
-      "
-    >
-      <div v-if="transactions.loading_getAccountTransactionsById">
-        <v-progress-linear :indeterminate="true" />
-      </div>
-      <div
-        v-if="transactions.transactions[wallet.activeWallet.name]
-          && transactions.transactions[wallet.activeWallet.name].length > 0"
+      <v-layout
+        row
+        wrap
+        style="margin-top: 30px !important;"
       >
-        <Transactions />
-      </div>
-    </div>
+        <v-flex
+          xs12
+        >
+          <Transactions
+            v-if="wallet.wallets.length > 0 &&
+              wallet.activeWallet &&
+              !application.error &&
+              accountInfo.accountInfo"
+          />
+        </v-flex>
+      </v-layout>
+    </v-container>
   </v-layout>
 </template>
 <script>
@@ -137,5 +128,10 @@ export default {
   ]),
 };
 </script>
+
 <style scoped>
+.account-info-container {
+  height: auto;
+  overflow: hidden;
+}
 </style>
