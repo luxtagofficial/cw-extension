@@ -19,7 +19,7 @@
   <div>
     <v-icon
       v-if="application.darkMode"
-      class="icons dark"
+      class="ws-icons ws-dark"
       large
       @click="$store.dispatch('application/TOGGLE_DARK_MODE')"
     >
@@ -27,7 +27,7 @@
     </v-icon>
     <v-icon
       v-if="!application.darkMode"
-      class="icons dark"
+      class="ws-icons ws-dark"
       large
       @click="$store.dispatch('application/TOGGLE_DARK_MODE')"
     >
@@ -39,7 +39,7 @@
     >
       <template v-slot:activator="{ on }">
         <v-icon
-          class="icons pointer wallet"
+          class="ws-icons pointer ws-wallet"
           large
           v-on="on"
         >
@@ -86,7 +86,7 @@
       v-model="walletName"
       :items="wallets"
       label="No Wallet Selected"
-      class="select"
+      class="ws-select"
       solo
     />
 
@@ -148,27 +148,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.icons {
-  display: block;
-  position: relative;
-  float: left;
-  padding-top: 8px;
-}
-
-.wallet {
-  padding-right: 23px;
-}
-
-.dark {
-  padding-right: 18px;
-}
-
-.select {
-  max-width: 200px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-</style>

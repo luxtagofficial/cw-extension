@@ -92,3 +92,24 @@
   height: auto;
   overflow: hidden;
 }
+
+.ws-icons {
+  display: block;
+  position: relative;
+  float: left;
+  padding-top: 8px;
+}
+
+.ws-wallet {
+  padding-right: 23px;
+}
+
+.ws-dark {
+  padding-right: 18px;
+}
+
+.ws-select {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
