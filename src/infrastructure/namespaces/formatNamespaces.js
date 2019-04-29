@@ -64,6 +64,7 @@ export const formatNamespaces = (namespacesInfo, blockHeight) => namespacesInfo.
     type: aliasType,
     alias: aliasText,
     expire: expireText,
+    active: expireWithin > 0,
     expand: {
       isExpandMore: false,
       namespaceName: name,

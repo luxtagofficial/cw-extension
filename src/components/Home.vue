@@ -44,55 +44,181 @@
               card
               prominent
             >
-              <v-toolbar-title>Account information</v-toolbar-title>
+              <v-toolbar-title>{{ wallet.activeWallet.name }}</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
-              <div class="monospaced account-info-container">
-                <h5 class="headline mb-0 mb-1">
-                  {{ wallet.activeWallet.name }}
-                </h5>
-                <div class="clearfix homeLine">
-                  <div v-if="wallet.activeWallet.isWatchOnly">
-                    Watch-Only Wallet
-                  </div>
-                  <div class="clearfix">
-                    Address:
-                  </div>
-                  <div
-                    v-if="wallet.activeWallet.isWatchOnly && wallet.activeWallet.publicAccount"
-                    class="clearfix"
+              <v-container
+                fluid
+                grid-list-sm
+              >
+                <v-layout
+                  row
+                  wrap
+                >
+                  <v-flex
+                    d-flex
+                    xs12
                   >
-                    {{ wallet.activeWallet.publicAccount.address.pretty() }}
-                  </div>
-                  <div
-                    v-if="!wallet.activeWallet.isWatchOnly"
-                    class="clearfix"
+                    <v-layout column>
+                      <v-flex d-flex>
+                        <v-card
+                          color="blue-grey"
+                          dark
+                          tile
+                          flat
+                        >
+                          <v-card-text>
+                            <v-text-field
+                              :value="wallet.activeWallet.isWatchOnly
+                                ?wallet.activeWallet.publicAccount.address.pretty()
+                                :wallet.activeWallet.account.address.pretty()"
+                              class="mt-4 mr-0 mb-0 ml-0 pa-0 monospaced"
+                              label="Address"
+                              readonly
+                            />
+
+                            <v-text-field
+                              :value="accountInfo.accountInfo
+                                ?accountInfo.accountInfo[wallet.activeWallet.name].publicKey
+                                : 'unknown'"
+                              class="ma-0 pa-0 monospaced"
+                              label="Public Key"
+                              readonly
+                            />
+
+                            <v-text-field
+                              v-if="showPrivateKey"
+                              :value="wallet.activeWallet.isWatchOnly
+                                ?'watch only'
+                                :wallet.activeWallet.account.privateKey"
+                              class="ma-0 pa-0 monospaced"
+                              label="Private Key"
+                              readonly
+                            />
+
+                            <v-text-field
+                              :value="wallet.activeWallet.node"
+                              class="ma-0 pa-0 monospaced"
+                              label="Node"
+                              readonly
+                            />
+                            <div style="text-align: right">
+                              <v-btn
+                                flat
+                                class="float:right !important"
+                                @click.stop="showPrivateKey = !showPrivateKey"
+                              >
+                                {{ !showPrivateKey ? 'show private key' : 'hide private key' }}
+                              </v-btn>
+                            </div>
+                          </v-card-text>
+                        </v-card>
+                      </v-flex>
+                    </v-layout>
+                  </v-flex>
+                  <v-flex
+                    d-flex
+                    xs12
+                    sm4
                   >
-                    {{ wallet.activeWallet.account.address.pretty() }}
-                  </div>
-                </div>
-                <div class="clearfix homeLine">
-                  <span
-                    v-show="accountInfo.accountInfo"
-                    class="clearfix"
-                  >Public key:</span>
-                  <span
-                    v-show="accountInfo.accountInfo"
-                    class="clearfix"
+                    <v-card
+                      color="red lighten-2"
+                      dark
+                      tile
+                      flat
+                      pa-0
+                    >
+                      <h3 style="margin:6px 0px 0px 12px;">
+                        Asset balances
+                      </h3>
+                      <div
+                        v-if="!ownedAssets"
+                        style="text-align:center;margin-top:20%"
+                      >
+                        <v-progress-circular
+                          :size="50"
+                          color="amber"
+                          indeterminate
+                        />
+                      </div>
+                      <v-card-text v-if="ownedAssets==='none'">
+                        This account does not own any asset
+                      </v-card-text>
+                      <div v-if="ownedAssets && ownedAssets!=='none'">
+                        <div
+                          v-for="(a, i) in ownedAssets"
+                          :key="i"
+                        >
+                          <v-card-text pa-0>
+                            {{ a.title }}:&nbsp;
+                            {{ parseInt(a.balance).toLocaleString() }}&nbsp;
+                            [{{ (a.amount/Math.pow(10, a.divisibility)).toLocaleString() }}]
+                          </v-card-text>
+                        </div>
+                      </div>
+                    </v-card>
+                  </v-flex>
+                  <v-flex
+                    d-flex
+                    xs12
+                    sm4
                   >
-                    {{ accountInfo.accountInfo.publicKey }}
-                  </span>
-                </div>
-                <div class="clearfix homeLine">
-                  <span class="clearfix">Current node:</span>
-                  <a
-                    class="clearfix"
-                    :href="wallet.activeWallet.node"
-                    target="_new"
+                    <v-card
+                      color="red lighten-2"
+                      dark
+                      tile
+                      flat
+                      pa-0
+                    >
+                      <h3 style="margin:6px 0px 0px 12px;">
+                        Owned namespaces
+                      </h3>
+                      <div
+                        v-if="!ownedNamespaces"
+                        style="text-align:center;margin-top:20%"
+                      >
+                        <v-progress-circular
+                          :size="50"
+                          color="amber"
+                          indeterminate
+                        />
+                      </div>
+                      <v-card-text v-if="ownedNamespaces==='none'">
+                        This account does not own any namespace
+                      </v-card-text>
+                      <div v-if="ownedNamespaces && ownedNamespaces!=='none'">
+                        <div
+                          v-for="(a, i) in ownedNamespaces"
+                          :key="i"
+                        >
+                          <v-card-text pa-0>
+                            {{ a.name }}
+                          </v-card-text>
+                        </div>
+                      </div>
+                    </v-card>
+                  </v-flex>
+                  <v-flex
+                    d-flex
+                    xs12
+                    sm4
                   >
-                    {{ wallet.activeWallet.node }}</a>
-                </div>
-              </div>
+                    <v-card
+                      color="red lighten-2"
+                      dark
+                      tile
+                      flat
+                      pa-0
+                      style="text-align: center;"
+                    >
+                      <img
+                        :src="QR"
+                        style="margin: 10px 11px 4px 11px !important;"
+                      >
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </v-container>
             </v-card-text>
           </v-card>
         </v-flex>
@@ -119,6 +245,7 @@
 </template>
 <script>
 import { mapState } from 'vuex';
+import { QRCodeGenerator } from 'nem2-qr-library';
 import Errors from './Errors.vue';
 import Transactions from './transactions/Transactions.vue';
 
@@ -128,18 +255,51 @@ export default {
     Errors,
     Transactions,
   },
-  computed: mapState([
-    'wallet',
-    'accountInfo',
-    'application',
-    'transactions',
-  ]),
+  data() {
+    return {
+      showPrivateKey: false,
+    };
+  },
+  computed: {
+    ...mapState([
+      'wallet',
+      'accountInfo',
+      'application',
+      'transactions',
+      'assets',
+      'namespaces',
+    ], {
+      wallet: state => state.wallet,
+      assets: state => state.assets,
+      namespaces: state => state.namespaces,
+    }),
+    QR() {
+      const dataset = `
+      {
+        "schema": 1,
+        "network": "MAIN_NET",
+        "nem_version": "Catapult",
+        "data": {
+          "address": "
+          ${this.wallet.activeWallet.isWatchOnly
+    ? this.wallet.activeWallet.publicAccount.address.pretty()
+    : this.wallet.activeWallet.account.address.pretty()}"
+        }
+      }`;
+      return new QRCodeGenerator(dataset).toBase64();
+    },
+    ownedAssets() {
+      if (!this.assets.assets[this.wallet.activeWallet.name]) return false;
+      if (this.assets.assets[this.wallet.activeWallet.name].length === 0) return 'none';
+      return this.assets.assets[this.wallet.activeWallet.name]
+        .filter(x => (x.balance > 0 && x.active));
+    },
+    ownedNamespaces() {
+      if (!this.namespaces.namespaces[this.wallet.activeWallet.name]) return false;
+      if (this.namespaces.namespaces[this.wallet.activeWallet.name].length === 0) return 'none';
+      return this.namespaces.namespaces[this.wallet.activeWallet.name]
+        .filter(x => x.active);
+    },
+  },
 };
 </script>
-
-<style scoped>
-.account-info-container {
-  height: auto;
-  overflow: hidden;
-}
-</style>
