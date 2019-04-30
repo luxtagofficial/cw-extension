@@ -16,7 +16,27 @@
 // along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
-  <div>
+  <div class="ws-container">
+    <v-chip
+      :color="chipColor"
+      text-color="white"
+      class="ws-height"
+    >
+      {{ application.listenerStatus === 'OK'
+        ? application.blockNumber.toLocaleString() : application.listenerStatus }}
+      <v-icon
+        v-if="!application.listenerError"
+        right
+      >
+        power
+      </v-icon>
+      <v-icon
+        v-if="application.listenerError"
+        right
+      >
+        power_off
+      </v-icon>
+    </v-chip>
     <v-icon
       v-if="application.darkMode"
       class="ws-icons ws-dark"
@@ -131,9 +151,16 @@ export default {
       showWalletImportDialog: false,
     };
   },
-  computed: mapState([
-    'application',
-  ]),
+  computed: {
+    ...mapState([
+      'application',
+    ]),
+    chipColor() {
+      return this.application.listenerStatus === 'OK'
+        && this.application.blockNumber !== 'loading'
+        ? 'orange' : 'blue';
+    },
+  },
   watch: {
     walletName(newActiveWalletName) {
       if (newActiveWalletName) {

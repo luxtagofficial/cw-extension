@@ -100,6 +100,14 @@
   padding-top: 8px;
 }
 
+.ws-height {
+  display: block;
+  position: relative;
+  float: left;
+  margin-top: 11px !important;
+  margin-right: 17px !important;
+}
+
 .ws-wallet {
   padding-right: 23px;
 }
@@ -112,4 +120,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  width: 200px !important;
+}
+
+.ws-container {
+  width: auto;
+  display: block;
+  float: left;
+  width: 450px;
 }
