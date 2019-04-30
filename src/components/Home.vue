@@ -78,7 +78,8 @@
                             />
 
                             <v-text-field
-                              :value="accountInfo.accountInfo
+
+                              :value="accountInfo.accountInfo[wallet.activeWallet.name]
                                 ?accountInfo.accountInfo[wallet.activeWallet.name].publicKey
                                 : 'unknown'"
                               class="ma-0 pa-0 monospaced"
