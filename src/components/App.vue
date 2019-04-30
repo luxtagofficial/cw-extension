@@ -176,6 +176,22 @@
         </v-card-text>
       </v-card>
     </v-footer>
+    <v-snackbar
+      v-model="snackbar"
+      :multi-line="true"
+      :right="true"
+      :bottom="true"
+      :timeout="8000"
+      :vertical="false"
+    >
+      {{ snackbarText }}
+      <v-btn
+        flat
+        @click="snackbar = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-app>
 </template>
 <script>
@@ -192,14 +208,26 @@ export default {
     return {
       drawer: true,
       right: null,
+      snackbar: false,
+      snackbarText: '',
     };
   },
-  computed: mapState([
-    'wallet',
-    'application',
-  ]),
+  computed: {
+    ...mapState([
+      'wallet',
+      'application',
+    ]),
+  },
   created() {
     this.$store.dispatch('wallet/INIT_APPLICATION');
+  },
+  mounted() {
+    store.subscribeAction((action) => {
+      if (action.type === 'application/SET_SNACKBAR_TEXT') {
+        this.snackbarText = `${action.payload.text} ${action.payload.text}`;
+        this.snackbar = true;
+      }
+    });
   },
 };
 </script>
