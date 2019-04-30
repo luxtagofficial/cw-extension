@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { Listener } from 'nem2-sdk';
 import { walletsToJSON, jsonToWallets } from '../infrastructure/wallet/wallet';
 import { Wallet, WoWallet } from '../infrastructure/wallet/wallet-types';
 import { GET_TRANSACTIONS_MODES } from '../infrastructure/transactions/transactions-types';
@@ -147,6 +148,8 @@ const actions = {
 
 
   async FETCH_WALLET_DATA({ dispatch, getters, commit }, argWallet) {
+    dispatch('application/SET_BLOCK_NUMBER', 'loading', { root: true });
+
     if (argWallet === false) return;
 
     try {
@@ -170,7 +173,7 @@ const actions = {
     }
     if (argWallet.publicAccount && !argWallet.publicAccount.publicKey) {
       // This was a watch-only wallet that had been created when
-      // It was not yet known by the networ
+      // It was not yet known by the network
       await commit('setActiveWallet', wallet);
       const walletsToStore = [
         ...getters.GET_WALLETS.filter(({ isToBeSaved }) => !(isToBeSaved === false)),
@@ -180,21 +183,84 @@ const actions = {
       await commit('addWallet', wallet);
     }
 
-    dispatch(
-      'transactions/GET_TRANSACTIONS_BY_ID',
-      { wallet, mode: GET_TRANSACTIONS_MODES.INIT },
-      { root: true },
-    );
-    dispatch(
-      'namespaces/GET_NAMESPACES_BY_ADDRESS',
-      { wallet, mode: GET_NAMESPACES_MODES.ON_WALLET_CHANGE },
-      { root: true },
-    );
-    dispatch(
-      'assets/GET_ASSETS_BY_ADDRESS',
-      { wallet, mode: GET_ASSETS_MODES.ON_WALLET_CHANGE },
-      { root: true },
-    );
+    await Promise.all([
+      dispatch(
+        'transactions/GET_TRANSACTIONS_BY_ID',
+        { wallet, mode: GET_TRANSACTIONS_MODES.INIT },
+        { root: true },
+      ),
+      dispatch(
+        'namespaces/GET_NAMESPACES_BY_ADDRESS',
+        { wallet, mode: GET_NAMESPACES_MODES.ON_WALLET_CHANGE },
+        { root: true },
+      ),
+      dispatch(
+        'assets/GET_ASSETS_BY_ADDRESS',
+        { wallet, mode: GET_ASSETS_MODES.ON_WALLET_CHANGE },
+        { root: true },
+      ),
+    ]);
+
+    const wsEndpoint = wallet.node.replace('http', 'ws');
+    const listener = new Listener(wsEndpoint, WebSocket);
+    listener.open().then(() => {
+      dispatch('application/SET_LISTENER_STATUS', { status: 'OK', text: '' }, { root: true });
+
+      listener
+        .newBlock()
+        .subscribe(
+          (block) => {
+            dispatch(
+              'application/SET_BLOCK_NUMBER',
+              block.height.compact(),
+              { root: true },
+            );
+          },
+          err => dispatch(
+            'application/SET_LISTENER_STATUS',
+            { bool: true, text: err },
+            { root: true },
+          ),
+        );
+
+      const address = wallet.isWatchOnly ? wallet.publicAccount.address : wallet.account.address;
+
+      listener
+        .unconfirmedAdded(address)
+        .subscribe(
+          (tx) => {
+            dispatch(
+              'transactions/FORMAT_TRANSACTION_FROM_LISTENER',
+              tx,
+              { root: true },
+            );
+          },
+        );
+
+      listener
+        .unconfirmedRemoved(address)
+        .subscribe(
+          (tx) => {
+            dispatch(
+              'transactions/FORMAT_TRANSACTION_FROM_LISTENER',
+              tx,
+              { root: true },
+            );
+          },
+        );
+
+      listener
+        .confirmed(address)
+        .subscribe(
+          (tx) => {
+            dispatch(
+              'transactions/FORMAT_TRANSACTION_FROM_LISTENER',
+              tx,
+              { root: true },
+            );
+          },
+        );
+    });
   },
 };
 

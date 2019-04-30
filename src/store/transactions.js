@@ -113,6 +113,18 @@ const actions = {
   UPDATE_ACTIVE_TRANSACTION({ commit }, transaction) {
     commit('updateActiveTransaction', transaction);
   },
+  FORMAT_TRANSACTION_FROM_LISTENER({ dispatch }, transaction) {
+
+  },
+  ADD_TRANSACTION_FROM_LISTENER({ dispatch, commit }, transaction) {
+
+    dispatch(
+      'application/SET_SNACKBAR_TEXT',
+      { bool: true, text: transaction.hash },
+      { root: true },
+    );
+
+  },
 };
 
 export default {

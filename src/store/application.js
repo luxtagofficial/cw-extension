@@ -22,8 +22,13 @@
 const state = {
   error: false,
   errorMessage: '',
+  listenerStatus: 'loading',
+  listenerErrorMessage: false,
   routeName: '',
   darkMode: false,
+  showSnackbar: false,
+  snackbarText: '',
+  blockNumber: 'loading',
 };
 
 const getters = {
@@ -50,6 +55,16 @@ const mutations = {
   toggleDarkMode(state) {
     state.darkMode = !state.darkMode;
   },
+  setSnackbarText(state, text) {
+    state.snackbarText = text;
+  },
+  setListenerStatus(state, status, text) {
+    state.listenerStatus = status;
+    state.listenerErrorMessage = text;
+  },
+  setBlockNumber(state, blockNumber) {
+    state.blockNumber = blockNumber;
+  },
 };
 
 const actions = {
@@ -61,11 +76,20 @@ const actions = {
       ? errorMessage : errorMessage.toString();
     commit('setError', errMsg);
   },
+  SET_LISTENER_STATUS({ commit }, { status, text }) {
+    commit('setListenerStatus', status, text);
+  },
   NAVIGATE({ commit }, { to }) {
     commit('updateRouteName', to.name);
   },
   TOGGLE_DARK_MODE({ commit }) {
     commit('toggleDarkMode');
+  },
+  SET_SNACKBAR_TEXT({ commit }, { text }) {
+    commit('setSnackbarText', text);
+  },
+  SET_BLOCK_NUMBER({ commit }, blockNumber) {
+    commit('setBlockNumber', blockNumber);
   },
 };
 
