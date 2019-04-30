@@ -129,7 +129,7 @@
                       pa-0
                     >
                       <h3 style="margin:6px 0px 0px 12px;">
-                        Asset balances
+                        Assets balance
                       </h3>
                       <div
                         v-if="!ownedAssets"

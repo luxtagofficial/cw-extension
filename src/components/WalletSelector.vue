@@ -158,7 +158,7 @@ export default {
     chipColor() {
       return this.application.listenerStatus === 'OK'
         && this.application.blockNumber !== 'loading'
-        ? 'orange' : 'blue';
+        ? 'green' : 'orange';
     },
   },
   watch: {
