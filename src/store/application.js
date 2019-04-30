@@ -22,7 +22,7 @@
 const state = {
   error: false,
   errorMessage: '',
-  listenerStatus: 'loading',
+  listenerStatus: 'off',
   listenerErrorMessage: false,
   routeName: '',
   darkMode: false,

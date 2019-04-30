@@ -17,42 +17,14 @@
 
 <template>
   <div class="ws-container">
-    <v-chip
-      :color="chipColor"
-      text-color="white"
-      class="ws-height"
-    >
-      {{ application.listenerStatus === 'OK'
-        ? application.blockNumber.toLocaleString() : application.listenerStatus }}
-      <v-icon
-        v-if="!application.listenerError"
-        right
-      >
-        power
-      </v-icon>
-      <v-icon
-        v-if="application.listenerError"
-        right
-      >
-        power_off
-      </v-icon>
-    </v-chip>
-    <v-icon
-      v-if="application.darkMode"
-      class="ws-icons ws-dark"
-      large
-      @click="$store.dispatch('application/TOGGLE_DARK_MODE')"
-    >
-      wb_sunny
-    </v-icon>
-    <v-icon
-      v-if="!application.darkMode"
-      class="ws-icons ws-dark"
-      large
-      @click="$store.dispatch('application/TOGGLE_DARK_MODE')"
-    >
-      brightness_2
-    </v-icon>
+    <v-select
+      v-if="walletName"
+      v-model="walletName"
+      :items="wallets"
+      label="No Wallet Selected"
+      class="ws-select"
+      solo
+    />
     <v-menu
       transition="slide-y-transition"
       bottom
@@ -101,14 +73,44 @@
         </v-list-tile>
       </v-list>
     </v-menu>
-    <v-select
-      v-if="walletName"
-      v-model="walletName"
-      :items="wallets"
-      label="No Wallet Selected"
-      class="ws-select"
-      solo
-    />
+
+    <v-icon
+      v-if="application.darkMode"
+      class="ws-icons ws-dark"
+      large
+      @click="$store.dispatch('application/TOGGLE_DARK_MODE')"
+    >
+      wb_sunny
+    </v-icon>
+    <v-icon
+      v-if="!application.darkMode"
+      class="ws-icons ws-dark"
+      large
+      @click="$store.dispatch('application/TOGGLE_DARK_MODE')"
+    >
+      brightness_2
+    </v-icon>
+
+    <v-chip
+      :color="chipColor"
+      text-color="white"
+      class="ws-height"
+    >
+      {{ application.listenerStatus === 'OK'
+        ? application.blockNumber.toLocaleString() : application.listenerStatus }}
+      <v-icon
+        v-if="!application.listenerError"
+        right
+      >
+        power
+      </v-icon>
+      <v-icon
+        v-if="application.listenerError"
+        right
+      >
+        power_off
+      </v-icon>
+    </v-chip>
 
     <WalletCreationDialog
       :visible="showWalletCreationDialog"
@@ -156,9 +158,10 @@ export default {
       'application',
     ]),
     chipColor() {
-      return this.application.listenerStatus === 'OK'
-        && this.application.blockNumber !== 'loading'
-        ? 'green' : 'orange';
+      if (this.application.listenerStatus === 'off') return 'false';
+      if (this.application.listenerStatus === 'error') return 'orange';
+      if (this.application.blockNumber === 'loading') return 'blue';
+      return 'green';
     },
   },
   watch: {

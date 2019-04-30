@@ -94,16 +94,16 @@
 }
 
 .ws-icons {
-  display: block;
+  display: block !important;
   position: relative;
-  float: left;
+  float: right !important;
   padding-top: 8px;
 }
 
 .ws-height {
-  display: block;
+  display: block !important;
   position: relative;
-  float: left;
+  float: right !important;
   margin-top: 11px !important;
   margin-right: 17px !important;
 }
@@ -121,6 +121,9 @@
   white-space: nowrap;
   overflow: hidden;
   width: 200px !important;
+  display: block !important;
+  position: relative !important;
+  float: right !important;
 }
 
 .ws-container {
