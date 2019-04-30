@@ -20,7 +20,7 @@
  */
 import Vue from 'vue';
 import getAccountTransactionsById from '../infrastructure/transactions/getAccountTransactionsById';
-import { removeDuplicatesAndSortByBlockNumber } from '../infrastructure/transactions/formatTransactions';
+import { removeDuplicatesAndSortByBlockNumber, formatTransactions } from '../infrastructure/transactions/formatTransactions';
 import { transactionTypesFilters } from '../infrastructure/transactions/transactions-types';
 
 
@@ -64,6 +64,8 @@ const actions = {
   async CLEAR_TRANSACTIONS({ commit }, wallet) {
     commit('setAccountTransactions', { wallet, transactions: false });
   },
+
+
   async GET_TRANSACTIONS_BY_ID({ commit, dispatch, getters }, { wallet, mode }) {
     await commit('setLoading_getAccountTransactionsById', true);
     const actualTransactions = getters.GET_TRANSACTIONS;
@@ -107,23 +109,32 @@ const actions = {
 
     commit('setLoading_getAccountTransactionsById', false);
   },
+
+
   UPDATE_TRANSACTION_TYPES_FILTERS({ commit }, prop) {
     commit('updateTransactionTypesFilter', prop);
   },
+
+
   UPDATE_ACTIVE_TRANSACTION({ commit }, transaction) {
     commit('updateActiveTransaction', transaction);
   },
+
+
   FORMAT_TRANSACTION_FROM_LISTENER({ dispatch }, transaction) {
-
+    console.log(transaction, 'transaction')
+    formatTransactions(transaction).map((tx) => {
+      console.log(tx, 'txxxx')
+    });
   },
-  ADD_TRANSACTION_FROM_LISTENER({ dispatch, commit }, transaction) {
 
+
+  ADD_TRANSACTION_FROM_LISTENER({ dispatch, commit }, transaction) {
     dispatch(
-      'application/SET_SNACKBAR_TEXT',
+      'application/SET_SNACKBAR_TEXT',  
       { bool: true, text: transaction.hash },
       { root: true },
     );
-
   },
 };
 

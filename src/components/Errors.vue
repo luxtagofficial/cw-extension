@@ -59,6 +59,14 @@
             {{ application.errorMessage }}
           </v-alert>
         </div>
+        <div v-if="application.listenerStatus === 'error'">
+          <v-alert
+            :value="true"
+            type="error"
+          >
+            {{ application.listenerErrorMessage }}
+          </v-alert>
+        </div>
       </div>
     </div>
   </v-layout>

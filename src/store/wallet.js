@@ -218,7 +218,7 @@ const actions = {
           },
           err => dispatch(
             'application/SET_LISTENER_STATUS',
-            { bool: true, text: err },
+            { status: 'error', text: err },
             { root: true },
           ),
         );
