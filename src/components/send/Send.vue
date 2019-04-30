@@ -78,6 +78,18 @@
                     </template>
                   </v-text-field>
 
+                  <v-text-field
+                    v-model="txMaxFee"
+                    placeholder="ex. 10"
+                    type="number"
+                    reverse
+                    solo
+                  >
+                    <template slot="append">
+                      <v-subheader>Max Fee (Network Currency / XEM)</v-subheader>
+                    </template>
+                  </v-text-field>
+
                   <v-checkbox
                     v-model="checkbox"
                     label="Sending other assets?"
@@ -89,7 +101,7 @@
                   >
                     <v-select
                       v-model="currentMosaicName"
-                      :items="assets.assets.map(({id})=>id)"
+                      :items="assets.assets[wallet.activeWallet.name].map(({id})=>id)"
                       label="Chose an asset"
                       solo
                     />
@@ -348,6 +360,7 @@ export default {
     return {
       txMessage: '',
       txAmount: 0,
+      txMaxFee: 0,
       txRecipient: '',
       userPrivateKey: '',
       signedTx: null,
@@ -390,6 +403,7 @@ export default {
         this.mosaics,
         PlainMessage.create(this.txMessage),
         NetworkType.MIJIN_TEST,
+        UInt64.fromUint(this.txMaxFee)
       );
     },
 
