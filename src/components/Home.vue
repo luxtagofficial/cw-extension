@@ -78,7 +78,8 @@
                             />
 
                             <v-text-field
-                              :value="accountInfo.accountInfo
+
+                              :value="accountInfo.accountInfo[wallet.activeWallet.name]
                                 ?accountInfo.accountInfo[wallet.activeWallet.name].publicKey
                                 : 'unknown'"
                               class="ma-0 pa-0 monospaced"
@@ -129,7 +130,7 @@
                       pa-0
                     >
                       <h3 style="margin:6px 0px 0px 12px;">
-                        Asset balances
+                        Assets balance
                       </h3>
                       <div
                         v-if="!ownedAssets"
