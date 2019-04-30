@@ -100,9 +100,17 @@
                     class="ma-4"
                   >
                     <v-select
+                      v-if="wallet.activeWallet && assets.assets[wallet.activeWallet.name].length>0"
                       v-model="currentMosaicName"
                       :items="assets.assets[wallet.activeWallet.name].map(({id})=>id)"
                       label="Chose an asset"
+                      solo
+                    />
+
+                    <v-text-field
+                      v-if="!wallet.activeWallet || assets.assets[wallet.activeWallet.name].length===0"
+                      v-model="currentMosaicName"
+                      label="Enter a mosaic ID"
                       solo
                     />
 
