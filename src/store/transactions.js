@@ -124,7 +124,7 @@ const actions = {
   // eslint-disable-next-line no-unused-vars
   FORMAT_TRANSACTION_FROM_LISTENER({ dispatch }, transaction) {
     // eslint-disable-next-line no-console
-    console.log(transaction, 'TRANSACTION ENTERED FORMAT_TRANSACTION_FROM_LISTENER')
+    console.log(transaction, 'TRANSACTION ENTERED FORMAT_TRANSACTION_FROM_LISTENER');
     // eslint-disable-next-line array-callback-return
     formatTransactions(transaction).map((tx) => {
       // eslint-disable-next-line no-console
