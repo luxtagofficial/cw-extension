@@ -121,17 +121,21 @@ const actions = {
   },
 
 
+  // eslint-disable-next-line no-unused-vars
   FORMAT_TRANSACTION_FROM_LISTENER({ dispatch }, transaction) {
-    console.log(transaction, 'transaction')
+    // eslint-disable-next-line no-console
+    console.log(transaction, 'TRANSACTION ENTERED FORMAT_TRANSACTION_FROM_LISTENER')
+    // eslint-disable-next-line array-callback-return
     formatTransactions(transaction).map((tx) => {
-      console.log(tx, 'txxxx')
+      // eslint-disable-next-line no-console
+      console.log(tx, 'TX FORMATTED');
     });
   },
 
 
-  ADD_TRANSACTION_FROM_LISTENER({ dispatch, commit }, transaction) {
+  ADD_TRANSACTION_FROM_LISTENER({ dispatch }, transaction) {
     dispatch(
-      'application/SET_SNACKBAR_TEXT',  
+      'application/SET_SNACKBAR_TEXT',
       { bool: true, text: transaction.hash },
       { root: true },
     );
