@@ -28,9 +28,9 @@
         <v-layout class="align-center ml-0 mb-1">
           <b>Source code repository:</b>
           <a
-            href="https://github.com/aleixmorgadas/nem2-wallet-browserextension"
+            href="https://github.com/decentraliser/nem2-wallet-browserextension"
             class="mx-1"
-          >https://github.com/aleixmorgadas/nem2-wallet-browserextension</a> licenced under
+          >https://github.com/decentraliser/nem2-wallet-browserextension</a> licenced under
           <img
             src="https://img.shields.io/badge/License-GPL%20v3-blue.svg"
             class="ml-1"
