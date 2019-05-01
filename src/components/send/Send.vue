@@ -34,8 +34,7 @@
           <Errors />
           <v-card
             v-if="wallet.wallets.length > 0
-              && wallet.activeWallet
-              && !application.error"
+              && wallet.activeWallet"
             style="height: auto;padding:0 !important"
             class="card--flex-toolbar"
           >
