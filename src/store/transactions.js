@@ -124,9 +124,8 @@ const actions = {
   // eslint-disable-next-line no-unused-vars
   async FORMAT_TRANSACTION_FROM_LISTENER({ dispatch, commit, getters }, { transaction, wallet }) {
     try {
-      const unconfirmedTx = await formatTransactions(transaction).map((tx) => {
-        return { ...tx, unconfirmed: true };
-      });
+      const unconfirmedTx = await formatTransactions(transaction)
+        .map(tx => ({ ...tx, unconfirmed: true }));
 
       const oldTransactions = await getters.GET_TRANSACTIONS || [];
       const transactionsToStore = [...unconfirmedTx, ...oldTransactions];
@@ -136,7 +135,7 @@ const actions = {
         transactions: transactionsToStore,
       });
 
-      unconfirmedTx.forEach(tx => dispatch('TRIGGER_TRANSACTION_SNACKBAR', { tx, status: 'announced' }))
+      unconfirmedTx.forEach(tx => dispatch('TRIGGER_TRANSACTION_SNACKBAR', { tx, status: 'announced' }));
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error, 'FORMAT_TRANSACTION_FROM_LISTENER');
@@ -144,14 +143,19 @@ const actions = {
   },
 
 
-  async CONFIRM_TRANSACTION({ dispatch, getters, rootGetters, commit }, { transaction, wallet }) {
+  async CONFIRM_TRANSACTION({
+    dispatch,
+    getters,
+    rootGetters,
+    commit,
+  }, { transaction, wallet }) {
     try {
       const blocks = await rootGetters['application/GET_BLOCKS'];
       const getTimestampFromBlock = (blockNumber) => {
-        const block = blocks.find(x => x.blockNumber === blockNumber)
+        const block = blocks.find(x => x.blockNumber === blockNumber);
         if (block === undefined) return 0;
         return block.timestamp;
-      }
+      };
 
       const txWithTimestamp = {
         ...transaction,
@@ -159,15 +163,10 @@ const actions = {
       };
 
       const confirmedTx = await formatTransactions(txWithTimestamp)
-        .map((tx) => {
-          return {
-            ...tx,
-            unconfirmed: false,
-          };
-        });
+        .map(tx => ({ ...tx, unconfirmed: false }));
 
       const oldTransactions = await getters.GET_TRANSACTIONS || [];
-      const oldConfirmedTransactions = oldTransactions.filter(tx => !tx.unconfirmed)
+      const oldConfirmedTransactions = oldTransactions.filter(tx => !tx.unconfirmed);
       const unconfirmedTransactionsToUpdate = oldTransactions.filter(tx => tx.unconfirmed);
 
       const unconfirmedTransactionsUpdated = unconfirmedTransactionsToUpdate
@@ -190,7 +189,7 @@ const actions = {
         transactions: transactionsToStore,
       });
 
-      confirmedTx.forEach(tx => dispatch('TRIGGER_TRANSACTION_SNACKBAR', { tx, status: 'confirmed' }))
+      confirmedTx.forEach(tx => dispatch('TRIGGER_TRANSACTION_SNACKBAR', { tx, status: 'confirmed' }));
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error, 'CONFIRM_TRANSACTION');
