@@ -88,6 +88,16 @@
               <v-divider />
 
               <v-list>
+                <v-list-tile to="/Handler">
+                  <v-list-tile-action>
+                    <v-icon>gamepad</v-icon>
+                  </v-list-tile-action>
+
+                  <v-list-tile-content>
+                    <v-list-tile-title>Handler</v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+
                 <v-list-tile to="/developer-mode">
                   <v-list-tile-action>
                     <v-icon>gamepad</v-icon>
