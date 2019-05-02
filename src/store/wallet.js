@@ -238,12 +238,12 @@ const actions = {
         );
 
       listener
-        .unconfirmedRemoved(address)
+        .confirmed(address)
         .subscribe(
-          (txHash) => {
+          (transaction) => {
             dispatch(
               'transactions/CONFIRM_TRANSACTION',
-              { txHash, wallet },
+              { transaction, wallet },
               { root: true },
             );
           },

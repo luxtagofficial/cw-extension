@@ -19,7 +19,6 @@
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { timestampNemesisBlock } from '../infrastructure/network/types';
-import { formatDate } from '../infrastructure/transactions/formatTransactions';
 
 const state = {
   error: false,
@@ -40,6 +39,9 @@ const getters = {
   },
   GET_ERROR_MESSAGE() {
     return state.errorMessage;
+  },
+  GET_BLOCKS() {
+    return state.blocks;
   },
 };
 
@@ -120,7 +122,6 @@ const actions = {
     commit('addBlock', {
       blockNumber,
       timestamp,
-      date: formatDate(new Date(timestamp * 1000)),
     });
   },
 };
