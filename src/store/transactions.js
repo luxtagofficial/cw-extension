@@ -122,21 +122,85 @@ const actions = {
 
 
   // eslint-disable-next-line no-unused-vars
-  FORMAT_TRANSACTION_FROM_LISTENER({ dispatch }, transaction) {
-    // eslint-disable-next-line no-console
-    console.log(transaction, 'TRANSACTION ENTERED FORMAT_TRANSACTION_FROM_LISTENER');
-    // eslint-disable-next-line array-callback-return
-    formatTransactions(transaction).map((tx) => {
+  async FORMAT_TRANSACTION_FROM_LISTENER({ dispatch, commit, getters }, { transaction, wallet }) {
+    try {
+      const unconfirmedTx = await formatTransactions(transaction)
+        .map(tx => ({ ...tx, unconfirmed: true }));
+
+      const oldTransactions = await getters.GET_TRANSACTIONS || [];
+      const transactionsToStore = [...unconfirmedTx, ...oldTransactions];
+
+      commit('setAccountTransactions', {
+        wallet,
+        transactions: transactionsToStore,
+      });
+
+      unconfirmedTx.forEach(tx => dispatch('TRIGGER_TRANSACTION_SNACKBAR', { tx, status: 'announced' }));
+    } catch (error) {
       // eslint-disable-next-line no-console
-      console.log(tx, 'TX FORMATTED');
-    });
+      console.error(error, 'FORMAT_TRANSACTION_FROM_LISTENER');
+    }
   },
 
 
-  ADD_TRANSACTION_FROM_LISTENER({ dispatch }, transaction) {
+  async CONFIRM_TRANSACTION({
+    dispatch,
+    getters,
+    rootGetters,
+    commit,
+  }, { transaction, wallet }) {
+    try {
+      const blocks = await rootGetters['application/GET_BLOCKS'];
+      const getTimestampFromBlock = (blockNumber) => {
+        const block = blocks.find(x => x.blockNumber === blockNumber);
+        if (block === undefined) return 0;
+        return block.timestamp;
+      };
+
+      const txWithTimestamp = {
+        ...transaction,
+        timestamp: getTimestampFromBlock(transaction.transactionInfo.height.compact()),
+      };
+
+      const confirmedTx = await formatTransactions(txWithTimestamp)
+        .map(tx => ({ ...tx, unconfirmed: false }));
+
+      const oldTransactions = await getters.GET_TRANSACTIONS || [];
+      const oldConfirmedTransactions = oldTransactions.filter(tx => !tx.unconfirmed);
+      const unconfirmedTransactionsToUpdate = oldTransactions.filter(tx => tx.unconfirmed);
+
+      const unconfirmedTransactionsUpdated = unconfirmedTransactionsToUpdate
+        .map((tx) => {
+          const confirmedTransaction = confirmedTx
+            .find(ctx => ctx.transactionHash === tx.transactionHash);
+          if (confirmedTransaction === undefined) return tx;
+          return [];
+        })
+        .filter(x => x.length > 0);
+
+      const transactionsToStore = [
+        ...unconfirmedTransactionsUpdated,
+        ...confirmedTx,
+        ...oldConfirmedTransactions,
+      ];
+
+      commit('setAccountTransactions', {
+        wallet,
+        transactions: transactionsToStore,
+      });
+
+      confirmedTx.forEach(tx => dispatch('TRIGGER_TRANSACTION_SNACKBAR', { tx, status: 'confirmed' }));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error, 'CONFIRM_TRANSACTION');
+    }
+  },
+
+
+  TRIGGER_TRANSACTION_SNACKBAR({ dispatch }, { tx, status }) {
     dispatch(
       'application/SET_SNACKBAR_TEXT',
-      { bool: true, text: transaction.hash },
+      { bool: true, text: `New ${tx.type1} ${status}!` },
       { root: true },
     );
   },

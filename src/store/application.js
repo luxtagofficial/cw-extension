@@ -18,6 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
  */
+import { timestampNemesisBlock } from '../infrastructure/network/types';
 
 const state = {
   error: false,
@@ -29,6 +30,7 @@ const state = {
   showSnackbar: false,
   snackbarText: '',
   blockNumber: 'loading',
+  blocks: [],
 };
 
 const getters = {
@@ -37,6 +39,9 @@ const getters = {
   },
   GET_ERROR_MESSAGE() {
     return state.errorMessage;
+  },
+  GET_BLOCKS() {
+    return state.blocks;
   },
 };
 
@@ -65,31 +70,59 @@ const mutations = {
   setBlockNumber(state, blockNumber) {
     state.blockNumber = blockNumber;
   },
+  addBlock(state, formattedBlock) {
+    if (state.blocks.length >= 100) state.blocks.shift();
+    state.blocks.push(formattedBlock);
+  },
 };
 
 const actions = {
   RESET_ERRORS({ commit }) {
     commit('resetErrors');
   },
+
+
   SET_ERROR({ commit }, errorMessage) {
     const errMsg = typeof errorMessage === 'string'
       ? errorMessage : errorMessage.toString();
     commit('setError', errMsg);
   },
+
+
   SET_LISTENER_STATUS({ commit }, { status, text }) {
     commit('setListenerStatus', status, text);
   },
+
+
   NAVIGATE({ commit }, { to }) {
     commit('updateRouteName', to.name);
   },
+
+
   TOGGLE_DARK_MODE({ commit }) {
     commit('toggleDarkMode');
   },
+
+
   SET_SNACKBAR_TEXT({ commit }, { text }) {
     commit('setSnackbarText', text);
   },
+
+
   SET_BLOCK_NUMBER({ commit }, blockNumber) {
     commit('setBlockNumber', blockNumber);
+  },
+
+
+  ADD_BLOCK({ commit, dispatch }, block) {
+    const blockNumber = block.height.compact();
+    dispatch('SET_BLOCK_NUMBER', blockNumber);
+
+    const timestamp = block.timestamp.compact() / 1000 + timestampNemesisBlock;
+    commit('addBlock', {
+      blockNumber,
+      timestamp,
+    });
   },
 };
 

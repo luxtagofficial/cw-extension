@@ -211,8 +211,8 @@ const actions = {
         .subscribe(
           (block) => {
             dispatch(
-              'application/SET_BLOCK_NUMBER',
-              block.height.compact(),
+              'application/ADD_BLOCK',
+              block,
               { root: true },
             );
           },
@@ -228,22 +228,10 @@ const actions = {
       listener
         .unconfirmedAdded(address)
         .subscribe(
-          (tx) => {
+          (transaction) => {
             dispatch(
               'transactions/FORMAT_TRANSACTION_FROM_LISTENER',
-              tx,
-              { root: true },
-            );
-          },
-        );
-
-      listener
-        .unconfirmedRemoved(address)
-        .subscribe(
-          (tx) => {
-            dispatch(
-              'transactions/FORMAT_TRANSACTION_FROM_LISTENER',
-              tx,
+              { transaction, wallet },
               { root: true },
             );
           },
@@ -252,10 +240,10 @@ const actions = {
       listener
         .confirmed(address)
         .subscribe(
-          (tx) => {
+          (transaction) => {
             dispatch(
-              'transactions/FORMAT_TRANSACTION_FROM_LISTENER',
-              tx,
+              'transactions/CONFIRM_TRANSACTION',
+              { transaction, wallet },
               { root: true },
             );
           },

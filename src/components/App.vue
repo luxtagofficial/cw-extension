@@ -224,7 +224,7 @@ export default {
   mounted() {
     store.subscribeAction((action) => {
       if (action.type === 'application/SET_SNACKBAR_TEXT') {
-        this.snackbarText = `${action.payload.text} ${action.payload.text}`;
+        this.snackbarText = `${action.payload.text}`;
         this.snackbar = true;
       }
     });
