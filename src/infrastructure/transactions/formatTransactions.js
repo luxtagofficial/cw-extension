@@ -27,7 +27,7 @@ import {
 import { networkCurrencyIdToName } from '../network/utils/nerworkCurrencyToName';
 import { txTypeNameFromTypeId } from './transactions-types';
 
-const formatDate = (d) => {
+export const formatDate = (d) => {
   let date = d.getDate();
   let month = d.getMonth() + 1;
   const year = d.getFullYear();

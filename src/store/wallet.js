@@ -211,8 +211,8 @@ const actions = {
         .subscribe(
           (block) => {
             dispatch(
-              'application/SET_BLOCK_NUMBER',
-              block.height.compact(),
+              'application/ADD_BLOCK',
+              block,
               { root: true },
             );
           },
