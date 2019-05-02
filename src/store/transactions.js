@@ -135,6 +135,8 @@ const actions = {
         wallet,
         transactions: transactionsToStore,
       });
+
+      unconfirmedTx.forEach(tx => dispatch('TRIGGER_TRANSACTION_SNACKBAR', { tx, status: 'announced' }))
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error, 'FORMAT_TRANSACTION_FROM_LISTENER');
@@ -187,6 +189,8 @@ const actions = {
         wallet,
         transactions: transactionsToStore,
       });
+
+      confirmedTx.forEach(tx => dispatch('TRIGGER_TRANSACTION_SNACKBAR', { tx, status: 'confirmed' }))
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error, 'CONFIRM_TRANSACTION');
@@ -194,10 +198,10 @@ const actions = {
   },
 
 
-  TRIGGER_TRANSACTION_SNACKBAR({ dispatch }, transaction) {
+  TRIGGER_TRANSACTION_SNACKBAR({ dispatch }, { tx, status }) {
     dispatch(
       'application/SET_SNACKBAR_TEXT',
-      { bool: true, text: transaction.hash },
+      { bool: true, text: `New ${tx.type1} ${status}!` },
       { root: true },
     );
   },
