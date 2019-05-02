@@ -122,23 +122,42 @@ const actions = {
 
 
   // eslint-disable-next-line no-unused-vars
-  FORMAT_TRANSACTION_FROM_LISTENER({ dispatch }, transaction) {
-    // eslint-disable-next-line no-console
-    console.log(transaction, 'TRANSACTION ENTERED FORMAT_TRANSACTION_FROM_LISTENER');
-    // eslint-disable-next-line array-callback-return
-    formatTransactions(transaction).map((tx) => {
+  async FORMAT_TRANSACTION_FROM_LISTENER({ dispatch, commit, getters }, { transaction, wallet }) {
+    try {
       // eslint-disable-next-line no-console
-      console.log(tx, 'TX FORMATTED');
-    });
+      console.log(transaction, 'TRANSACTION ENTERED FORMAT_TRANSACTION_FROM_LISTENER');
+
+      const unconfirmedTx = await formatTransactions(transaction).map((tx) => {
+        // eslint-disable-next-line no-console
+        console.log(tx, 'TX FORMATTED');
+        return { ...tx, unconfirmed: true };
+      });
+
+      const oldTransactions = await getters.GET_TRANSACTIONS || [];
+      const transactionsToStore = [...unconfirmedTx, ...oldTransactions];
+
+      commit('setAccountTransactions', {
+        wallet,
+        transactions: transactionsToStore,
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error, 'FORMAT_TRANSACTION_FROM_LISTENER');
+    }
   },
 
 
-  ADD_TRANSACTION_FROM_LISTENER({ dispatch }, transaction) {
+  TRIGGER_TRANSACTION_SNACKBAR({ dispatch }, transaction) {
     dispatch(
       'application/SET_SNACKBAR_TEXT',
       { bool: true, text: transaction.hash },
       { root: true },
     );
+  },
+
+
+  CONFIRM_TRANSACTION({ dispatch }, txHash) {
+    dispatch('application/confirmTransaction', txHash);
   },
 };
 

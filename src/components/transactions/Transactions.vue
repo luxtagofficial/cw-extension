@@ -108,10 +108,22 @@
                       "
                     >
                       <td class="text-xs-left">
-                        <span class="clearfix">
+                        <span
+                          v-if="props.item.unconfirmed"
+                          class="clearfix"
+                        >
+                          <pre>unconfirmed</pre>
+                        </span>
+                        <span
+                          v-if="!props.item.unconfirmed"
+                          class="clearfix"
+                        >
                           <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
                         </span>
-                        <span class="clearfix">
+                        <span
+                          v-if="!props.item.unconfirmed"
+                          class="clearfix"
+                        >
                           <pre>{{ props.item.date }}</pre>
                         </span>
                         <span class="clearfix">

@@ -228,10 +228,10 @@ const actions = {
       listener
         .unconfirmedAdded(address)
         .subscribe(
-          (tx) => {
+          (transaction) => {
             dispatch(
               'transactions/FORMAT_TRANSACTION_FROM_LISTENER',
-              tx,
+              { transaction, wallet },
               { root: true },
             );
           },
@@ -240,22 +240,10 @@ const actions = {
       listener
         .unconfirmedRemoved(address)
         .subscribe(
-          (tx) => {
+          (txHash) => {
             dispatch(
-              'transactions/FORMAT_TRANSACTION_FROM_LISTENER',
-              tx,
-              { root: true },
-            );
-          },
-        );
-
-      listener
-        .confirmed(address)
-        .subscribe(
-          (tx) => {
-            dispatch(
-              'transactions/FORMAT_TRANSACTION_FROM_LISTENER',
-              tx,
+              'transactions/CONFIRM_TRANSACTION',
+              { txHash, wallet },
               { root: true },
             );
           },
