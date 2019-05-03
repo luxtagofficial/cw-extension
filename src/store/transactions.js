@@ -29,6 +29,7 @@ const state = {
   loading_getAccountTransactionsById: false,
   transactionTypesFilters: transactionTypesFilters(),
   activeTransaction: false,
+  createdURI: [],
 };
 
 const getters = {
@@ -57,6 +58,11 @@ const mutations = {
   updateActiveTransaction(state, transaction) {
     // eslint-disable-next-line prefer-destructuring
     state.activeTransaction = transaction;
+  },
+  saveCreatedUri(state, { wallet, uriTransaction }) {
+    if (!state.createdURI[wallet.name]) state.createdURI[wallet.name] = [];
+    state.createdURI.push(uriTransaction);
+    Vue.set(state.createdURI, wallet.name, state.createdURI);
   },
 };
 
@@ -203,6 +209,13 @@ const actions = {
       { bool: true, text: `New ${tx.type1} ${status}!` },
       { root: true },
     );
+  },
+
+  SAVE_CREATED_URI({ commit }, { wallet, uriTransaction }) {
+    commit('saveCreatedUri', {
+      wallet,
+      uriTransaction,
+    });
   },
 };
 
