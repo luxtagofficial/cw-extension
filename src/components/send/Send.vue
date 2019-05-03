@@ -107,7 +107,8 @@
                     />
 
                     <v-text-field
-                      v-if="!wallet.activeWallet || assets.assets[wallet.activeWallet.name].length===0"
+                      v-if="!wallet.activeWallet
+                        || assets.assets[wallet.activeWallet.name].length===0"
                       v-model="currentMosaicName"
                       label="Enter a mosaic ID"
                       solo
@@ -410,7 +411,7 @@ export default {
         this.mosaics,
         PlainMessage.create(this.txMessage),
         NetworkType.MIJIN_TEST,
-        UInt64.fromUint(this.txMaxFee)
+        UInt64.fromUint(this.txMaxFee),
       );
     },
 
