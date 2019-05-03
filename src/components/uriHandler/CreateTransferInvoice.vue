@@ -230,8 +230,6 @@
         v-if="transactions.createdURI[wallet.activeWallet.name]
           && transactions.createdURI[wallet.activeWallet.name].length > 0"
         xs12
-        sm6
-        offset-sm3
       >
         <v-card>
           <v-toolbar
@@ -243,18 +241,41 @@
           <template
             v-for="(uriTx, i) in transactions.createdURI[wallet.activeWallet.name]"
           >
-            <v-list :key="i">
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>
-                    Recipient: {{ uriTx.transaction.recipient.address }}
+            <v-list
+              :key="i"
+              class="pa-3"
+              style="overflow: auto; height: auto !important;"
+              height="auto"
+              three-line
+            >
+              <div class="clearfix">
+                <span class="clearfix">
+                  To: {{ uriTx.txRecipient }}
+                </span>
+
+                <template v-for="(asset, j) in uriTx.formattedMosaics">
+                  <v-list-tile-title :key="j">
+                    <span class="clearfix">
+                      {{ asset.mosaicName }} {{ asset.mosaicAmount }}
+                    </span>
                   </v-list-tile-title>
-                  <v-list-tile-sub-title>
-                    <a :href="uriTx.URI">{{ uriTx.URI }}</a>
-                  </v-list-tile-sub-title>
-                </v-list-tile-content>
-              </v-list-tile>
+                </template>
+                <span
+                  v-if="uriTx.transaction.message.payload !== ''"
+                  class="clearfix"
+                >
+                  Message: {{ uriTx.transaction.message.payload }}
+                </span>
+
+                <span class="clearfix">
+                  URI: <a :href="uriTx.URI">{{ uriTx.URI }}</a>
+                </span>
+              </div>
             </v-list>
+            <v-divider
+              v-if="i + 1 < transactions.createdURI[wallet.activeWallet.name].length"
+              :key="`divider-${i}`"
+            />
           </template>
         </v-card>
       </v-flex>
@@ -277,8 +298,8 @@ import {
 } from 'nem2-sdk';
 
 import { TransactionURI } from 'nem2-uri-scheme';
-
 import { mapState } from 'vuex';
+import { networkCurrencyIdToName } from '../../infrastructure/network/utils/nerworkCurrencyToName';
 import store from '../../store/index';
 import Errors from '../Errors.vue';
 
@@ -291,15 +312,13 @@ export default {
     return {
       txMessage: '',
       txAmount: 0,
-      signedTx: null,
-      transferTx: null,
       dialog: false,
       checkbox: false,
       mosaics: [],
       currentMosaicName: '',
       currentMosaicAmount: '',
-      txHash: '',
       networkId: 'test',
+      txRecipient: '',
     };
   },
   computed: {
@@ -313,14 +332,14 @@ export default {
     transactionHttp() {
       return new TransactionHttp(this.activeWallet.node);
     },
-    txRecipient() {
-      return this.activeWallet.isWatchOnly
-        ? this.activeWallet.publicAccount.address.pretty()
-        : this.activeWallet.account.address.pretty();
-    },
     endpoint() {
       return this.activeWallet.node;
     },
+  },
+  mounted() {
+    this.txRecipient = this.activeWallet.isWatchOnly
+      ? this.activeWallet.publicAccount.address.pretty()
+      : this.activeWallet.account.address.pretty();
   },
   methods: {
     createTransactionURI() {
@@ -336,7 +355,7 @@ export default {
         this.mosaics,
         PlainMessage.create(this.txMessage),
         NetworkType.MIJIN_TEST,
-      )
+      );
 
       const serializedTransaction = transaction.serialize();
 
@@ -346,15 +365,33 @@ export default {
         this.endpoint,
       ).build();
 
+      const formattedMosaics = transaction.mosaics
+        .map(mosaic => ({
+          ...mosaic,
+          mosaicName: networkCurrencyIdToName(mosaic.id.toHex()),
+          mosaicAmount: mosaic.amount.compact(),
+        }));
+
       this.$store.dispatch('transactions/SAVE_CREATED_URI', {
         wallet: this.activeWallet,
         uriTransaction: {
           URI: transactionURI,
           transaction,
+          txRecipient: this.txRecipient,
+          formattedMosaics,
         },
       });
-
+      this.resetFields();
       this.dialog = false;
+    },
+
+    resetFields() {
+      this.txMessage = '';
+      this.txAmount = 0;
+      this.checkbox = false;
+      this.mosaics = [];
+      this.currentMosaicName = '';
+      this.currentMosaicAmount = '';
     },
 
     addMosaic() {
@@ -369,7 +406,6 @@ export default {
     removeMosaic(index) {
       this.mosaics.splice(index, 1);
     },
-
   },
 };
 </script>
