@@ -118,14 +118,12 @@ function sendSequential(transactions, endpoint, address, emitter) {
     });
     const firstSignedTx = transactions[0];
     txHttp.announce(firstSignedTx).subscribe((x) => {
-      console.log('CALL', x, firstSignedTx, firstSignedTx.hash)
       emitter('sent', {
         message: x,
         txHash: firstSignedTx.hash,
         nodeURL: endpoint,
       });
     }, (e) => {
-      console.log(e, 'ERROR')
       emitter('error', {
         message: e,
         txHash: firstSignedTx.hash,
