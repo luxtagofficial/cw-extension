@@ -41,40 +41,65 @@
             three-line
           >
             <div class="clearfix">
-              <span class="clearfix">
-                Type: {{ uriTx.txType }}
-              </span>
-
-              <span class="clearfix">
-                To: {{ uriTx.txRecipient }}
-              </span>
-
-              <template v-for="(asset, j) in uriTx.formattedMosaics">
-                <v-list-tile-title :key="j">
-                  <span class="clearfix">
-                    {{ asset.mosaicName }} {{ asset.mosaicAmount.toLocaleString() }}
-                  </span>
-                </v-list-tile-title>
-              </template>
-
-              <span
-                v-if="uriTx.transaction.message.payload !== ''"
-                class="clearfix"
+              <div
+                style="
+                  display: inline-block;
+                  padding: 10px;"
               >
-                Message: {{ uriTx.transaction.message.payload }}
-              </span>
+                <img
+                  :src="qr(uriTx.transaction)"
+                  style="width:200px"
+                >
+              </div>
+              <div
+                style="
+                  display: inline-block;
+                  max-width: 500px;
+                  overflow: hidden;
+                  vertical-align: top;
+                  padding: 10px;"
+              >
+                <span class="clearfix">
+                  Type: {{ uriTx.txType }}
+                </span>
 
-              <span class="clearfix">
-                Chain ID: {{ uriTx.chainId }}
-              </span>
+                <span class="clearfix">
+                  To: {{ uriTx.txRecipient }}
+                </span>
 
-              <span class="clearfix">
-                Endpoint: <a :href="uriTx.endpoint">{{ uriTx.endpoint }}</a>
-              </span>
+                <template v-for="(asset, j) in uriTx.formattedMosaics">
+                  <v-list-tile-title :key="j">
+                    <span class="clearfix">
+                      {{ asset.mosaicName }} {{ asset.mosaicAmount.toLocaleString() }}
+                    </span>
+                  </v-list-tile-title>
+                </template>
 
-              <span class="clearfix">
-                URI: <a :href="uriTx.URI">{{ uriTx.URI }}</a>
-              </span>
+                <span
+                  v-if="uriTx.transaction.message.payload !== ''"
+                  class="clearfix"
+                >
+                  Message: {{ uriTx.transaction.message.payload }}
+                </span>
+
+                <span class="clearfix">
+                  Chain ID: {{ uriTx.chainId }}
+                </span>
+
+                <span class="clearfix">
+                  Endpoint: <a :href="uriTx.endpoint">{{ uriTx.endpoint }}</a>
+                </span>
+
+                <span
+                  class="clearfix"
+                  style="
+                    overflow-wrap: break-word;
+                    max-height: 82px;
+                    overflow-y: scroll;"
+                >
+                  URI: <a :href="uriTx.URI">{{ uriTx.URI }}</a>
+                </span>
+              </div>
             </div>
           </v-list>
           <v-card-actions
@@ -121,6 +146,7 @@
 
 <script>
 
+import { QRCodeGenerator } from 'nem2-qr-library';
 import Confirmation from '../Confirmation.vue';
 
 export default {
@@ -149,6 +175,11 @@ export default {
       return this.type === 'uriToValidate'
         ? 'URI transactions to validate'
         : 'List of created URI invoices';
+    },
+  },
+  methods: {
+    qr(transaction) {
+      return QRCodeGenerator.createTransactionRequest(transaction).toBase64();
     },
   },
 };
