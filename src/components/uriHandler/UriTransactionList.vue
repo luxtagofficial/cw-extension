@@ -172,7 +172,7 @@ export default {
   },
   computed: {
     title() {
-      return this.type === 'uriToValidate'
+      return this.listType === 'uriToValidate'
         ? 'URI transactions to validate'
         : 'List of created URI invoices';
     },
