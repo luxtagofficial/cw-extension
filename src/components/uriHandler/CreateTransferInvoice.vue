@@ -26,7 +26,7 @@
       wrap
     >
       <v-flex xs12>
-        <Errors />
+        <Errors class="pb-4" />
         <v-card
           v-if="wallet.wallets.length > 0
             && wallet.activeWallet"
@@ -64,7 +64,7 @@
                 />
 
                 <v-text-field
-                  v-model="networkId"
+                  v-model="chainId"
                   label="Network Id (this is for testing purpose, leave ''test'' if not needed"
                   type="text"
                   required
@@ -229,6 +229,7 @@
       v-if="transactions.createdURI[wallet.activeWallet.name]
         && transactions.createdURI[wallet.activeWallet.name].length > 0"
       :transactions="transactions.createdURI[wallet.activeWallet.name]"
+      list-type="createdUri"
     />
   </v-container>
 </template>
@@ -250,6 +251,7 @@ import {
 import { TransactionURI } from 'nem2-uri-scheme';
 import { mapState } from 'vuex';
 import { networkCurrencyIdToName } from '../../infrastructure/network/utils/nerworkCurrencyToName';
+import { txTypeNameFromTypeId } from '../../infrastructure/transactions/transactions-types';
 import store from '../../store/index';
 import Errors from '../Errors.vue';
 import UriTransactionList from './UriTransactionList.vue';
@@ -269,7 +271,7 @@ export default {
       mosaics: [],
       currentMosaicName: '',
       currentMosaicAmount: '',
-      networkId: 'test',
+      chainId: 'test',
       txRecipient: '',
     };
   },
@@ -289,6 +291,9 @@ export default {
     },
   },
   mounted() {
+    // activeWallet is not yet defined when opening the wallet from an URI
+    if (!this.activeWallet) return;
+
     this.txRecipient = this.activeWallet.isWatchOnly
       ? this.activeWallet.publicAccount.address.pretty()
       : this.activeWallet.account.address.pretty();
@@ -313,7 +318,7 @@ export default {
 
       const transactionURI = new TransactionURI(
         serializedTransaction,
-        this.networkId,
+        this.chainId,
         this.endpoint,
       ).build();
 
@@ -331,6 +336,9 @@ export default {
           transaction,
           txRecipient: this.txRecipient,
           formattedMosaics,
+          txType: txTypeNameFromTypeId(transaction.type),
+          chainId: this.chainId,
+          endpoint: this.endpoint,
         },
       });
       this.resetFields();
@@ -344,6 +352,7 @@ export default {
       this.mosaics = [];
       this.currentMosaicName = '';
       this.currentMosaicAmount = '';
+      this.chainId = 'test';
     },
 
     addMosaic() {

@@ -28,7 +28,7 @@
           card
           prominent
         >
-          <v-toolbar-title>List of created URI invoices</v-toolbar-title>
+          <v-toolbar-title>{{ title }}</v-toolbar-title>
         </v-toolbar>
         <template
           v-for="(uriTx, i) in transactions"
@@ -42,16 +42,21 @@
           >
             <div class="clearfix">
               <span class="clearfix">
+                Type: {{ uriTx.txType }}
+              </span>
+
+              <span class="clearfix">
                 To: {{ uriTx.txRecipient }}
               </span>
 
               <template v-for="(asset, j) in uriTx.formattedMosaics">
                 <v-list-tile-title :key="j">
                   <span class="clearfix">
-                    {{ asset.mosaicName }} {{ asset.mosaicAmount }}
+                    {{ asset.mosaicName }} {{ asset.mosaicAmount.toLocaleString() }}
                   </span>
                 </v-list-tile-title>
               </template>
+
               <span
                 v-if="uriTx.transaction.message.payload !== ''"
                 class="clearfix"
@@ -60,10 +65,31 @@
               </span>
 
               <span class="clearfix">
+                Chain ID: {{ uriTx.chainId }}
+              </span>
+
+              <span class="clearfix">
+                Endpoint: <a :href="uriTx.endpoint">{{ uriTx.endpoint }}</a>
+              </span>
+
+              <span class="clearfix">
                 URI: <a :href="uriTx.URI">{{ uriTx.URI }}</a>
               </span>
             </div>
           </v-list>
+          <v-card-actions
+            v-if="listType === 'uriToValidate'"
+            :key="`actions-${i}`"
+            class="pa-3"
+          >
+            <v-spacer />
+            <v-btn
+              flat
+              @click="toggleDialog = true"
+            >
+              Accept transaction
+            </v-btn>
+          </v-card-actions>
           <v-divider
             v-if="i + 1 < transactions"
             :key="`divider-${i}`"
@@ -71,15 +97,58 @@
         </template>
       </v-card>
     </v-flex>
+    <Confirmation
+      v-model="toggleDialog"
+      :v-if="listType === 'uriToValidate'"
+      :transactions="transactions.map(({transaction})=>transaction)"
+      :title="confirmationTitle"
+      :body="body"
+      :max-width="600"
+    >
+      <v-list
+        v-for="(uriTx) in transactions"
+        :key="uriTx.transaction.recipient.plain()"
+      >
+        <v-list-tile>
+          <v-list-tile-title>
+            Recipient: {{ uriTx.transaction.recipient.plain() }}
+          </v-list-tile-title>
+        </v-list-tile>
+      </v-list>
+    </Confirmation>
   </v-layout>
 </template>
 
 <script>
+
+import Confirmation from '../Confirmation.vue';
+
 export default {
+  components: {
+    Confirmation,
+  },
   props: {
     transactions: {
       type: Array,
       default() { return []; },
+    },
+    listType: {
+      type: String,
+      default() { return ''; },
+    },
+  },
+  data() {
+    return {
+      toggleDialog: false,
+      confirmationTitle: 'Are sure you want to accept this transaction?',
+      body: 'This transaction came from a URI link, and is to be sent to an exernal service.  Please confirm all details once more before sending.',
+    };
+  },
+  computed: {
+    title() {
+      return this.type === 'uriToValidate'
+        ? 'URI transactions to validate'
+        : 'List of created URI invoices';
     },
   },
 };
