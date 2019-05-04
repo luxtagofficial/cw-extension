@@ -27,7 +27,8 @@
       ma-0
     >
       <v-flex
-        v-if="transactions"
+        v-if="transactions.receivedURI
+          && transactions.receivedURI.length > 0"
         xs12
       >
         <v-alert
@@ -42,8 +43,7 @@
       </v-flex>
       <v-flex xs12>
         <UriTransactionList
-          v-if="formattedTransactions"
-          :transactions="formattedTransactions"
+          :transactions="transactions.receivedURI"
           list-type="uriToValidate"
         />
         <CreateTransferInvoice />
@@ -53,6 +53,7 @@
 </template>
 <script>
 
+import { mapState } from 'vuex';
 import { Address } from 'nem2-sdk';
 import { TransactionURI } from 'nem2-uri-scheme';
 import { txTypeNameFromTypeId } from '../../infrastructure/transactions/transactions-types';
@@ -67,14 +68,16 @@ export default {
   },
   data() {
     return {
-      transactions: false,
-      formattedTransactions: false,
-      txURL: false,
-      txURI: false,
       toggleDialog: false,
       title: 'Are sure you want to accept this transaction?',
       body: 'This transaction came from a URI link, and is to be sent to an exernal service.  Please confirm all details once more before sending.',
     };
+  },
+  computed: {
+    ...mapState([
+      'wallet',
+      'transactions',
+    ]),
   },
   created() {
     try {
@@ -88,25 +91,17 @@ export default {
           mosaicAmount: mosaic.amount.compact(),
         }));
 
-      const formattedTransaction = {
-        transaction,
-        txType: txTypeNameFromTypeId(transaction.type),
-        formattedMosaics,
-        chainId: transactionURI.chainId,
-        endpoint: transactionURI.endpoint,
-        URI: transactionQuery,
-        txRecipient: new Address(transaction.recipient.address).pretty(),
-      };
-
-      if (!this.transactions) this.transactions = [];
-      if (!this.formattedTransaction) this.formattedTransaction = [];
-
-      if (!this.formattedTransactions) this.formattedTransactions = [];
-      this.formattedTransactions.push(formattedTransaction);
-
-      this.transactions.push(transaction);
-      this.txURI = transactionURI;
-      this.txURL = transactionQuery;
+      this.$store.dispatch('transactions/SAVE_RECEIVED_URI', {
+        uriTransaction: {
+          URI: this.$route.query.transaction,
+          transaction,
+          txRecipient: new Address(transaction.recipient.address).pretty(),
+          formattedMosaics,
+          txType: txTypeNameFromTypeId(transaction.type),
+          chainId: transactionURI.chainId,
+          endpoint: transactionURI.endpoint,
+        },
+      });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Handler.vue - created', error);
