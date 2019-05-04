@@ -29,6 +29,8 @@ const state = {
   loading_getAccountTransactionsById: false,
   transactionTypesFilters: transactionTypesFilters(),
   activeTransaction: false,
+  createdURI: [],
+  receivedURI: [],
 };
 
 const getters = {
@@ -57,6 +59,14 @@ const mutations = {
   updateActiveTransaction(state, transaction) {
     // eslint-disable-next-line prefer-destructuring
     state.activeTransaction = transaction;
+  },
+  saveCreatedUri(state, { wallet, uriTransaction }) {
+    if (!state.createdURI[wallet.name]) state.createdURI[wallet.name] = [];
+    Vue.set(state.createdURI, wallet.name, [...state.createdURI[wallet.name], uriTransaction]);
+  },
+  saveReceivedUri(state, { uriTransaction }) {
+    if (!state.receivedURI) state.receivedURI = [];
+    state.receivedURI = [...state.receivedURI, uriTransaction];
   },
 };
 
@@ -121,7 +131,6 @@ const actions = {
   },
 
 
-  // eslint-disable-next-line no-unused-vars
   async FORMAT_TRANSACTION_FROM_LISTENER({ dispatch, commit, getters }, { transaction, wallet }) {
     try {
       const unconfirmedTx = await formatTransactions(transaction)
@@ -135,7 +144,10 @@ const actions = {
         transactions: transactionsToStore,
       });
 
-      unconfirmedTx.forEach(tx => dispatch('TRIGGER_TRANSACTION_SNACKBAR', { tx, status: 'announced' }));
+      unconfirmedTx.forEach(tx => dispatch(
+        'TRIGGER_TRANSACTION_SNACKBAR',
+        { tx, status: 'announced' },
+      ));
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error, 'FORMAT_TRANSACTION_FROM_LISTENER');
@@ -189,7 +201,10 @@ const actions = {
         transactions: transactionsToStore,
       });
 
-      confirmedTx.forEach(tx => dispatch('TRIGGER_TRANSACTION_SNACKBAR', { tx, status: 'confirmed' }));
+      confirmedTx.forEach(tx => dispatch(
+        'TRIGGER_TRANSACTION_SNACKBAR',
+        { tx, status: 'confirmed' },
+      ));
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error, 'CONFIRM_TRANSACTION');
@@ -203,6 +218,18 @@ const actions = {
       { bool: true, text: `New ${tx.type1} ${status}!` },
       { root: true },
     );
+  },
+
+  SAVE_CREATED_URI({ commit }, { wallet, uriTransaction }) {
+    commit('saveCreatedUri', {
+      wallet,
+      uriTransaction,
+    });
+  },
+  SAVE_RECEIVED_URI({ commit }, { uriTransaction }) {
+    commit('saveReceivedUri', {
+      uriTransaction,
+    });
   },
 };
 

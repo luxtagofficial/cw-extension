@@ -214,7 +214,10 @@
                     >
                       <img
                         :src="QR"
-                        style="margin: 10px 11px 4px 11px !important;"
+                        style="
+                          margin: 10px 11px 4px 11px !important;
+                          height: 200px;
+                          width: 200px;"
                       >
                     </v-card>
                   </v-flex>
@@ -246,6 +249,7 @@
 </template>
 <script>
 import { mapState } from 'vuex';
+import { NetworkType } from 'nem2-sdk';
 import { QRCodeGenerator } from 'nem2-qr-library';
 import Errors from './Errors.vue';
 import Transactions from './transactions/Transactions.vue';
@@ -275,19 +279,13 @@ export default {
       namespaces: state => state.namespaces,
     }),
     QR() {
-      const dataset = `
-      {
-        "schema": 1,
-        "network": "MAIN_NET",
-        "nem_version": "Catapult",
-        "data": {
-          "address": "
-          ${this.wallet.activeWallet.isWatchOnly
-    ? this.wallet.activeWallet.publicAccount.address.pretty()
-    : this.wallet.activeWallet.account.address.pretty()}"
-        }
-      }`;
-      return new QRCodeGenerator(dataset).toBase64();
+      const qrData = {
+        address: this.wallet.activeWallet.isWatchOnly
+          ? this.wallet.activeWallet.publicAccount.address.pretty()
+          : this.wallet.activeWallet.account.address.pretty(),
+      };
+
+      return QRCodeGenerator.createExportObject(qrData, NetworkType.MIJIN_TEST).toBase64();
     },
     ownedAssets() {
       if (!this.assets.assets[this.wallet.activeWallet.name]) return false;

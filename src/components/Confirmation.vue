@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import { filter, timeout } from 'rxjs/operators';
 import {
   TransactionHttp, Listener, TransactionType,
@@ -167,11 +168,7 @@ export default {
       },
     },
   },
-  computed: {
-    activeWallet() {
-      return this.$store.getters['wallet/GET_ACTIVE_WALLET'];
-    },
-  },
+  computed: mapState(['wallet']),
   watch: {
   },
   methods: {
@@ -179,9 +176,9 @@ export default {
       this.$emit('input', !this.value);
     },
     signAndAnnounce() {
-      if (this.activeWallet == null) return;
-      const endpoint = this.activeWallet.node;
-      const { account } = this.activeWallet;
+      if (!this.wallet.activeWallet) return;
+      const endpoint = this.wallet.activeWallet.node;
+      const { account } = this.wallet.activeWallet;
       const { address } = account;
       const transactions = signTransactions(this.transactions, account);
       const emitter = (type, value) => {
