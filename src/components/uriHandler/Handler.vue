@@ -66,19 +66,7 @@ export default {
     CreateTransferInvoice,
     UriTransactionList,
   },
-  data() {
-    return {
-      toggleDialog: false,
-      title: 'Are sure you want to accept this transaction?',
-      body: 'This transaction came from a URI link, and is to be sent to an exernal service.  Please confirm all details once more before sending.',
-    };
-  },
-  computed: {
-    ...mapState([
-      'wallet',
-      'transactions',
-    ]),
-  },
+  computed: mapState(['transactions']),
   created() {
     try {
       const transactionQuery = this.$route.query.transaction;

@@ -157,7 +157,7 @@
                   Create this URI invoice?
                 </v-card-title>
                 <v-card-text>
-                  Please double-check the URI parameters details
+                  Please double-check the URI details
                   <v-list>
                     <v-list-tile>
                       <v-list-tile-action>
