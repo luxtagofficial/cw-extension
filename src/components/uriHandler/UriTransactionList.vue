@@ -130,16 +130,44 @@
       :body="body"
       :max-width="600"
     >
-      <v-list
-        v-for="(uriTx) in transactions"
-        :key="uriTx.transaction.recipient.plain()"
+      <template
+        v-for="(uriTx, i) in transactions"
       >
-        <v-list-tile>
-          <v-list-tile-title>
-            Recipient: {{ uriTx.transaction.recipient.plain() }}
-          </v-list-tile-title>
-        </v-list-tile>
-      </v-list>
+        <v-list :key="i">
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-icon>person_outline</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Recipient: {{ uriTx.txRecipient }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile v-if="uriTx.txMessage && uriTx.txMessage !== ''">
+            <v-list-tile-action>
+              <v-icon>message</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Message: {{ uriTx.txMessage }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+        <template v-for="(mosaic) in uriTx.transaction.mosaics">
+          <v-list :key="mosaic.id.toHex()">
+            <v-list-tile>
+              <v-list-tile-action>
+                <v-icon>group_work</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  {{ networkCurrencyIdToName(mosaic.id.toHex()) }}:&nbsp;
+                  {{ mosaic.amount.compact().toLocaleString() }}
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </template>
+      </template>
     </Confirmation>
   </v-layout>
 </template>
@@ -148,6 +176,7 @@
 
 import { QRCodeGenerator } from 'nem2-qr-library';
 import Confirmation from '../Confirmation.vue';
+import { networkCurrencyIdToName } from '../../infrastructure/network/utils/nerworkCurrencyToName';
 
 export default {
   components: {
@@ -168,6 +197,7 @@ export default {
       toggleDialog: false,
       confirmationTitle: 'Are sure you want to accept this transaction?',
       body: 'This transaction came from a URI link, and is to be sent to an exernal service.  Please confirm all details once more before sending.',
+      networkCurrencyIdToName,
     };
   },
   computed: {
