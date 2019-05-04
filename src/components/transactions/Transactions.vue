@@ -57,6 +57,17 @@
               wrap
             >
               <v-flex xs12>
+                <v-alert
+                  v-if="transactions.transactions[wallet.activeWallet.name]
+                    && transactions.transactions[wallet.activeWallet.name][0] === 'Error'"
+
+                  :value="true"
+                  type="error"
+                >
+                  An error occured when getting the transaction list
+                </v-alert>
+              </v-flex>
+              <v-flex xs12>
                 <v-progress-linear
                   v-if="transactions.loading_getAccountTransactionsById"
                   :indeterminate="true"
@@ -64,8 +75,9 @@
               </v-flex>
             </v-layout>
             <v-layout
-              v-if="transactions.transactions[wallet.activeWallet.name] &&
-                transactions.transactions[wallet.activeWallet.name].length > 0"
+              v-if="transactions.transactions[wallet.activeWallet.name]
+                && transactions.transactions[wallet.activeWallet.name][0] !== 'Error'
+                && transactions.transactions[wallet.activeWallet.name].length > 0"
               child-flex
               row
               wrap
