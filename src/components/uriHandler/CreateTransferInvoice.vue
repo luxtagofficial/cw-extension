@@ -157,7 +157,7 @@
                   Create this URI invoice?
                 </v-card-title>
                 <v-card-text>
-                  Please double-check the URI parameters details?
+                  Please double-check the URI parameters details
                   <v-list>
                     <v-list-tile>
                       <v-list-tile-action>
@@ -194,7 +194,7 @@
                         </v-list-tile-action>
                         <v-list-tile-content>
                           <v-list-tile-title>
-                            Asset Attached: {{ mosaic.id.toHex() }}
+                            Asset Attached: {{ mosaic.amount.compact() }} {{ mosaic.id.toHex() }}
                           </v-list-tile-title>
                         </v-list-tile-content>
                       </v-list-tile>
