@@ -225,61 +225,11 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout row>
-      <v-flex
-        v-if="transactions.createdURI[wallet.activeWallet.name]
-          && transactions.createdURI[wallet.activeWallet.name].length > 0"
-        xs12
-      >
-        <v-card>
-          <v-toolbar
-            card
-            prominent
-          >
-            <v-toolbar-title>List of created URI invoices</v-toolbar-title>
-          </v-toolbar>
-          <template
-            v-for="(uriTx, i) in transactions.createdURI[wallet.activeWallet.name]"
-          >
-            <v-list
-              :key="i"
-              class="pa-3"
-              style="overflow: auto; height: auto !important;"
-              height="auto"
-              three-line
-            >
-              <div class="clearfix">
-                <span class="clearfix">
-                  To: {{ uriTx.txRecipient }}
-                </span>
-
-                <template v-for="(asset, j) in uriTx.formattedMosaics">
-                  <v-list-tile-title :key="j">
-                    <span class="clearfix">
-                      {{ asset.mosaicName }} {{ asset.mosaicAmount }}
-                    </span>
-                  </v-list-tile-title>
-                </template>
-                <span
-                  v-if="uriTx.transaction.message.payload !== ''"
-                  class="clearfix"
-                >
-                  Message: {{ uriTx.transaction.message.payload }}
-                </span>
-
-                <span class="clearfix">
-                  URI: <a :href="uriTx.URI">{{ uriTx.URI }}</a>
-                </span>
-              </div>
-            </v-list>
-            <v-divider
-              v-if="i + 1 < transactions.createdURI[wallet.activeWallet.name].length"
-              :key="`divider-${i}`"
-            />
-          </template>
-        </v-card>
-      </v-flex>
-    </v-layout>
+    <UriTransactionList
+      v-if="transactions.createdURI[wallet.activeWallet.name]
+        && transactions.createdURI[wallet.activeWallet.name].length > 0"
+      :transactions="transactions.createdURI[wallet.activeWallet.name]"
+    />
   </v-container>
 </template>
 
@@ -302,10 +252,12 @@ import { mapState } from 'vuex';
 import { networkCurrencyIdToName } from '../../infrastructure/network/utils/nerworkCurrencyToName';
 import store from '../../store/index';
 import Errors from '../Errors.vue';
+import UriTransactionList from './UriTransactionList.vue';
 
 export default {
   components: {
     Errors,
+    UriTransactionList,
   },
   store,
   data() {
