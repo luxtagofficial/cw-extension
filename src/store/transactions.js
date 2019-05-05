@@ -44,7 +44,7 @@ const getters = {
 
 const mutations = {
   setAccountTransactions(state, { wallet, transactions }) {
-    if (!state.transactions) state.transactions = {};
+    if (!state.transactions) state.transactions = [];
     Vue.set(state.transactions, wallet.name, transactions);
   },
   setLoading_getAccountTransactionsById(state, bool) {
@@ -99,6 +99,15 @@ const actions = {
         wallet,
         currentId,
       );
+
+      if (!newTransactions) {
+        await commit('setAccountTransactions', {
+          wallet,
+          transactions: ['Error'],
+        });
+        return;
+      }
+
       const oldTransactions = getters.GET_TRANSACTIONS || [];
       const transactionsToStore = removeDuplicatesAndSortByBlockNumber([
         ...oldTransactions,

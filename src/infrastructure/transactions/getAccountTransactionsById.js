@@ -56,9 +56,11 @@ const getAccountTransactionsById = (
               flatMap(x => x),
               toArray(),
           )
-          .subscribe((formattedTransactions) => {
-              resolve(formattedTransactions);
-          });
+          .subscribe(
+            formattedTransactions => resolve(formattedTransactions),
+            // eslint-disable-next-line no-console
+            (error) => { console.error(error); resolve(false); },
+          );
   } catch (error) {
       reject(error);
   }
