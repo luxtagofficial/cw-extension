@@ -31,20 +31,6 @@
       </v-card-title>
       <v-card-text>
         <v-text-field
-          :value="isValidAccount ? account.address.pretty() : ''"
-          class="ma-0 pa-0 monospaced"
-          label="Address"
-          readonly
-        />
-
-        <v-text-field
-          :value="isValidAccount ? account.publicKey : ''"
-          class="ma-0 pa-0 monospaced"
-          label="Public Key"
-          readonly
-        />
-
-        <v-text-field
           v-model="node"
           class="ma-0 pa-0"
           label="NEM2 node URL"
@@ -63,6 +49,28 @@
           class="ma-0 pa-0"
           label="Private Key (64 char)"
         />
+
+        <div
+          v-if="isValidAccount"
+        >
+          <v-divider class="mt-4" />
+
+          <v-text-field
+            v-if="isValidAccount"
+            :value="isValidAccount ? account.address.pretty() : ''"
+            class="mt-4 pt-4 monospaced"
+            label="Address"
+            readonly
+          />
+
+          <v-text-field
+            v-if="isValidAccount"
+            :value="isValidAccount ? account.publicKey : ''"
+            class="ma-0 pa-0 monospaced"
+            label="Public Key"
+            readonly
+          />
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
