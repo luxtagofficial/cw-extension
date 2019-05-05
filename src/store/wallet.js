@@ -129,10 +129,10 @@ const actions = {
     dispatch('application/RESET_ERRORS', null, { root: true });
 
     // @TODO:Refactor clear account info and move to a more suitable place
-    dispatch('accountInfo/CLEAR_ACCOUNT_INFO', null, { root: true });
-    dispatch('transactions/CLEAR_TRANSACTIONS', null, { root: true });
-    dispatch('assets/CLEAR_ASSETS', null, { root: true });
-    dispatch('namespaces/CLEAR_NAMESPACES', null, { root: true });
+    dispatch('accountInfo/CLEAR_ACCOUNT_INFO', walletName, { root: true });
+    dispatch('transactions/CLEAR_TRANSACTIONS', walletName, { root: true });
+    dispatch('assets/CLEAR_ASSETS', walletName, { root: true });
+    dispatch('namespaces/CLEAR_NAMESPACES', walletName, { root: true });
 
     if (wallets.length === 0) {
       commit('setActiveWallet', false);
