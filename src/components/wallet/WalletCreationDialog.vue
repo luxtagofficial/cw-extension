@@ -38,8 +38,22 @@
       <v-card-text />
       <v-card-text>
         <v-text-field
+          v-model="node"
+          class="ma-0 pa-0"
+          label="NEM2 node URL"
+        />
+
+        <v-text-field
+          v-model="walletName"
+          class="ma-0 pa-0"
+          label="Wallet name"
+        />
+
+        <v-divider class="mt-4" />
+
+        <v-text-field
           :value="account ? account.address.pretty() : ''"
-          class="ma-0 pa-0 monospaced"
+          class="mt-4 pt-4 monospaced"
           label="Main wallet"
           readonly
         />
@@ -58,17 +72,6 @@
           readonly
         />
 
-        <v-text-field
-          v-model="node"
-          class="ma-0 pa-0"
-          label="NEM2 node URL"
-        />
-
-        <v-text-field
-          v-model="walletName"
-          class="ma-0 pa-0"
-          label="Wallet name"
-        />
       </v-card-text>
       <v-card-actions>
         <v-spacer />

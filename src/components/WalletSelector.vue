@@ -40,6 +40,20 @@
       </template>
       <v-list>
         <v-list-tile>
+          <v-list-tile-avatar>
+            <v-icon>list</v-icon>
+          </v-list-tile-avatar>
+          <v-list-tile-title
+            class="pointer"
+            @click.stop="goToWallet"
+          >
+            My wallets
+          </v-list-tile-title>
+        </v-list-tile>
+        <v-list-tile>
+          <v-list-tile-avatar>
+            <v-icon>add_box</v-icon>
+          </v-list-tile-avatar>
           <v-list-tile-title
             class="pointer"
             @click.stop="showWalletCreationDialog = true"
@@ -48,6 +62,9 @@
           </v-list-tile-title>
         </v-list-tile>
         <v-list-tile>
+          <v-list-tile-avatar>
+            <v-icon>add_box</v-icon>
+          </v-list-tile-avatar>
           <v-list-tile-title
             class="pointer"
             @click.stop="showWoWalletCreationDialog = true"
@@ -56,19 +73,14 @@
           </v-list-tile-title>
         </v-list-tile>
         <v-list-tile>
+          <v-list-tile-avatar>
+            <v-icon>add_box</v-icon>
+          </v-list-tile-avatar>
           <v-list-tile-title
             class="pointer"
             @click.stop="showWalletImportDialog = true"
           >
             Import From Private Key
-          </v-list-tile-title>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-title
-            class="pointer"
-            @click.stop="goToWallet"
-          >
-            Go to wallet page
           </v-list-tile-title>
         </v-list-tile>
       </v-list>
