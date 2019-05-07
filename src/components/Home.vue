@@ -1,127 +1,304 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <v-layout
-    column
-    xs12
+    row
+    pb-2
+    mt-4
   >
-    <v-layout
-      row
-      mb-4
+    <v-container
+      fluid
+      pa-0
+      ma-0
     >
       <v-layout
         row
-        fill-height
-        justify-start
-        pl-3
-        xs12
+        wrap
       >
-        <h5 class="headline pt-3">
-          Information
-        </h5>
-      </v-layout>
-    </v-layout>
-    <div
-      v-if="
-        sharedState.wallets.length > 0 &&
-          sharedState.activeWallet
-      "
-    >
-      <v-flex xs12>
-        <v-card>
-          <v-card-title primary-title>
-            <div class="monospaced">
-              <h5 class="headline mb-0 mb-1">
-                {{ sharedState.activeWallet.name }}
-              </h5>
-              <div class="clearfix homeLine">
-                <div class="clearfix">
-                  Address:
-                </div>
-                <div class="clearfix">
-                  {{ sharedState.activeWallet.account.address.pretty() }}
-                </div>
-              </div>
-              <div class="clearfix homeLine">
-                <span
-                  v-show="sharedState.accountInfo"
-                  class="clearfix"
-                >Public key:</span>
-                <span
-                  v-show="sharedState.accountInfo"
-                  class="clearfix"
-                >{{
-                  sharedState.accountInfo.publicKey
-                }}</span>
-              </div>
-              <div class="clearfix homeLine">
-                <span class="clearfix">Current node:</span>
-                <a
-                  class="clearfix"
-                  :href="sharedState.activeWallet.node"
-                  target="_new"
+        <v-flex
+          xs12
+        >
+          <Errors style="margin-bottom:35px !important" />
+          <v-card
+            v-if="
+              wallet.wallets.length > 0 &&
+                wallet.activeWallet
+            "
+          >
+            <v-toolbar
+              card
+              prominent
+            >
+              <v-toolbar-title>{{ wallet.activeWallet.name }}</v-toolbar-title>
+            </v-toolbar>
+            <v-card-text>
+              <v-container
+                fluid
+                grid-list-sm
+              >
+                <v-layout
+                  row
+                  wrap
                 >
-                  {{ sharedState.activeWallet.node }}</a>
-              </div>
-            </div>
-          </v-card-title>
-        </v-card>
-      </v-flex>
-    </div>
-    <Errors :shared-state="sharedState" />
-    <div
-      v-if="
-        sharedState.wallets.length > 0 &&
-          sharedState.activeWallet &&
-          !sharedState.error &&
-          sharedState.accountInfo
-      "
-    >
-      <div v-if="sharedState.loading_getAccountTransactionsById">
-        <v-progress-linear :indeterminate="true" />
-      </div>
-      <div
-        v-if="sharedState.transactions && sharedState.transactions.length > 0"
+                  <v-flex
+                    d-flex
+                    xs12
+                  >
+                    <v-layout column>
+                      <v-flex d-flex>
+                        <v-card
+                          color="blue-grey"
+                          dark
+                          tile
+                          flat
+                        >
+                          <v-card-text>
+                            <v-text-field
+                              :value="wallet.activeWallet.isWatchOnly
+                                ?wallet.activeWallet.publicAccount.address.pretty()
+                                :wallet.activeWallet.account.address.pretty()"
+                              class="mt-4 mr-0 mb-0 ml-0 pa-0 monospaced"
+                              label="Address"
+                              readonly
+                            />
+
+                            <v-text-field
+
+                              :value="accountInfo.accountInfo[wallet.activeWallet.name]
+                                ?accountInfo.accountInfo[wallet.activeWallet.name].publicKey
+                                : 'unknown'"
+                              class="ma-0 pa-0 monospaced"
+                              label="Public Key"
+                              readonly
+                            />
+
+                            <v-text-field
+                              v-if="showPrivateKey"
+                              :value="wallet.activeWallet.isWatchOnly
+                                ?'watch only'
+                                :wallet.activeWallet.account.privateKey"
+                              class="ma-0 pa-0 monospaced"
+                              label="Private Key"
+                              readonly
+                            />
+
+                            <v-text-field
+                              :value="wallet.activeWallet.node"
+                              class="ma-0 pa-0 monospaced"
+                              label="Node"
+                              readonly
+                            />
+                            <div style="text-align: right">
+                              <v-btn
+                                flat
+                                class="float:right !important"
+                                @click.stop="showPrivateKey = !showPrivateKey"
+                              >
+                                {{ !showPrivateKey ? 'show private key' : 'hide private key' }}
+                              </v-btn>
+                            </div>
+                          </v-card-text>
+                        </v-card>
+                      </v-flex>
+                    </v-layout>
+                  </v-flex>
+                  <v-flex
+                    d-flex
+                    xs12
+                    sm4
+                  >
+                    <v-card
+                      color="red lighten-2"
+                      dark
+                      tile
+                      flat
+                      pa-0
+                    >
+                      <h3 style="margin:6px 0px 0px 12px;">
+                        Assets balance
+                      </h3>
+                      <div
+                        v-if="!ownedAssets"
+                        style="text-align:center;margin-top:20%"
+                      >
+                        <v-progress-circular
+                          :size="50"
+                          color="amber"
+                          indeterminate
+                        />
+                      </div>
+                      <v-card-text v-if="ownedAssets==='none'">
+                        This account does not own any asset
+                      </v-card-text>
+                      <div v-if="ownedAssets && ownedAssets!=='none'">
+                        <div
+                          v-for="(a, i) in ownedAssets"
+                          :key="i"
+                        >
+                          <v-card-text pa-0>
+                            {{ a.title }}:&nbsp;
+                            {{ parseInt(a.balance).toLocaleString() }}&nbsp;
+                            [{{ (a.amount/Math.pow(10, a.divisibility)).toLocaleString() }}]
+                          </v-card-text>
+                        </div>
+                      </div>
+                    </v-card>
+                  </v-flex>
+                  <v-flex
+                    d-flex
+                    xs12
+                    sm4
+                  >
+                    <v-card
+                      color="red lighten-2"
+                      dark
+                      tile
+                      flat
+                      pa-0
+                    >
+                      <h3 style="margin:6px 0px 0px 12px;">
+                        Owned namespaces
+                      </h3>
+                      <div
+                        v-if="!ownedNamespaces"
+                        style="text-align:center;margin-top:20%"
+                      >
+                        <v-progress-circular
+                          :size="50"
+                          color="amber"
+                          indeterminate
+                        />
+                      </div>
+                      <v-card-text v-if="ownedNamespaces==='none'">
+                        This account does not own any namespace
+                      </v-card-text>
+                      <div v-if="ownedNamespaces && ownedNamespaces!=='none'">
+                        <div
+                          v-for="(a, i) in ownedNamespaces"
+                          :key="i"
+                        >
+                          <v-card-text pa-0>
+                            {{ a.name }}
+                          </v-card-text>
+                        </div>
+                      </div>
+                    </v-card>
+                  </v-flex>
+                  <v-flex
+                    d-flex
+                    xs12
+                    sm4
+                  >
+                    <v-card
+                      color="red lighten-2"
+                      dark
+                      tile
+                      flat
+                      pa-0
+                      style="text-align: center;"
+                    >
+                      <img
+                        :src="QR"
+                        style="
+                          margin: 10px 11px 4px 11px !important;
+                          height: 200px;
+                          width: 200px;"
+                      >
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+      </v-layout>
+
+      <v-layout
+        row
+        wrap
+        style="margin-top: 30px !important;"
       >
-        <Transactions :transactions="sharedState.transactions" />
-      </div>
-    </div>
+        <v-flex
+          xs12
+        >
+          <Transactions
+            v-if="wallet.wallets.length > 0 &&
+              wallet.activeWallet &&
+              !application.error &&
+              accountInfo.accountInfo"
+          />
+        </v-flex>
+      </v-layout>
+    </v-container>
   </v-layout>
 </template>
 <script>
-import StateRepository from '../infrastructure/StateRepository';
+import { mapState } from 'vuex';
+import { NetworkType } from 'nem2-sdk';
+import { QRCodeGenerator } from 'nem2-qr-library';
 import Errors from './Errors.vue';
 import Transactions from './transactions/Transactions.vue';
 
 export default {
+  name: 'Home',
   components: {
     Errors,
     Transactions,
   },
   data() {
-    return { sharedState: StateRepository.state };
+    return {
+      showPrivateKey: false,
+    };
   },
-  created() {
-    if (StateRepository.state.activeWallet && !StateRepository.state.accountInfo) {
-      StateRepository.onWalletChange(StateRepository.state.activeWallet.name);
-    }
+  computed: {
+    ...mapState([
+      'wallet',
+      'accountInfo',
+      'application',
+      'transactions',
+      'assets',
+      'namespaces',
+    ], {
+      wallet: state => state.wallet,
+      assets: state => state.assets,
+      namespaces: state => state.namespaces,
+    }),
+    QR() {
+      const qrData = {
+        address: this.wallet.activeWallet.isWatchOnly
+          ? this.wallet.activeWallet.publicAccount.address.pretty()
+          : this.wallet.activeWallet.account.address.pretty(),
+      };
+
+      return QRCodeGenerator.createExportObject(qrData, NetworkType.MIJIN_TEST).toBase64();
+    },
+    ownedAssets() {
+      if (!this.assets.assets[this.wallet.activeWallet.name]) return false;
+      if (this.assets.assets[this.wallet.activeWallet.name].length === 0) return 'none';
+      return this.assets.assets[this.wallet.activeWallet.name]
+        .filter(x => (x.balance > 0 && x.active));
+    },
+    ownedNamespaces() {
+      if (!this.namespaces.namespaces[this.wallet.activeWallet.name]) return false;
+      if (this.namespaces.namespaces[this.wallet.activeWallet.name].length === 0) return 'none';
+      return this.namespaces.namespaces[this.wallet.activeWallet.name]
+        .filter(x => x.active);
+    },
   },
 };
 </script>
-<style scoped>
-</style>

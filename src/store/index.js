@@ -20,6 +20,11 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import wallet from './wallet';
+import accountInfo from './accountInfo';
+import application from './application';
+import transactions from './transactions';
+import namespaces from './namespaces';
+import assets from './assets';
 
 Vue.use(Vuex);
 
@@ -28,6 +33,11 @@ const debug = process.env.NODE_ENV !== 'production';
 export default new Vuex.Store({
   modules: {
     wallet,
+    application,
+    accountInfo,
+    transactions,
+    namespaces,
+    assets,
   },
   strict: debug,
 });

@@ -75,3 +75,61 @@
 .pointer{
   cursor: pointer;
 }
+
+.v-alert{
+  font-size: 16px !important;
+}
+
+.width-100{
+  width:100%;
+}
+
+.padding-0{
+  padding:0 !important;
+}
+
+.account-info-container {
+  height: auto;
+  overflow: hidden;
+}
+
+.ws-icons {
+  display: block !important;
+  position: relative;
+  float: right !important;
+  padding-top: 8px;
+}
+
+.ws-height {
+  display: block !important;
+  position: relative;
+  float: right !important;
+  margin-top: 11px !important;
+  margin-right: 17px !important;
+}
+
+.ws-wallet {
+  padding-right: 23px;
+}
+
+.ws-dark {
+  padding-right: 18px;
+}
+
+.ws-select {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 200px !important;
+  display: block !important;
+  position: relative !important;
+  float: right !important;
+}
+
+.ws-container {
+  width: auto;
+  display: block;
+  float: left;
+  width: 450px;
+  min-width: 450px;
+}

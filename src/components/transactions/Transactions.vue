@@ -1,180 +1,263 @@
 // Copyright (C) 2019 Contributors as noted in the AUTHORS file
-// 
+//
 // This file is part of nem2-wallet-browserextension.
-// 
+//
 // nem2-wallet-browserextension is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // nem2-wallet-browserextension is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
-// along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
+// along with nem2-wallet-browserextension.  If not, see http://www.gnu.org/licenses/.
 
 <template>
   <v-layout
-    column
-    xs12
+    row
+    wrap
   >
-    <v-layout
-      column
-      xs12
-    >
-      <v-layout
-        row
-        mb-4
-        mt-4
-      >
-        <v-layout
-          row
-          fill-height
-          justify-start
-          pl-3
-          xs3
+    <v-flex xs12>
+      <v-card>
+        <v-toolbar
+          card
+          prominent
         >
-          <h5 class="headline pt-3 pl-2">
-            Transactions
-          </h5>
-        </v-layout>
-        <v-layout
-          row
-          fill-height
-          justify-end
-          xs9
-        >
+          <v-toolbar-title>Recent transactions</v-toolbar-title>
+          <v-spacer />
           <v-btn
-            color="primary mx-0"
-            @click="refresh"
+            icon
+            @click.stop="refresh(wallet.activeWallet)"
           >
-            Refresh
+            <v-icon>refresh</v-icon>
           </v-btn>
-          <v-btn
-            class="ml-3"
-            color="primary mx-0"
-            @click="loadMore"
-          >
-            Load more
-          </v-btn>
-        </v-layout>
-      </v-layout>
-      <v-container
-        fluid
-        fill-height
-      >
-        <v-layout child-flex>
-          <v-data-table
-            :headers="headers"
-            :items="transactions"
-            disable-initial-sort
-            :rows-per-page-items="rowsPerPageOptions"
-          >
-            <template v-slot:items="props">
-              <tr
-                class="pointer"
-                @click="showModal(props.item.id)"
-              >
-                <td class="text-xs-left">
-                  <span class="clearfix">
-                    <pre>{{ props.item.time }}</pre>
-                  </span>
-                  <span class="clearfix">
-                    <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
-                  </span>
-                </td>
-                <td class="text-xs-left">
-                  <span class="clearfix">
-                    <pre>{{ props.item.type1 }}</pre>
-                  </span>
-                  <span class="clearfix">
-                    <pre>{{ props.item.type2 }}</pre>
-                  </span>
-                </td>
-                <td class="text-xs-left">
-                  <span class="clearfix">
-                    <pre>{{ props.item.mainProp1 }}</pre>
-                  </span>
-                  <span class="clearfix">
-                    <pre>{{ props.item.mainProp2 }}</pre>
-                  </span>
-                </td>
-                <td class="text-xs-left">
-                  <span class="clearfix">
-                    <pre>{{ props.item.signer }}</pre>
-                  </span>
-                  <span class="clearfix">
-                    <pre>{{ props.item.recipient }}</pre>
-                  </span>
-                </td>
-              </tr>
-            </template>
-          </v-data-table>
-        </v-layout>
-      </v-container>
-    </v-layout>
 
-    <TransactionModal
-      :modal="modal"
-      :tx="activeTransaction"
-      @close="modalClosed"
-    />
+          <v-btn
+            icon
+            @click.stop="loadMore(wallet.activeWallet)"
+          >
+            <v-icon>playlist_add</v-icon>
+          </v-btn>
+          <v-btn
+            icon
+            @click.stop="showFilters=true"
+          >
+            <v-icon>filter_list</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-card-text>
+          <v-container
+            fluid
+          >
+            <v-layout
+              row
+              wrap
+            >
+              <v-flex xs12>
+                <v-alert
+                  v-if="transactions.transactions[wallet.activeWallet.name]
+                    && transactions.transactions[wallet.activeWallet.name][0] === 'Error'"
+
+                  :value="true"
+                  type="error"
+                >
+                  An error occured when getting the transaction list
+                </v-alert>
+              </v-flex>
+              <v-flex xs12>
+                <v-progress-linear
+                  v-if="transactions.loading_getAccountTransactionsById"
+                  :indeterminate="true"
+                />
+              </v-flex>
+            </v-layout>
+            <v-layout
+              v-if="transactions.transactions[wallet.activeWallet.name]
+                && transactions.transactions[wallet.activeWallet.name][0] !== 'Error'
+                && transactions.transactions[wallet.activeWallet.name].length > 0"
+              child-flex
+              row
+              wrap
+            >
+              <v-flex xs12>
+                <v-data-table
+                  :headers="headers"
+                  :items="transactions.transactions[wallet.activeWallet.name]"
+                  disable-initial-sort
+                  :rows-per-page-items="rowsPerPageOptions"
+                >
+                  <template
+                    slot="headerCell"
+                    slot-scope="props"
+                  >
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <span v-on="on">
+                          {{ props.header.text }}
+                        </span>
+                      </template>
+                      <span>
+                        {{ props.header.hoverText }}
+                      </span>
+                    </v-tooltip>
+                  </template>
+                  <template v-slot:items="props">
+                    <tr
+                      v-show="
+                        transactions.transactionTypesFilters[
+                          props.item.type1.replace(/ /g, '_').replace(/\./g, '8')
+                        ]"
+                      class="pointer"
+                      @click.stop="
+                        showTransactionModal=true
+                        $store.dispatch(
+                          'transactions/UPDATE_ACTIVE_TRANSACTION',
+                          props.item,
+                        );
+                      "
+                    >
+                      <td class="text-xs-left">
+                        <span
+                          v-if="props.item.unconfirmed"
+                          class="clearfix"
+                        >
+                          <pre>unconfirmed</pre>
+                        </span>
+                        <span
+                          v-if="!props.item.unconfirmed"
+                          class="clearfix"
+                        >
+                          <pre>{{ props.item.blockNumber.toLocaleString() }}</pre>
+                        </span>
+                        <span
+                          v-if="!props.item.unconfirmed"
+                          class="clearfix"
+                        >
+                          <pre>{{ props.item.date }}</pre>
+                        </span>
+                        <span class="clearfix">
+                          <pre>{{ props.item.type1 }}</pre>
+                        </span>
+                        <span
+                          v-if="props.item.type2 !== ''"
+                          class="clearfix"
+                        >
+                          <pre>{{ props.item.type2 }}</pre>
+                        </span>
+                      </td>
+                      <td class="text-xs-left">
+                        <div
+                          v-for="(mainProp, index) in props.item.mainProps"
+                          :key="index"
+                        >
+                          <span
+                            class="clearfix"
+                            style="text-align:left"
+                          >
+                            <pre>{{ mainProp.key }}&nbsp;{{ mainProp.value }}</pre>
+                          </span>
+                        </div>
+                      </td>
+                      <td class="text-xs-left">
+                        <span class="clearfix">
+                          <pre>{{ props.item.signerTiny }}</pre>
+                        </span>
+                        <span class="clearfix">
+                          <pre>{{ props.item.recipientTiny }}</pre>
+                        </span>
+                      </td>
+                    </tr>
+                  </template>
+                </v-data-table>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card-text>
+      </v-card>
+
+      <TransactionModal
+        v-if="tx"
+        :visible="showTransactionModal"
+        @close="showTransactionModal=false"
+      />
+
+      <WoWalletCreationDialog
+        :visible="showWoWalletCreationDialog"
+        @close="showWoWalletCreationDialog=false"
+      />
+
+      <div v-if="transactions.activeTransaction">
+        <TransactionListFilters
+          :visible="showFilters"
+          @close="showFilters=false"
+        />
+      </div>
+    </v-flex>
   </v-layout>
 </template>
 <script>
-import StateRepository from '../../infrastructure/StateRepository';
+import { mapState } from 'vuex';
+import store from '../../store/index';
 import TransactionModal from './TransactionModal.vue';
+import { GET_TRANSACTIONS_MODES } from '../../infrastructure/transactions/transactions-types';
+import WoWalletCreationDialog from '../wallet/WoWalletCreationDialog.vue';
+import TransactionListFilters from './transactionListFilters.vue';
 
 export default {
   name: 'Transactions',
+  store,
   components: {
     TransactionModal,
-  },
-  props: {
-    transactions: {
-      default() {
-        return [];
-      },
-      type: Array,
-    },
+    WoWalletCreationDialog,
+    TransactionListFilters,
   },
   data() {
     return {
       headers: [
-        { text: 'Time / Block', value: 'blockNumber' },
-        { text: 'Type', value: 'type1' },
-        { text: 'Main properties', value: 'mainProp1' },
-        { text: 'Signer / Recipient', value: 'recipient' },
+        { text: 'Block / Type', value: 'blockNumber', hoverText: 'sort by block number' },
+        { text: 'Main properties', value: '', hoverText: 'no sorting action' },
+        { text: 'Signer / Recipient', value: 'recipient', hoverText: 'sort by recipient' },
       ],
-      tx: this.transactions,
       rowsPerPageOptions: [
         25, 50, { text: 'All', value: -1 },
       ],
-      activeTransaction: this.transactions[0],
       modal: false,
+      showFilters: false,
+      showWoWalletCreationDialog: false,
+      showTransactionModal: false,
     };
   },
   computed: {
-
+    ...mapState([
+      'transactions',
+      'application',
+      'wallet',
+    ], {
+      transactions: state => state.transactions,
+    }),
+    tx() {
+      return this.transactions.activeTransaction;
+    },
   },
   methods: {
-    refresh() {
-      StateRepository.getAccountTransactionsById('refresh');
+    refresh(wallet) {
+      this.$store.dispatch(
+        'transactions/GET_TRANSACTIONS_BY_ID',
+        { wallet, mode: GET_TRANSACTIONS_MODES.REFRESH },
+      );
     },
-    loadMore() {
-      StateRepository.getAccountTransactionsById('more');
-    },
-    showModal(clickedTx) {
-      this.activeTransaction = this.transactions.find(t => t.id === clickedTx);
-      this.modal = true;
-    },
-    modalClosed() {
-      this.modal = false;
+    loadMore(wallet) {
+      this.$store.dispatch(
+        'transactions/GET_TRANSACTIONS_BY_ID',
+        { wallet, mode: GET_TRANSACTIONS_MODES.MORE },
+      );
     },
   },
 };
 </script>
+
 <style scoped>
 </style>

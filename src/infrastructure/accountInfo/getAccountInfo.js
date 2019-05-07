@@ -22,19 +22,21 @@ import { formatAccountInfo } from './formatAccountInfo';
 
 const getAccountInfo = wallet => new Promise((resolve, reject) => {
   const accountHttp = new AccountHttp(wallet.node);
-  accountHttp.getAccountInfo(wallet.account.address).subscribe(
+  const address = wallet.isWatchOnly
+    ? wallet.publicAccount.address : wallet.account.address;
+
+
+  accountHttp.getAccountInfo(address).subscribe(
     (ai) => {
       resolve(formatAccountInfo(ai));
     },
     (err) => {
-      // @TODO: rationalize
-      if (
-        err.response
+      if (err.response
           && JSON.parse(err.response.text).code === 'ResourceNotFound'
       ) {
-        reject(new Error('ResourceNotFound'));
+        reject(new Error('This address is not known by the network.'));
       } else {
-        reject(new Error('error at getAccountInfo', JSON.stringify(err)));
+        reject(new Error('Error when trying to get the account information. Please make sure this address is known by the network. If it should, please try with another node, or verify your internet connection.', JSON.stringify(err)));
       }
     },
   );

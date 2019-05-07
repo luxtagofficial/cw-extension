@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /**
  * Copyright (C) 2019 Contributors as noted in the AUTHORS file
  *
@@ -23,38 +24,20 @@ import {
  TransactionType, Address,
 } from 'nem2-sdk';
 
-import { networkCurrencyIdToName } from './nerworkCurrencyToName';
+import { networkCurrencyIdToName } from '../network/utils/nerworkCurrencyToName';
+import { txTypeNameFromTypeId } from './transactions-types';
 
- const formatDate = (d) => {
- const date = d.getDate();
- const month = d.getMonth() + 1;
- const year = d.getFullYear();
- const hours = d.getHours();
- const minutes = d.getMinutes();
-
- return `${year.toString().substring(2)}/${month}/${date} ${hours}:${minutes}`;
-};
-
-const txTypeNameFromTypeId = (typeId) => {
- switch (typeId) {
-     case TransactionType.TRANSFER: return 'Transfer';
-     case TransactionType.REGISTER_NAMESPACE: return 'Register namespace';
-     case TransactionType.ADDRESS_ALIAS: return 'Address alias';
-     case TransactionType.MOSAIC_ALIAS: return 'Mosaic alias';
-     case TransactionType.MOSAIC_DEFINITION: return 'Mosaic definition';
-     case TransactionType.MOSAIC_SUPPLY_CHANGE: return 'Mosaic supply change';
-     case TransactionType.MODIFY_MULTISIG_ACCOUNT: return 'Modify multisig account';
-     case TransactionType.AGGREGATE_COMPLETE: return 'Aggregate complete';
-     case TransactionType.AGGREGATE_BONDED: return 'Aggregate bonded';
-     case TransactionType.LOCK: return 'Lock';
-     case TransactionType.SECRET_LOCK: return 'Secret lock';
-     case TransactionType.SECRET_PROOF: return 'Secret proof';
-     case TransactionType.MODIFY_ACCOUNT_PROPERTY_ADDRESS: return 'Mod. account address';
-     case TransactionType.MODIFY_ACCOUNT_PROPERTY_MOSAIC: return 'Mod. account mosaic';
-     case TransactionType.MODIFY_ACCOUNT_PROPERTY_ENTITY_TYPE: return 'Mod. account entity type';
-     case TransactionType.LINK_ACCOUNT: return 'Link account';
-     default: return new Error('The transaction ID was not found');
- }
+export const formatDate = (d) => {
+  let date = d.getDate();
+  let month = d.getMonth() + 1;
+  const year = d.getFullYear();
+  let hours = d.getHours();
+  let minutes = d.getMinutes();
+  if (date < 10) date = `0${date}`;
+  if (month < 10) month = `0${month}`;
+  if (hours < 10) hours = `0${hours}`;
+  if (minutes < 10) minutes = `0${minutes}`;
+  return `${year.toString().substring(2)}/${month}/${date} ${hours}:${minutes}`;
 };
 
 const getBody = (tx) => {
@@ -62,49 +45,61 @@ const getBody = (tx) => {
     // The key order will dictate the display order
     const body = [];
 
-    // mainProp1, mainProp2, and type1 are fixed fields that display in the transaction rows
-    let mainProp1 = '';
-    let mainProp2 = '';
+    // mainprops and type1 are fixed fields that display in the transaction rows
+    // mainprops takes a maximum of argument of 4 items (4 lines in the row)
+    // The key order will dictate the display order
+    let mainProps = [];
 
     switch (tx.type) {
         case TransactionType.TRANSFER:
-            if (tx.message) body.push({ key: 'Message', value: tx.message.payload });
+            // eslint-disable-next-line no-case-declarations
+            let maxNumberOfMosaicsInMainProps = 4;
 
-            if (tx.mosaics.length > 0) {
-                let int = 0;
-                tx.mosaics.forEach((mosaic) => {
-                    int += 1;
-                    body.push(
-                        { key: `Amount ${int}`, value: mosaic.amount.compact().toLocaleString() },
-                        {
-                            key: `Asset ID ${int}`,
-                            value: networkCurrencyIdToName(mosaic.id.toHex()),
-                        },
-                    );
-                });
+            if (tx.message.payload !== '') {
+              body.push({ key: 'Message', value: tx.message.payload });
+              mainProps.push({ key: 'message: ', value: tx.message.payload });
+              maxNumberOfMosaicsInMainProps = 3;
             }
 
-            mainProp1 = tx.mosaics.length === 1
-                ? networkCurrencyIdToName(tx.mosaics[0].id.toHex())
-                : '';
+            if (tx.mosaics.length > 0) {
+              let int = 0;
+              tx.mosaics.forEach((mosaic) => {
+                  int += 1;
+                  body.push(
+                      { key: `Amount ${int}`, value: mosaic.amount.compact().toLocaleString() },
+                      {
+                          key: `Asset ID ${int}`,
+                          value: networkCurrencyIdToName(mosaic.id.toHex()),
+                      },
+                  );
+                  if (int <= maxNumberOfMosaicsInMainProps) {
+                    mainProps.push(
+                      {
+                        key: mosaic.amount.compact().toLocaleString(),
+                        value: networkCurrencyIdToName(mosaic.id.toHex()),
+                      },
+                    );
+                  }
+              });
+            }
 
-            mainProp2 = tx.mosaics.length === 1
-                ? tx.mosaics[0].amount.compact().toLocaleString()
-                : 'multi';
             break;
 
         case TransactionType.REGISTER_NAMESPACE:
             // eslint-disable-next-line no-case-declarations
-
+            let childOf = false;
+            // eslint-disable-next-line no-case-declarations
+            let namespaceName;
             switch (tx.namespaceType) {
                 case 1:
                     // This is a child namespace
                     body.push(
                         { key: 'Namespace Name', value: tx.namespaceName },
                         { key: 'Duration (blocks)', value: 0 },
-                        { key: 'Parent Namespace Id', value: tx.parentId.toHex().toUpperCase() },
+                        { key: 'Parent Namespace Id', value: tx.parentId.toHex().toLowerCase() },
                     );
-                    mainProp1 = `Child of ${tx.parentId.toHex().toUpperCase()}`;
+                    // eslint-disable-next-line no-case-declarations
+                    childOf = { key: 'Child of: ', value: tx.parentId.toHex().toLowerCase() };
                     break;
 
                 default:
@@ -113,11 +108,11 @@ const getBody = (tx) => {
                         { key: 'Namespace Name', value: tx.namespaceName },
                         { key: 'Duration (blocks)', value: tx.duration.compact().toLocaleString() },
                     );
-                    mainProp1 = '';
+                    namespaceName = { key: 'name: ', value: tx.namespaceName };
                     break;
             }
 
-            mainProp2 = tx.namespaceName;
+            mainProps = [namespaceName, childOf];
             break;
 
         case TransactionType.ADDRESS_ALIAS:
@@ -129,12 +124,15 @@ const getBody = (tx) => {
                 { key: 'Address', value: new Address(tx.address.address).pretty() },
                 {
                     key: 'Namespace Id',
-                    value: tx.namespaceId.toHex().toUpperCase(),
+                    value: tx.namespaceId.toHex().toLowerCase(),
                 },
             );
 
-            mainProp1 = tx.actionType === 0 ? 'Link' : 'Unlink';
-            mainProp2 = tx.namespaceId.toHex().toUpperCase();
+            mainProps.push({
+              key: tx.actionType === 0 ? 'Link namespace: ' : 'Unlink namespace: ',
+              value: tx.namespaceId.toHex().toLowerCase(),
+            });
+
             break;
 
         case TransactionType.MOSAIC_ALIAS:
@@ -143,20 +141,29 @@ const getBody = (tx) => {
                     key: 'Alias action type',
                     value: tx.actionType === 0 ? 'Link' : 'Unlink',
                 },
-                { key: 'Mosaic Id', value: tx.mosaicId.toHex().toUpperCase() },
+                { key: 'Mosaic Id', value: tx.mosaicId.toHex().toLowerCase() },
                 {
                     key: 'Namespace Id',
-                    value: tx.namespaceId.toHex().toUpperCase(),
+                    value: tx.namespaceId.toHex().toLowerCase(),
                 },
             );
 
-            mainProp1 = '';
-            mainProp2 = tx.namespaceId.toHex().toUpperCase();
+            mainProps.push(
+              {
+              key: tx.actionType === 0 ? 'Link mosaic Id: ' : 'Unlink mosaic Id: ',
+              value: tx.mosaicId.toHex().toLowerCase(),
+              },
+              {
+                key: tx.actionType === 0 ? 'to namespace: ' : 'from namespace: ',
+                value: tx.namespaceId.toHex().toLowerCase(),
+              },
+            );
+
             break;
 
         case TransactionType.MOSAIC_DEFINITION:
             body.push(
-                { key: 'Mosaic Id', value: tx.mosaicId.toHex().toUpperCase() },
+                { key: 'Mosaic Id', value: tx.mosaicId.toHex().toLowerCase() },
                 {
                     key: 'Divisibility (decimals)',
                     value: tx.mosaicProperties.divisibility,
@@ -181,13 +188,27 @@ const getBody = (tx) => {
                 },
             );
 
-            mainProp1 = '';
-            mainProp2 = tx.mosaicId.toHex().toUpperCase();
+            mainProps.push(
+              {
+                key: 'Mosaic Id: ', value: tx.mosaicId.toHex().toLowerCase(),
+              },
+              {
+                  key: 'Divisibility (decimals): ',
+                  value: tx.mosaicProperties.divisibility,
+              },
+              {
+                  key: 'Duration (blocks): ',
+                  value: tx.mosaicProperties.duration.compact() === 0
+                      ? 'unlimited'
+                      : tx.mosaicProperties.duration.compact().toLocaleString(),
+              },
+            );
+
             break;
 
         case TransactionType.MOSAIC_SUPPLY_CHANGE:
             body.push(
-                { key: 'Mosaic Id', value: tx.mosaicId.toHex().toUpperCase() },
+                { key: 'Mosaic Id', value: tx.mosaicId.toHex().toLowerCase() },
                 {
                     key: 'Direction',
                     value: tx.direction === 0 ? 'Decrease' : 'Increase',
@@ -198,10 +219,18 @@ const getBody = (tx) => {
                 },
             );
 
-            mainProp1 = tx.direction === 0
-                ? `Decreased by ${tx.delta.compact().toLocaleString()}`
-                : `Increased by ${tx.delta.compact().toLocaleString()}`;
-            mainProp2 = tx.mosaicId.toHex().toUpperCase();
+            mainProps.push(
+              {
+                key: 'Mosaic Id: ', value: tx.mosaicId.toHex().toLowerCase(),
+              },
+              {
+                key: tx.direction === 0
+                  ? 'Decreased by '
+                  : 'Increased by ',
+                value: tx.delta.compact().toLocaleString(),
+              },
+            );
+
             break;
 
         case TransactionType.MODIFY_MULTISIG_ACCOUNT:
@@ -211,8 +240,11 @@ const getBody = (tx) => {
                 // notifications
             );
 
-            mainProp1 = tx.minApprovalDelta;
-            mainProp2 = tx.minRemovalDelta;
+            mainProps.push(
+              { key: 'Min. approval delta: ', value: tx.minApprovalDelta },
+              { key: 'Min. removal delta: ', value: tx.minRemovalDelta },
+            );
+
             break;
 
         // The aggregate types shall be unreachable.
@@ -230,8 +262,15 @@ const getBody = (tx) => {
                 },
             );
 
-            mainProp1 = tx.mosaic.amount.compact().toLocaleString();
-            mainProp2 = tx.mosaic.id.toHex().toUpperCase();
+            mainProps.push(
+              { key: 'Locked amount: ', value: tx.mosaic.amount.compact().toLocaleString() },
+              { key: 'Locked asset Id: ', value: tx.mosaic.id.toHex() },
+              {
+                  key: 'Duration (blocks): ',
+                  value: tx.duration.compact().toLocaleString(),
+              },
+            );
+
             break;
 
         case TransactionType.SECRET_LOCK:
@@ -242,12 +281,19 @@ const getBody = (tx) => {
                     key: 'Duration (blocks)',
                     value: tx.duration.compact(),
                 },
-                { key: 'Recipient', value: new Address(tx.recipient.address).pretty() },
                 { key: 'Secret', value: tx.secret },
             );
 
-            mainProp1 = tx.mosaic.amount.compact().toLocaleString();
-            mainProp2 = tx.mosaic.id.toHex().toUpperCase();
+            mainProps.push(
+              { key: 'Locked amount: ', value: tx.mosaic.amount.compact().toLocaleString() },
+              { key: 'Locked asset Id: ', value: tx.mosaic.id.toHex() },
+              {
+                  key: 'Duration (blocks): ',
+                  value: tx.duration.compact(),
+              },
+              { key: 'Secret: ', value: `${tx.secret.substring(0, 20)}...` },
+            );
+
             break;
 
         case TransactionType.SECRET_PROOF:
@@ -256,26 +302,23 @@ const getBody = (tx) => {
                 { key: 'Proof', value: tx.proof },
             );
 
-            mainProp1 = '';
-            mainProp2 = '';
+            mainProps.push(
+                { key: 'Secret: ', value: `${tx.secret.substring(0, 20)}...` },
+                { key: 'Proof: ', value: `${tx.proof.substring(0, 20)}...` },
+            );
+
             break;
 
         // @TODO
         case TransactionType.MODIFY_ACCOUNT_PROPERTY_ADDRESS:
-            mainProp1 = '';
-            mainProp2 = '';
             break;
 
         // @TODO
         case TransactionType.MODIFY_ACCOUNT_PROPERTY_MOSAIC:
-            mainProp1 = '';
-            mainProp2 = '';
             break;
 
         // @TODO
         case TransactionType.MODIFY_ACCOUNT_PROPERTY_ENTITY_TYPE:
-            mainProp1 = '';
-            mainProp2 = '';
             break;
 
         case TransactionType.LINK_ACCOUNT:
@@ -284,8 +327,11 @@ const getBody = (tx) => {
                 { key: 'Link action', value: tx.actionType === 0 ? 'Link' : 'Unlink' },
             );
 
-            mainProp1 = '';
-            mainProp2 = '';
+            mainProps.push(
+              { key: 'Remote account key: ', value: tx.remoteAccountKey },
+              { key: 'Link action: ', value: tx.actionType === 0 ? 'Link' : 'Unlink' },
+            );
+
             break;
 
         default: break;
@@ -293,45 +339,61 @@ const getBody = (tx) => {
 
     const headerExtension = {
         type1: txTypeNameFromTypeId(tx.type),
-        mainProp1,
-        mainProp2,
+        mainProps,
     };
 
     return { body, headerExtension };
 };
 
-const formatTransaction = (tx) => {
+const tinyAddress = address =>
+  // eslint-disable-next-line implicit-arrow-linebreak
+  `${address.substring(0, 13).toLowerCase()}...${address.substring(42).toLowerCase()}`;
+
+const formatTransaction = (tx, numberOfTransactionsInAggregate) => {
+    const signer = new Address(tx.signer.address.address).pretty();
+    const signerTiny = tinyAddress(signer);
     const recipient = tx.recipient ? new Address(tx.recipient.address).pretty() : '';
+    const recipientTiny = recipient === '' ? '' : tinyAddress(recipient);
     const type2 = tx.aggregate ? tx.aggregate : '';
-    const specificTransactionItems = getBody(tx);
+    const { body, headerExtension } = getBody(tx);
+    const { type1, mainProps } = headerExtension;
+    const numberOfAssetsInTransfer = type1 === 'Transfer' ? tx.mosaics.length : null;
 
     return {
-        time: formatDate(new Date(tx.deadline.value)),
-        signer: new Address(tx.signer.address.address).pretty(),
+        signer,
+        signerTiny,
         recipient,
+        recipientTiny,
         fee: tx.maxFee.compact(),
         blockNumber: tx.transactionInfo.height.compact(),
         type2,
         transactionHash: tx.transactionInfo.hash,
         id: tx.transactionInfo.id,
-        body: specificTransactionItems.body,
-        type1: specificTransactionItems.headerExtension.type1,
-        mainProp1: specificTransactionItems.headerExtension.mainProp1,
-        mainProp2: specificTransactionItems.headerExtension.mainProp2,
+        body,
+        type1,
+        mainProps,
+        numberOfAssetsInTransfer,
+        numberOfTransactionsInAggregate,
+        deadline: formatDate(new Date(tx.deadline.value)),
+        timestamp: tx.timestamp,
+        date: formatDate(new Date(tx.timestamp * 1000)),
     };
 };
 
 export const formatTransactions = (tx) => {
     if (tx.innerTransactions) {
         return tx.innerTransactions.map((t) => {
-            // eslint-disable-next-line no-param-reassign
             t.transactionInfo.hash = tx.transactionInfo.hash;
-            // eslint-disable-next-line no-param-reassign
-            t.aggregate = txTypeNameFromTypeId(tx.type);
+            t.timestamp = tx.timestamp;
+
+            t.aggregate = txTypeNameFromTypeId(
+              tx.type,
+              tx.innerTransactions.length,
+            );
             return formatTransaction(t);
         });
     }
-    return [formatTransaction(tx)];
+    return [formatTransaction(tx, null)];
 };
 
 export const removeDuplicatesAndSortByBlockNumber = (array) => {

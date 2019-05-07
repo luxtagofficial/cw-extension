@@ -16,52 +16,48 @@
 // along with nem2-wallet-browserextension.  If not, see <http://www.gnu.org/licenses/>.
 
 <template>
-    <v-layout
-            column
-            xs12
+  <v-layout
+    row
+    pb-2
+    mt-4
+  >
+    <v-flex
+      xs12
     >
-        <v-layout
-                row
-                mb-4
-        >
-            <v-layout
-                    row
-                    fill-height
-                    justify-start
-                    pl-3
-                    xs3
-            >
-                <h5 class="headline pt-3">
-                    Filter
-                </h5>
-            </v-layout>
-            <v-layout
-                    row
-                    fill-height
-                    justify-end
-                    xs9
-            >
-                <v-btn
-                        color="primary mx-0"
-                        @click="reloadList"
-                >
-                    Reload List
-                </v-btn>
-                <v-btn
-                        class="ml-3"
-                        color="primary mx-0"
-                        @click="addFilter = !addFilter"
-                >
-                   Add Filter
-                </v-btn>
-            </v-layout>
-        </v-layout>
-
-        <Errors :shared-state="sharedState" />
-        <AddFilter
-                @closeFilter="addFilter=false"
-                v-if="addFilter"
+      <Errors />
+      <v-card
+        style="height: auto;padding:0 !important"
+        class="card--flex-toolbar"
+      >
+        <v-toolbar
+          card
+          prominent
         />
+        <v-spacer />
+        <v-card-text>
+          <!--<v-btn
+            color="primary mx-0"
+            @click="reloadList"
+          >
+            Reload List
+          </v-btn>  
+          <v-btn
+            class="ml-3"
+            color="primary mx-0"
+            @click="addFilter = !addFilter"
+          >
+            Add Filter
+          </v-btn>-->
+          <AddFilter
+            v-if="addFilter"
+            @closeFilter="addFilter=false"
+          />
+        </v-card-text>
+      </v-card>
+    </v-flex>
+  </v-layout>
+
+
 <!--        <div-->
 <!--                v-if="sharedState.wallets.length > 0-->
 <!--        && sharedState.activeWallet-->
@@ -71,34 +67,26 @@
 <!--                    class="my-2"-->
 <!--            />-->
 <!--        </div>-->
-    </v-layout>
 </template>
 
 <script>
-    import StateRepository from '../../infrastructure/StateRepository';
-    import AddFilter from './AddFilter'
-    import Errors from '../Errors'
+import AddFilter from './AddFilter.vue';
+import Errors from '../Errors.vue';
 
-    export default {
-        name: "Filter",
-        components:{
-            AddFilter,
-            Errors
-        },
-        data:function () {
-            return {
-                sharedState:StateRepository.state,
-                addFilter:true
-            }
-        },
-        methods:{
-            reloadList:function () {
-                alert('loading...')
-            }
-        }
-    }
+export default {
+  name: 'Filters',
+  components: {
+    AddFilter,
+    Errors,
+  },
+  data() {
+    return {
+      addFilter: true,
+    };
+  },
+  methods: {
+    reloadList() {
+    },
+  },
+};
 </script>
-
-<style scoped>
-
-</style>

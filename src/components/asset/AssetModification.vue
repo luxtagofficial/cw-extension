@@ -122,6 +122,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import {
   Deadline,
   MosaicId,
@@ -131,7 +132,7 @@ import {
   TransactionHttp,
   UInt64,
 } from 'nem2-sdk';
-import StateRespository from '../../infrastructure/StateRepository';
+
 import Dialog from './Dialog.vue';
 import SendConfirmation from './SendConfirmation.vue';
 
@@ -151,7 +152,6 @@ export default {
   },
   data() {
     return {
-      sharedState: StateRespository.state,
       supply: 1,
       dialogDetails: [],
       txSendResults: [],
@@ -161,6 +161,9 @@ export default {
       directions: ['Increase', 'Decrease'],
     };
   },
+  computed: mapState([
+    'wallet',
+  ]),
   watch: {
     supply: {
       handler(e) {
@@ -185,13 +188,13 @@ export default {
       this.isDialogShow = true;
     },
     modifyAsset() {
-      if (!this.sharedState.activeWallet) return;
+      if (!this.wallet.activeWallet) return;
       if (this.directions.indexOf(this.direction) === -1) return;
 
-      const endpoint = this.sharedState.activeWallet.node;
+      const endpoint = this.wallet.activeWallet.node;
       const transactionHttp = new TransactionHttp(endpoint);
       // eslint-disable-next-line prefer-destructuring;
-      const { account } = this.sharedState.activeWallet;
+      const { account } = this.wallet.activeWallet;
 
       const mosaicSupplyChangeTransaction = MosaicSupplyChangeTransaction.create(
         Deadline.create(),
